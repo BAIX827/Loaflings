@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Loaflings · 摸鱼灵</title>
+    <link rel="stylesheet" href="./companion.css" />
+  </head>
+  <body>
+    <div id="stage" class="stage" aria-label="Loaflings companion">
+      <div id="pet" class="pet" role="img" aria-label="Base Loafling"></div>
+      <div id="reveal" class="reveal" hidden>
+        <p id="reveal-line" class="reveal-line"></p>
+      </div>
+      <p id="status" class="status" hidden></p>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

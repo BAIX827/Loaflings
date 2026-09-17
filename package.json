@@ -1,0 +1,20 @@
+{
+  "name": "loaflings",
+  "productName": "Loaflings",
+  "version": "0.1.0",
+  "description": "Loaflings / 摸鱼灵 — Mac companion demo",
+  "main": "src/desk/main.js",
+  "scripts": {
+    "start": "electron -r tsx/cjs .",
+    "desk": "electron -r tsx/cjs .",
+    "demo": "electron -r tsx/cjs .",
+    "settle:demo": "tsx src/desk/runDemoSettle.ts"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "tsx": "^4.19.2"
+  }
+}
