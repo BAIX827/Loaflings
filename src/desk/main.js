@@ -1,6 +1,6 @@
 /**
  * Loaflings / 摸鱼灵 — Electron companion shell (DAY-DESK)
- * Always-on-top, frameless, transparent window. Shows base pet + demo settle.
+ * Always-on-top, frameless, transparent window. Shows base pet + end-of-day reveal.
  */
 const { app, BrowserWindow, ipcMain, nativeImage, screen } = require('electron');
 const path = require('path');
@@ -12,6 +12,7 @@ const {
   getLiveSettle,
   excludeWindowIds,
 } = require('./hooks/senseLive');
+const { loadCollection, saveToCollection } = require('./collection');
 
 const ROOT = path.join(__dirname, '../..');
 const ICON_PATH = path.join(ROOT, 'src/art/AppIcon.png');
@@ -29,6 +30,52 @@ function getDemoBundle() {
   return demoBundle;
 }
 
+/**
+ * Prefer live settle when sense is running; else fixture demo.
+ * Does not invent genes — always settleDay() from CORE.
+ * @returns {{ ok: boolean, source?: string, profile?: object, result?: object, fixturePath?: string, persistPath?: string, error?: string }}
+ */
+function resolveSettleBundle() {
+  try {
+    const live = getLiveSettle();
+    if (live?.result) {
+      return {
+        ok: true,
+        source: 'live',
+        profile: live.profile,
+        result: live.result,
+        persistPath: live.persistPath,
+      };
+    }
+  } catch (err) {
+    console.warn(
+      '[loaflings] live settle unavailable, falling back to demo',
+      err instanceof Error ? err.message : err,
+    );
+  }
+  try {
+    const { profile, result, fixturePath } = getDemoBundle();
+    return { ok: true, source: 'demo', profile, result, fixturePath };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+function slimResult(result) {
+  return {
+    date: result.date,
+    energy: result.energy,
+    genes: result.genes,
+    personality: result.personality,
+    rarity: result.rarity,
+    traits: result.traits,
+    events: result.events,
+  };
+}
+
 function createCompanionWindow() {
   const icon = nativeImage.createFromPath(ICON_PATH);
   if (process.platform === 'darwin' && app.dock) {
@@ -36,8 +83,8 @@ function createCompanionWindow() {
   }
 
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize;
-  const winW = 320;
-  const winH = 300;
+  const winW = 340;
+  const winH = 380;
 
   companion = new BrowserWindow({
     width: winW,
@@ -83,7 +130,6 @@ function createCompanionWindow() {
   return companion;
 }
 
-
 ipcMain.handle('loaflings:get-live-profile', () => {
   try {
     const profile = getLiveProfile();
@@ -101,17 +147,10 @@ ipcMain.handle('loaflings:get-live-settle', () => {
     const { profile, result, persistPath } = bundle;
     return {
       ok: true,
+      source: 'live',
       persistPath,
       profile,
-      result: {
-        date: result.date,
-        energy: result.energy,
-        genes: result.genes,
-        personality: result.personality,
-        rarity: result.rarity,
-        traits: result.traits,
-        events: result.events,
-      },
+      result: slimResult(result),
     };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
@@ -123,23 +162,86 @@ ipcMain.handle('loaflings:get-demo-settle', () => {
     const { profile, result, fixturePath } = getDemoBundle();
     return {
       ok: true,
+      source: 'demo',
       fixturePath,
       profile,
-      result: {
-        date: result.date,
-        energy: result.energy,
-        genes: result.genes,
-        personality: result.personality,
-        rarity: result.rarity,
-        traits: result.traits,
-        events: result.events,
-      },
+      result: slimResult(result),
     };
   } catch (err) {
     return {
       ok: false,
       error: err instanceof Error ? err.message : String(err),
     };
+  }
+});
+
+/** Prefer live, fall back to fixture demo. */
+ipcMain.handle('loaflings:get-day-settle', () => {
+  const bundle = resolveSettleBundle();
+  if (!bundle.ok) return bundle;
+  return {
+    ok: true,
+    source: bundle.source,
+    fixturePath: bundle.fixturePath,
+    persistPath: bundle.persistPath,
+    profile: bundle.profile,
+    result: slimResult(bundle.result),
+  };
+});
+
+ipcMain.handle('loaflings:get-collection', () => {
+  try {
+    const col = loadCollection();
+    return { ok: true, path: col.path, version: col.version, items: col.items, count: col.items.length };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
+/**
+ * Settle (live→demo) and upsert into local collection.
+ * Optional forceSource: 'demo' | 'live'
+ */
+ipcMain.handle('loaflings:collect-day', (_e, opts = {}) => {
+  try {
+    const force = opts?.forceSource;
+    let bundle;
+    if (force === 'demo') {
+      const { profile, result, fixturePath } = getDemoBundle();
+      bundle = { ok: true, source: 'demo', profile, result, fixturePath };
+    } else if (force === 'live') {
+      const live = getLiveSettle();
+      if (!live?.result) {
+        return { ok: false, error: 'live-sense-not-started' };
+      }
+      bundle = {
+        ok: true,
+        source: 'live',
+        profile: live.profile,
+        result: live.result,
+        persistPath: live.persistPath,
+      };
+    } else {
+      bundle = resolveSettleBundle();
+    }
+    if (!bundle.ok) return bundle;
+
+    const saved = saveToCollection(bundle.result, {
+      source: bundle.source,
+      seedKey: bundle.profile?.seedKey,
+    });
+    return {
+      ok: true,
+      source: bundle.source,
+      fixturePath: bundle.fixturePath,
+      persistPath: bundle.persistPath,
+      result: slimResult(bundle.result),
+      entry: saved.entry,
+      count: saved.count,
+      collectionPath: saved.path,
+    };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
 });
 
@@ -157,6 +259,13 @@ app.whenReady().then(() => {
     console.error('[loaflings] demo settle failed', err);
   }
 
+  try {
+    const col = loadCollection();
+    console.log('[loaflings] collection', col.path, 'items=', col.items.length);
+  } catch (err) {
+    console.warn('[loaflings] collection load', err);
+  }
+
   createCompanionWindow();
 
   startLiveSense(() => Boolean(companion && companion.isFocused()))
@@ -167,7 +276,6 @@ app.whenReady().then(() => {
       }
     })
     .catch((err) => console.error('[loaflings] live sense failed', err));
-
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

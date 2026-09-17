@@ -13,9 +13,40 @@
   <body>
     <div id="stage" class="stage" aria-label="Loaflings companion">
       <div id="pet" class="pet" role="img" aria-label="Base Loafling"></div>
+
+      <div class="chrome" role="toolbar" aria-label="Companion controls">
+        <button type="button" id="btn-reveal" class="chip" title="End-of-day reveal">
+          Day
+        </button>
+        <button type="button" id="btn-collect" class="chip" title="Save today’s Loafling">
+          Save
+        </button>
+        <span id="collection-badge" class="badge" title="Local collection size">0</span>
+      </div>
+
       <div id="reveal" class="reveal" hidden>
         <p id="reveal-line" class="reveal-line"></p>
       </div>
+
+      <aside id="panel" class="panel" hidden aria-label="End-of-day reveal">
+        <header class="panel-head">
+          <strong id="panel-title">End of day</strong>
+          <button type="button" id="btn-close-panel" class="chip chip-quiet" title="Close">
+            ✕
+          </button>
+        </header>
+        <dl class="panel-grid">
+          <dt>Name</dt><dd id="f-name">—</dd>
+          <dt>Type</dt><dd id="f-type">—</dd>
+          <dt>Rarity</dt><dd id="f-rarity">—</dd>
+          <dt>Personality</dt><dd id="f-personality">—</dd>
+          <dt>Genes</dt><dd id="f-genes">—</dd>
+          <dt>Traits</dt><dd id="f-traits">—</dd>
+          <dt>Source</dt><dd id="f-source">—</dd>
+        </dl>
+        <p id="panel-note" class="panel-note"></p>
+      </aside>
+
       <p id="status" class="status" hidden></p>
     </div>
     <script src="./renderer.js"></script>

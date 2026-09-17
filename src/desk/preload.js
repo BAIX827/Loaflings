@@ -1,5 +1,5 @@
 /**
- * Preload bridge: MVP parts + SENSE/CORE demo settle IPC.
+ * Preload bridge: MVP parts + SENSE/CORE settle + local collection IPC.
  */
 const { contextBridge, ipcRenderer } = require('electron');
 const {
@@ -32,6 +32,20 @@ contextBridge.exposeInMainWorld('loaflings', {
   },
   getLiveSettle() {
     return ipcRenderer.invoke('loaflings:get-live-settle');
+  },
+  /** Prefer live settle when available; else fixture demo. */
+  getDaySettle() {
+    return ipcRenderer.invoke('loaflings:get-day-settle');
+  },
+  getCollection() {
+    return ipcRenderer.invoke('loaflings:get-collection');
+  },
+  /**
+   * Settle (live→demo by default) and upsert into userData/collection.json.
+   * @param {{ forceSource?: 'demo'|'live' }} [opts]
+   */
+  collectDay(opts) {
+    return ipcRenderer.invoke('loaflings:collect-day', opts || {});
   },
   onCompanionWindowId(cb) {
     ipcRenderer.on('loaflings:window-id', (_e, payload) => cb(payload));

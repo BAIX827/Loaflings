@@ -1,17 +1,17 @@
 # WORK_PLAN
 
 ## Current
-- [ ] TASK-006 Mac demo app — **live sense in; hatch reveal still open**
+- [ ] TASK-006 Mac demo app — **reveal/collection done; live sense on Mac still needs Accessibility**
   - [x] DESK: companion window + AppIcon + pet SVG + fixture→settle
+  - [x] DESK: end-of-day reveal panel + local `userData/collection.json`
   - [x] CORE: settleDay verified via `npm run settle:demo`
   - [x] SENSE: profile schema + `fixtures/demo-day.json`
   - [x] SENSE: live Mac counters (`f039926`, needs Accessibility)
-  - [ ] DESK: end-of-day reveal UI + local collection
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
 - [ ] TASK-004 Real sensors + permissions + exclude own window (SENSE + DESK)
-- [ ] TASK-005 Daily hatch reveal polish (DESK + CORE)
+- [ ] TASK-005 Daily hatch reveal polish (DESK + CORE) — minimal reveal/collection shipped; polish still open
 - [ ] Optional short interactions (feed / dig / evolution choice)
 
 ## Done
@@ -24,9 +24,15 @@
 
 ## Log
 
+2026-09-18 (DAY-DESK)
+- End-of-day reveal panel (name/type/rarity/personality/genes/traits from CORE settle).
+- Local collection JSON under Electron `app.getPath('userData')` (`collection.json`).
+- Wire: prefer `getLiveSettle` / senseLive when up; fixture `settle:demo` still works.
+- UI: non-intrusive Day / Save chips on companion; pet still Pet_Base_Master.svg.
+
 2026-09-18 (DAY-LEAD)
 - Accepted SENSE live counters slice f039926 (count-only, companion-focus click skip, docs/SENSE_LIVE.md)
-- Still open for demo DoD: DESK end-of-day reveal + collection; 老大本机开辅助功能权限
+- Still open for demo DoD at that time: DESK end-of-day reveal + collection; 老大本机开辅助功能权限
 
 2026-09-18 (DAY-LEAD)
 - Acceptance check on `63fb64d`: runnable Mac shell + fixture settle = pass for UI slice
