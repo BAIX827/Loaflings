@@ -1,0 +1,107 @@
+# Loaflings / 摸鱼灵
+
+Passive Mac desktop companion: **each day starts as an egg**, your computer habits grow it, and end-of-day settle hatches one Loafling into your local collection.
+
+> You work. It grows. Every day leaves behind a creature.
+
+## Quick start (dev)
+
+```bash
+cd Loaflings   # or your clone of this repo
+npm install
+npm start
+```
+
+- Companion window: always-on-top, current `character/Pet_Base_Master.svg`
+- Click **Day** → settle reveal; **Save** → `userData/collection.json`
+- Live counters need macOS **Accessibility** (and Input Monitoring if prompted) for Electron / Loaflings
+- Fixture-only settle check: `npm run settle:demo`
+
+Repo: https://github.com/BAIX827/Loaflings
+
+## Core loop
+
+```text
+computer behaviour (DAY-SENSE)
+        → DailyActivityProfile (count-only JSON)
+        → energy + genes + settle (DAY-CORE)
+        → SVG parts (DAY-ART / figma bro)
+        → companion + collection (DAY-DESK)
+```
+
+One local calendar day → one profile → one hatch. Next day → new egg.
+
+## Privacy
+
+We count keystrokes / clicks / mouse travel / idle / focus / window-switch proxies.  
+We **never** read typed text, documents, screenshots, or window titles.
+
+## File structure
+
+```text
+Loaflings/
+├── README.md                 ← you are here
+├── PROJECT.md                ← product one-pager
+├── AGENTS.md                 ← agent working rules
+├── WORK_PLAN.md              ← current tasks + log
+├── package.json              ← Electron demo scripts
+├── character/                ← canonical pet art (authority)
+│   ├── Pet_Base_Master.svg
+│   ├── loafling-standard-base.css
+│   ├── LOAFLING_CHARACTER_SPEC_UPDATED.md
+│   ├── PARTS_MVP.md          ← body / cloud / face / tail
+│   └── STYLE_NOTES.md
+├── reference/                ← inspiration only (not requirements)
+├── docs/
+│   ├── MVP_DEMO_ACCEPTANCE.md
+│   ├── GENE_CONTRACT_MVP.md
+│   ├── SENSE_PROFILE_SCHEMA.md
+│   └── SENSE_LIVE.md
+└── src/
+    ├── sense/                ← DAY-SENSE
+    │   ├── profile.ts        ← DailyActivityProfile (aligned with core)
+    │   ├── builder.ts
+    │   ├── liveSensor.js     ← uiohook + powerMonitor
+    │   ├── fixtures/demo-day.json
+    │   └── index.ts
+    ├── core/                 ← DAY-CORE
+    │   ├── profile.ts
+    │   ├── energy.ts
+    │   ├── genes.ts
+    │   ├── settle.ts         ← settleDay()
+    │   ├── rng.ts
+    │   └── index.ts
+    ├── art/                  ← DAY-ART
+    │   ├── parts.ts
+    │   └── AppIcon.png
+    └── desk/                 ← DAY-DESK (Electron shell)
+        ├── main.js
+        ├── preload.js
+        ├── renderer.js
+        ├── pipeline.js
+        ├── collection.js
+        ├── hooks/senseLive.js
+        └── …
+```
+
+## Owners
+
+| Area | Agent |
+|------|--------|
+| Sense profile + live counters | DAY-SENSE |
+| Energy / genes / settle | DAY-CORE |
+| Parts / icon / visual specs | DAY-ART (+ figma bro for Figma SVG) |
+| Mac shell / package / collection UI | DAY-DESK |
+| Scope / acceptance | DAY-LEAD |
+
+## MVP gene parts
+
+`body` / `cloud` / `face` / `tail` (not `sprout`). See `docs/GENE_CONTRACT_MVP.md` and `character/PARTS_MVP.md`.
+
+## Docs priority
+
+1. Latest instruction from 老大  
+2. `PROJECT.md`  
+3. `WORK_PLAN.md`  
+4. `docs/*` contracts  
+5. `reference/` (inspiration only)

@@ -65,10 +65,7 @@ class LiveSensor {
     return emptyProfile(date, this.seedKey);
   }
 
-  persist(force = false) {
-    const now = Date.now();
-    if (!force && now - this.lastPersistAt < 2000) return;
-    this.lastPersistAt = now;
+  _writePersist() {
     try {
       assertProfileShape(this.profile);
       fs.mkdirSync(path.dirname(this.persistPath), { recursive: true });
@@ -78,7 +75,31 @@ class LiveSensor {
     }
   }
 
+  /** One egg per local day — fresh profile when calendar day changes. */
+  ensureToday() {
+    const today = todayLocal();
+    if (this.profile.date !== today) {
+      this.#endFocus();
+      this._writePersist();
+      this.profile = emptyProfile(today, this.seedKey);
+      this.lastMouse = null;
+      this.focusStartedAt = null;
+      this.lastActiveAt = Date.now();
+      this._writePersist();
+      console.log('[sense] new day egg', today);
+    }
+  }
+
+  persist(force = false) {
+    this.ensureToday();
+    const now = Date.now();
+    if (!force && now - this.lastPersistAt < 2000) return;
+    this.lastPersistAt = now;
+    this._writePersist();
+  }
+
   getProfile() {
+    this.ensureToday();
     return {
       ...this.profile,
       focusSessions: [...this.profile.focusSessions],
@@ -174,6 +195,7 @@ class LiveSensor {
   }
 
   async start() {
+    this.ensureToday();
     if (this.running) return { ok: true, already: true };
     this.running = true;
     this.tickTimer = setInterval(() => this.#tickIdle(), 5000);

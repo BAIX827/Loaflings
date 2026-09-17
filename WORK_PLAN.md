@@ -61,3 +61,7 @@
 2026-09-18 (DAY-SENSE)
 - Live counters: `src/sense/liveSensor.js` + desk `senseLive` bridge; IPC get-live-profile / get-live-settle.
 - Depends on `uiohook-napi` + macOS Accessibility.
+
+2026-09-18 (DAY-SENSE)
+- Added root README.md (structure + quick start + owners).
+- liveSensor: ensureToday() one egg per local day.
