@@ -1,0 +1,304 @@
+/* Guide_Center_Axis */
+
+.Guide_Center_Axis {
+  position: absolute;
+  width: 0px;
+  height: 600px;
+  left: 600px;
+  top: 115px;
+  opacity: 0.55;
+  border: 1px dashed #CFC7C2;
+}
+
+/* Guide_Baseline */
+
+.Guide_Baseline {
+  position: absolute;
+  width: 660px;
+  height: 0px;
+  left: 270px;
+  top: 690px;
+  opacity: 0.55;
+  border: 1px dashed #CFC7C2;
+}
+
+/* Tail */
+
+.Tail {
+  box-sizing: border-box;
+  position: absolute;
+  width: 92px;
+  height: 118px;
+  left: 823.58px;
+  top: 520px;
+  background: #FFE9DB;
+  border: 7px solid #4B3A32;
+  transform: rotate(8deg);
+}
+
+/* Body */
+
+.Body {
+  position: absolute;
+  width: 720px;
+  height: 430px;
+  left: 240px;
+  top: 255px;
+}
+
+/* Vector */
+
+.Vector {
+  position: absolute;
+  left: 6.5%;
+  right: 6.5%;
+  top: 3.72%;
+  bottom: 3.6%;
+  background: #FFF8F1;
+  border: 8px solid #4B3A32;
+}
+
+/* Paw_L_Toe1 */
+
+.Paw_L_Toe1 {
+  position: absolute;
+  width: 0px;
+  height: 17px;
+  left: 392px;
+  top: 632px;
+  border: 5px solid #4B3A32;
+}
+
+/* Paw_L_Toe2 */
+
+.Paw_L_Toe2 {
+  position: absolute;
+  width: 0px;
+  height: 17px;
+  left: 430px;
+  top: 632px;
+  border: 5px solid #4B3A32;
+}
+
+/* Paw_R_Toe1 */
+
+.Paw_R_Toe1 {
+  position: absolute;
+  width: 0px;
+  height: 17px;
+  left: 770px;
+  top: 632px;
+  border: 5px solid #4B3A32;
+}
+
+/* Paw_R_Toe2 */
+
+.Paw_R_Toe2 {
+  position: absolute;
+  width: 0px;
+  height: 17px;
+  left: 808px;
+  top: 632px;
+  border: 5px solid #4B3A32;
+}
+
+/* Face */
+
+.Face {
+  position: absolute;
+  width: 420px;
+  height: 150px;
+  left: 392px;
+  top: 445px;
+}
+
+/* Eye_L */
+
+.Eye_L {
+  position: absolute;
+  width: 34px;
+  height: 50px;
+  left: 42px;
+  top: 34px;
+  background: #4B3A32;
+}
+
+/* Eye_R */
+
+.Eye_R {
+  position: absolute;
+  width: 34px;
+  height: 50px;
+  left: 344px;
+  top: 34px;
+  background: #4B3A32;
+}
+
+/* Blush_L */
+
+.Blush_L {
+  position: absolute;
+  width: 84px;
+  height: 42px;
+  left: 0px;
+  top: 84px;
+  background: #FFD6D6;
+}
+
+/* Blush_R */
+
+.Blush_R {
+  position: absolute;
+  width: 84px;
+  height: 42px;
+  left: 336px;
+  top: 84px;
+  background: #FFD6D6;
+}
+
+/* Mouth */
+
+.Mouth {
+  position: absolute;
+  width: 52px;
+  height: 7.11px;
+  left: 183px;
+  top: 88px;
+  border: 7px solid #4B3A32;
+}
+
+/* Thought_Cloud */
+
+.Thought_Cloud {
+  position: absolute;
+  width: 280px;
+  height: 150px;
+  left: 456px;
+  top: 60px;
+}
+
+/* Cloud_L */
+
+.Cloud_L {
+  box-sizing: border-box;
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  left: 20px;
+  top: 55px;
+  background: #EAF4FF;
+  border: 5px solid #8CB7F0;
+}
+
+/* Cloud_C */
+
+.Cloud_C {
+  box-sizing: border-box;
+  position: absolute;
+  width: 125px;
+  height: 125px;
+  left: 78px;
+  top: 15px;
+  background: #EAF4FF;
+  border: 5px solid #8CB7F0;
+}
+
+/* Cloud_R */
+
+.Cloud_R {
+  box-sizing: border-box;
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  left: 170px;
+  top: 55px;
+  background: #EAF4FF;
+  border: 5px solid #8CB7F0;
+}
+
+/* Cloud_B */
+
+.Cloud_B {
+  box-sizing: border-box;
+  position: absolute;
+  width: 105px;
+  height: 105px;
+  left: 92px;
+  top: 62px;
+  background: #EAF4FF;
+  border: 5px solid #8CB7F0;
+}
+
+/* Thought_Dot */
+
+.Thought_Dot {
+  box-sizing: border-box;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 592px;
+  top: 237px;
+  background: #EAF4FF;
+  border: 4px solid #8CB7F0;
+}
+
+/* Geometry_Guide */
+
+.Geometry_Guide {
+  position: absolute;
+  width: 210px;
+  height: 260px;
+  left: 951px;
+  top: 298px;
+  opacity: 0.55;
+}
+
+/* R64_Bump */
+
+.R64_Bump {
+  box-sizing: border-box;
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: 45px;
+  top: 20px;
+  border: 2px dashed #CFC7C2;
+}
+
+/* R32_Paw */
+
+.R32_Paw {
+  box-sizing: border-box;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  left: 75px;
+  top: 150px;
+  border: 2px dashed #CFC7C2;
+}
+
+/* Paw_L */
+
+.Paw_L {
+  box-sizing: border-box;
+  position: absolute;
+  width: 142px;
+  height: 108px;
+  left: 350px;
+  top: 565px;
+  background: #FFF8F1;
+  border: 7px solid #4B3A32;
+}
+
+/* Paw_R */
+
+.Paw_R {
+  box-sizing: border-box;
+  position: absolute;
+  width: 142px;
+  height: 108px;
+  left: 708px;
+  top: 565px;
+  background: #FFF8F1;
+  border: 7px solid #4B3A32;
+}

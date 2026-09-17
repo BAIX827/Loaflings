@@ -34,3 +34,16 @@ Priority:
 5. Agent assumptions
 
 If a reference conflicts with PROJECT.md, follow PROJECT.md unless the user explicitly requests a change.
+
+
+
+## Loafling Character Design
+
+For any task involving Loafling character art, sprites, animation or visual
+variants, read:
+
+`character/LOAFLING_CHARACTER_SPEC_UPDATED.md`
+
+Also inspect the canonical reference images listed in that document.
+
+Do not redesign the core Loafling visual identity unless explicitly requested.
