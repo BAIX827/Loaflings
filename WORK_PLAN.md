@@ -1,12 +1,12 @@
 # WORK_PLAN
 
 ## Current
-- [ ] TASK-006 Mac demo app — **reveal/collection done; live sense on Mac still needs Accessibility**
-  - [x] DESK: companion window + AppIcon + pet SVG + fixture→settle
-  - [x] DESK: end-of-day reveal panel + local `userData/collection.json`
-  - [x] CORE: settleDay verified via `npm run settle:demo`
-  - [x] SENSE: profile schema + `fixtures/demo-day.json`
-  - [x] SENSE: live Mac counters (`f039926`, needs Accessibility)
+- [x] TASK-006 Mac demo app — **MVP demo DoD met (dev launch)**
+  - [x] DESK: companion + AppIcon + pet + fixture/live→settle
+  - [x] DESK: end-of-day reveal + local collection (`c890305`)
+  - [x] CORE: settleDay verified
+  - [x] SENSE: schema + fixture + live counters (`f039926`)
+  - Still not: signed `.app` / Dock one-click (packaging) — next when 老大按规划排期
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
@@ -21,8 +21,15 @@
 - [x] CORE: gene contract MVP + `src/core`
 - [x] SENSE: profile aligned to CORE + demo fixture
 - [x] LEAD: MVP demo acceptance doc
+- [x] TASK-006 Mac demo (dev) — reveal/collection/live sense
 
 ## Log
+
+2026-09-18 (DAY-LEAD)
+- Accepted DESK reveal+collection `c890305` (Day panel + Save → userData/collection.json; live settle preferred)
+- MVP demo DoD (dev): pass — `npm install && npm start`
+- Not yet: packaged clickable `.app`; Accessibility must be on for live hooks
+- Art: keep current character/; do not block on design
 
 2026-09-18 (DAY-DESK)
 - End-of-day reveal panel (name/type/rarity/personality/genes/traits from CORE settle).
