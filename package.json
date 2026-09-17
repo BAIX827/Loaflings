@@ -8,7 +8,9 @@
     "start": "electron -r tsx/cjs .",
     "desk": "electron -r tsx/cjs .",
     "demo": "electron -r tsx/cjs .",
-    "settle:demo": "tsx src/desk/runDemoSettle.ts"
+    "settle:demo": "tsx src/desk/runDemoSettle.ts",
+    "postinstall": "electron-builder install-app-deps || true",
+    "rebuild:sense": "npm rebuild uiohook-napi --runtime=electron --target=33.2.1 --disturl=https://electronjs.org/headers"
   },
   "engines": {
     "node": ">=18"
@@ -16,5 +18,11 @@
   "devDependencies": {
     "electron": "^33.2.1",
     "tsx": "^4.19.2"
+  },
+  "dependencies": {
+    "uiohook-napi": "^1.5.5"
+  },
+  "allowScripts": {
+    "uiohook-napi@1.5.5": true
   }
 }

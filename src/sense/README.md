@@ -8,16 +8,22 @@ Privacy-first, count-only metrics for Loaflings.
 
 `date`, `seedKey`, `keystrokes`, `clicks`, `mouseTravel`, `idleSec`, `activeSec`, `focusSessions[]`, `windowSwitches`, `activeHours[24]`.
 
-Demo fixture: `fixtures/demo-day.json` — pass into CORE `settleDay()`.
+- Demo fixture: `fixtures/demo-day.json`
+- Live profile (Electron): written under app `userData` / also mirrored for settle
 
-## Not collected
+## Live sensing
 
-Typed text, documents, screenshots, window titles, message contents.
+`liveSensor.js` (main process):
 
-## Own-window exclusion
+- `uiohook-napi` → keystrokes, clicks, mouse travel, Cmd/Ctrl+Tab as window-switch proxy
+- Electron `powerMonitor.getSystemIdleTime()` → idle accumulation
+- Clicks ignored while companion window is focused (`shouldIgnoreClick`)
+- Never stores key characters / titles / screenshots
 
-Desk should call `excludeWindowIds([...])` with the companion window id(s). Stubbed in MVP builder.
+Grant **Accessibility** (and Input Monitoring if prompted) on macOS or global hooks will not fire.
 
-## Next
+## Code
 
-Wire real macOS Input Monitoring / Accessibility sensors; keep this JSON shape stable.
+- Types: `profile.ts`
+- Aggregator stub: `builder.ts`
+- Live: `liveSensor.js`

@@ -5,6 +5,13 @@
 const { app, BrowserWindow, ipcMain, nativeImage, screen } = require('electron');
 const path = require('path');
 const { runDemoSettle } = require('./pipeline');
+const {
+  startLiveSense,
+  stopLiveSense,
+  getLiveProfile,
+  getLiveSettle,
+  excludeWindowIds,
+} = require('./hooks/senseLive');
 
 const ROOT = path.join(__dirname, '../..');
 const ICON_PATH = path.join(ROOT, 'src/art/AppIcon.png');
@@ -76,6 +83,41 @@ function createCompanionWindow() {
   return companion;
 }
 
+
+ipcMain.handle('loaflings:get-live-profile', () => {
+  try {
+    const profile = getLiveProfile();
+    if (!profile) return { ok: false, error: 'live-sense-not-started' };
+    return { ok: true, profile };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
+ipcMain.handle('loaflings:get-live-settle', () => {
+  try {
+    const bundle = getLiveSettle();
+    if (!bundle) return { ok: false, error: 'live-sense-not-started' };
+    const { profile, result, persistPath } = bundle;
+    return {
+      ok: true,
+      persistPath,
+      profile,
+      result: {
+        date: result.date,
+        energy: result.energy,
+        genes: result.genes,
+        personality: result.personality,
+        rarity: result.rarity,
+        traits: result.traits,
+        events: result.events,
+      },
+    };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
 ipcMain.handle('loaflings:get-demo-settle', () => {
   try {
     const { profile, result, fixturePath } = getDemoBundle();
@@ -117,6 +159,16 @@ app.whenReady().then(() => {
 
   createCompanionWindow();
 
+  startLiveSense(() => Boolean(companion && companion.isFocused()))
+    .then((info) => {
+      console.log('[loaflings] live sense', info);
+      if (companion) {
+        excludeWindowIds([String(companion.id)]);
+      }
+    })
+    .catch((err) => console.error('[loaflings] live sense failed', err));
+
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createCompanionWindow();
@@ -128,4 +180,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  stopLiveSense();
 });

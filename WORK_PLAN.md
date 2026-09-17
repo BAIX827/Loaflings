@@ -40,3 +40,7 @@
 
 2026-09-18 (DAY-ART)
 - Cozy AppIcon (c7d6b1d); pet still Pet_Base_Master.svg
+
+2026-09-18 (DAY-SENSE)
+- Live counters: `src/sense/liveSensor.js` + desk `senseLive` bridge; IPC get-live-profile / get-live-settle.
+- Depends on `uiohook-napi` + macOS Accessibility.

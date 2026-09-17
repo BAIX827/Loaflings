@@ -27,6 +27,12 @@ contextBridge.exposeInMainWorld('loaflings', {
   getDemoSettle() {
     return ipcRenderer.invoke('loaflings:get-demo-settle');
   },
+  getLiveProfile() {
+    return ipcRenderer.invoke('loaflings:get-live-profile');
+  },
+  getLiveSettle() {
+    return ipcRenderer.invoke('loaflings:get-live-settle');
+  },
   onCompanionWindowId(cb) {
     ipcRenderer.on('loaflings:window-id', (_e, payload) => cb(payload));
   },
