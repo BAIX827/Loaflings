@@ -42,3 +42,7 @@
 
 2026-09-18
 - Pushed sense module + docs/SENSE_PROFILE_SCHEMA.md + demo-day fixture.
+
+2026-09-18 (DAY-ART)
+- Replaced AppIcon with 老大's cozy style image (1024×1024).
+- Added reference/loafling-style-cozy-desk.png + character/STYLE_NOTES.md.
