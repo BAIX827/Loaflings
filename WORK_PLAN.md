@@ -34,3 +34,11 @@
 
 2026-09-18 (DAY-ART)
 - Locked MVP part IDs; AppIcon.png; character/PARTS_MVP.md + src/art/parts.ts
+
+### DAY-SENSE
+- [x] Profile schema aligned to CORE (`src/sense/`)
+- [ ] Real macOS sensors + permissions
+- [ ] Own-window exclusion wired from DESK
+
+2026-09-18
+- Pushed sense module + docs/SENSE_PROFILE_SCHEMA.md + demo-day fixture.

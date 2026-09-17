@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-17",
+  "seedKey": "demo-local",
+  "keystrokes": 8421,
+  "clicks": 1203,
+  "mouseTravel": 3.7,
+  "idleSec": 7980,
+  "activeSec": 18600,
+  "focusSessions": [
+    { "durationSec": 4440 },
+    { "durationSec": 1800 },
+    { "durationSec": 900 }
+  ],
+  "windowSwitches": 86,
+  "activeHours": [0,0,0,0,0,0,0,0,600,1200,1800,2100,900,1500,1800,2100,1800,1200,600,300,0,0,0,0]
+}
