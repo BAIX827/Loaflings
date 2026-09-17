@@ -4,14 +4,15 @@
 - [x] TASK-006 Mac demo app — **MVP demo DoD met (dev launch)**
   - [x] DESK: companion + AppIcon + pet + fixture/live→settle
   - [x] DESK: end-of-day reveal + local collection (`c890305`)
+  - [x] DESK: daily egg → hatch loop (day-state + ensureToday wire)
   - [x] CORE: settleDay verified
-  - [x] SENSE: schema + fixture + live counters (`f039926`)
+  - [x] SENSE: schema + fixture + live counters (`f039926`) + ensureToday
   - Still not: signed `.app` / Dock one-click (packaging) — next when 老大按规划排期
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
 - [ ] TASK-004 Real sensors + permissions + exclude own window (SENSE + DESK)
-- [ ] TASK-005 Daily hatch reveal polish (DESK + CORE) — minimal reveal/collection shipped; polish still open
+- [ ] TASK-005 Daily hatch reveal polish (DESK + CORE) — CORE dayCycle shipped; DESK egg UI polish still open
 - [ ] Optional short interactions (feed / dig / evolution choice)
 
 ## Done
@@ -24,6 +25,17 @@
 - [x] TASK-006 Mac demo (dev) — reveal/collection/live sense
 
 ## Log
+
+2026-09-18 (DAY-DESK)
+- Daily egg → hatch loop: companion starts as CSS/SVG egg; Day/Save hatch to Pet_Base_Master.svg.
+- Day boundary: desk `dayState.js` + SENSE `ensureToday()` via senseLive; midnight poll resets to new egg.
+- Copy: Day = “Day reveal — hatch today’s egg”; panel “Day hatch”; Keep Save → collection.
+- Live settle still preferred; `settle:demo` unchanged.
+
+2026-09-18 (DAY-CORE)
+- Confirmed daily form with 老大: one egg/day → hatch one Loafling → new egg next day.
+- Added src/core/dayCycle.ts + docs/DAY_CYCLE_MVP.md; DaylingResult.kind = 'loafling'.
+- hatchDay() wraps settleDay for DESK egg UI / Save.
 
 2026-09-18 (DAY-LEAD)
 - Accepted DESK reveal+collection `c890305` (Day panel + Save → userData/collection.json; live settle preferred)

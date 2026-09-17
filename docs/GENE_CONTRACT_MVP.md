@@ -3,6 +3,10 @@
 Status: draft v1 · locked part IDs with DAY-ART / DAY-LEAD  
 Canonical art: `character/Pet_Base_Master.svg` + `character/PARTS_MVP.md`
 
+## Daily form
+
+One egg per local day → `hatchDay` / `settleDay` → one Loafling. See `docs/DAY_CYCLE_MVP.md`.
+
 ## Pipeline
 
 ```text
@@ -42,6 +46,7 @@ Same profile + seedKey ⇒ same `DaylingResult`.
 
 See `src/core/settle.ts`:
 
+- `kind`: `loafling`
 - `energy`: `{ work, explore, dream }`
 - `genes`: `{ body, cloud, face, tail }`
 - `personality`, `rarity`, `traits[]`, `events[]`

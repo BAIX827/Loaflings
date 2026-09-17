@@ -27,7 +27,10 @@ export interface IdleEvent {
 }
 
 export interface DaylingResult {
+  /** Always one creature for this calendar date. */
   date: string;
+  /** Settled form — egg/growing live in dayCycle.ts until hatch. */
+  kind: 'loafling';
   energy: EnergyPool;
   genes: CreatureGenes;
   personality: Personality;
@@ -50,6 +53,7 @@ export function settleDay(profile: DailyActivityProfile): DaylingResult {
 
   return {
     date: profile.date,
+    kind: 'loafling',
     energy,
     genes,
     personality,

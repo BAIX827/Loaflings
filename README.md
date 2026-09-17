@@ -12,8 +12,7 @@ npm install
 npm start
 ```
 
-- Companion window: always-on-top, current `character/Pet_Base_Master.svg`
-- Click **Day** → settle reveal; **Save** → `userData/collection.json`
+- Companion starts as an **egg**; **Day** hatches to `character/Pet_Base_Master.svg`; **Save** → `userData/collection.json` (see `src/desk/`)
 - Live counters need macOS **Accessibility** (and Input Monitoring if prompted) for Electron / Loaflings
 - Fixture-only settle check: `npm run settle:demo`
 
@@ -55,6 +54,7 @@ Loaflings/
 ├── docs/
 │   ├── MVP_DEMO_ACCEPTANCE.md
 │   ├── GENE_CONTRACT_MVP.md
+│   ├── DAY_CYCLE_MVP.md
 │   ├── SENSE_PROFILE_SCHEMA.md
 │   └── SENSE_LIVE.md
 └── src/
@@ -69,6 +69,7 @@ Loaflings/
     │   ├── energy.ts
     │   ├── genes.ts
     │   ├── settle.ts         ← settleDay()
+    │   ├── dayCycle.ts       ← egg → growing → hatch (one/day)
     │   ├── rng.ts
     │   └── index.ts
     ├── art/                  ← DAY-ART

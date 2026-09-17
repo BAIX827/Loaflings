@@ -1,21 +1,29 @@
 # src/core — Loaflings growth rules (DAY-CORE)
 
-Art-agnostic rules engine: daily activity profile → Work / Explore / Dream energy → genes / traits / end-of-day settlement.
+Art-agnostic rules engine: daily activity profile → Work / Explore / Dream energy → genes / traits / end-of-day hatch.
+
+## Daily form (locked with 老大)
+
+```text
+morning: egg (or undefined embryo)
+during day: growing from behaviour (SENSE profile)
+end of day: hatch → one Loafling into collection
+next day: brand-new egg (never merge days)
+```
 
 ## MVP surface
 
 | Module | Role |
 |---|---|
-| `profile.ts` | Input shape from DAY-SENSE (count-only; no content) |
-| `energy.ts` | Work / Explore / Dream accumulators |
-| `genes.ts` | Gene fields `body` / `cloud` / `face` / `tail` |
-| `rng.ts` | Seeded PRNG for reproducible offline / mutation rolls |
-| `settle.ts` | End-of-day settlement → `DaylingResult` |
+| `profile.ts` | Input shape from DAY-SENSE (count-only) |
+| `energy.ts` | Work / Explore / Dream |
+| `genes.ts` | `body` / `cloud` / `face` / `tail` |
+| `rng.ts` | Seeded PRNG |
+| `settle.ts` | `settleDay()` → one `DaylingResult` |
+| `dayCycle.ts` | egg → growing → `hatchDay()` / `shouldStartNewEgg()` |
 | `index.ts` | Public exports |
 
-## Contract docs
+## Docs
 
-- Gene ↔ part IDs: `character/PARTS_MVP.md` (owned with DAY-ART)
-- Full gene contract (this milestone): `docs/GENE_CONTRACT_MVP.md`
-
-Do not invent part IDs. Do not read typed text or screenshots.
+- `docs/GENE_CONTRACT_MVP.md`
+- `docs/DAY_CYCLE_MVP.md`
