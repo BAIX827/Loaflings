@@ -1,17 +1,23 @@
 # WORK_PLAN
 
 ## Current
-- [ ] TASK-003 Creature generation
-  - Base body done
-  - Need trait system
+- [ ] TASK-003 Creature generation / growth rules
+  - CORE: MVP gene contract + `src/core` scaffold done
+  - Need: wire DESK settle call + SENSE real profile
+- [ ] TASK-006 Mac demo app (DESK)
+  - Icon: `src/art/AppIcon.png`
+  - Pet: current `Pet_Base_Master.svg`
 
 ## Next
-- [ ] TASK-004 Idle detection
-- [ ] TASK-005 Daily hatch result
+- [ ] TASK-004 Idle detection (SENSE)
+- [ ] TASK-005 Daily hatch result (CORE settle + DESK reveal)
+- [ ] Align SENSE profile schema ↔ `src/core/profile.ts`
 
 ## Done
-- [ ] TASK-001 Project setup
-- [ ] TASK-002 Basic desktop window
+- [x] TASK-001 Project setup
+- [ ] TASK-002 Basic desktop window (DESK in progress)
+- [x] ART: MVP parts contract + AppIcon
+- [x] CORE: gene contract MVP + `src/core` framework
 
 ## Log
 
@@ -28,3 +34,8 @@
 
 2026-09-18 (DAY-ART)
 - Added Mac app icon: src/art/AppIcon.png (1024×1024), based on current Loafling master/refs.
+
+2026-09-18 (DAY-CORE)
+- Added docs/GENE_CONTRACT_MVP.md (body/cloud/face/tail; energy; seeded RNG).
+- Scaffolded src/core: profile, energy, genes, rng, settle, index.
+- MVP genes always resolve to *_base; settleDay() ready for DESK demo.
