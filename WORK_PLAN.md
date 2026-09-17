@@ -1,12 +1,12 @@
 # WORK_PLAN
 
 ## Current
-- [ ] TASK-006 Mac demo app — **shell slice done, live sense still open**
+- [ ] TASK-006 Mac demo app — **live sense in; hatch reveal still open**
   - [x] DESK: companion window + AppIcon + pet SVG + fixture→settle
   - [x] CORE: settleDay verified via `npm run settle:demo`
   - [x] SENSE: profile schema + `fixtures/demo-day.json`
-  - [ ] SENSE: real macOS counters (key/click/mouse/idle)
-  - [ ] DESK: end-of-day reveal UI (beyond settle pipeline)
+  - [x] SENSE: live Mac counters (`f039926`, needs Accessibility)
+  - [ ] DESK: end-of-day reveal UI + local collection
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
@@ -23,6 +23,10 @@
 - [x] LEAD: MVP demo acceptance doc
 
 ## Log
+
+2026-09-18 (DAY-LEAD)
+- Accepted SENSE live counters slice f039926 (count-only, companion-focus click skip, docs/SENSE_LIVE.md)
+- Still open for demo DoD: DESK end-of-day reveal + collection; 老大本机开辅助功能权限
 
 2026-09-18 (DAY-LEAD)
 - Acceptance check on `63fb64d`: runnable Mac shell + fixture settle = pass for UI slice
