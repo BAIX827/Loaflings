@@ -19,7 +19,7 @@ function persistPath() {
 /**
  * @param {() => boolean} shouldIgnoreClick
  */
-async function startLiveSense(shouldIgnoreClick) {
+async function startLiveSense(_shouldIgnoreClick) {
   if (sensor) {
     sensor.ensureToday();
     return { ok: true, already: true, path: persistPath(), ...(lastStartInfo || {}), coreApi: getApiSource() };
@@ -27,7 +27,6 @@ async function startLiveSense(shouldIgnoreClick) {
   const display = screen.getPrimaryDisplay();
   sensor = new LiveSensor({
     persistPath: persistPath(),
-    shouldIgnoreClick,
     seedKey: 'mac-demo',
     powerMonitor: require('electron').powerMonitor,
     scaleFactor: display.scaleFactor || 2,

@@ -1,15 +1,20 @@
 /**
- * DAY-SENSE live counters for Electron main process.
- * Count-only: never reads key codes as text, never window titles.
+ * DAY-SENSE live counters for Electron main.
+ * Aggregates inputHook events into DailyActivityProfile (count-only).
+ *
+ * Layout inspired by BongoCat-mac InputMonitor (start/stop + callbacks),
+ * but we never read key characters — only counts.
  */
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const { emptyProfile, assertProfileShape } = require('./profile.cjs');
+const { createInputHook } = require('./inputHook.cjs');
 
 const IDLE_THRESHOLD_SEC = 60;
 
 function pxToMetres(px, scaleFactor = 2) {
-  // Assume ~110 CSS-px per inch at scale 1; physical px ≈ css * scaleFactor
   const inches = px / (110 * scaleFactor);
   return inches * 0.0254;
 }
@@ -26,14 +31,12 @@ class LiveSensor {
   /**
    * @param {object} opts
    * @param {string} opts.persistPath
-   * @param {() => boolean} [opts.shouldIgnoreClick] — true when event is on companion
    * @param {string} [opts.seedKey]
    * @param {import('electron').PowerMonitor} [opts.powerMonitor]
    * @param {number} [opts.scaleFactor]
    */
   constructor(opts) {
     this.persistPath = opts.persistPath;
-    this.shouldIgnoreClick = opts.shouldIgnoreClick || (() => false);
     this.seedKey = opts.seedKey || 'local';
     this.powerMonitor = opts.powerMonitor || null;
     this.scaleFactor = opts.scaleFactor || 2;
@@ -41,12 +44,22 @@ class LiveSensor {
     this.lastMouse = null;
     this.lastPersistAt = 0;
     this.tickTimer = null;
-    this.uiohook = null;
     this.running = false;
-    this._excludedWindowIds = [];
     this._backend = null;
+    this._excludedWindowIds = [];
     this.focusStartedAt = null;
     this.lastActiveAt = Date.now();
+
+    this.hook = createInputHook({
+      onKeydown: () => this.#onKey(),
+      onClick: () => this.#onClick(),
+      onMousemove: (x, y) => this.#onMove(x, y),
+      onChordTab: () => {
+        this.#markActive();
+        this.profile.windowSwitches += 1;
+        this.persist();
+      },
+    });
   }
 
   #loadOrCreate() {
@@ -67,7 +80,7 @@ class LiveSensor {
     return emptyProfile(date, this.seedKey);
   }
 
-  _writePersist() {
+  #writePersist() {
     try {
       assertProfileShape(this.profile);
       fs.mkdirSync(path.dirname(this.persistPath), { recursive: true });
@@ -80,16 +93,15 @@ class LiveSensor {
   /** One egg per local day — fresh profile when calendar day changes. */
   ensureToday() {
     const today = todayLocal();
-    if (this.profile.date !== today) {
-      this.#endFocus();
-      this._writePersist();
-      this.profile = emptyProfile(today, this.seedKey);
-      this.lastMouse = null;
-      this.focusStartedAt = null;
-      this.lastActiveAt = Date.now();
-      this._writePersist();
-      console.log('[sense] new day egg', today);
-    }
+    if (this.profile.date === today) return;
+    this.#endFocus();
+    this.#writePersist();
+    this.profile = emptyProfile(today, this.seedKey);
+    this.lastMouse = null;
+    this.focusStartedAt = null;
+    this.lastActiveAt = Date.now();
+    this.#writePersist();
+    console.log('[sense] new day egg', today);
   }
 
   persist(force = false) {
@@ -97,7 +109,7 @@ class LiveSensor {
     const now = Date.now();
     if (!force && now - this.lastPersistAt < 2000) return;
     this.lastPersistAt = now;
-    this._writePersist();
+    this.#writePersist();
   }
 
   getProfile() {
@@ -125,7 +137,7 @@ class LiveSensor {
       idleSec: this.profile.idleSec,
       activeSec: this.profile.activeSec,
       windowSwitches: this.profile.windowSwitches,
-      excludedWindowIds: [...(this._excludedWindowIds || [])],
+      excludedWindowIds: [...this._excludedWindowIds],
       permissionHint:
         this._backend === 'uiohook-napi'
           ? null
@@ -139,8 +151,7 @@ class LiveSensor {
       const sec = Math.floor(gapMs / 1000);
       if (sec > 0) {
         this.profile.activeSec += sec;
-        const hour = new Date(at).getHours();
-        this.profile.activeHours[hour] += sec;
+        this.profile.activeHours[new Date(at).getHours()] += sec;
       }
       if (this.focusStartedAt == null) this.focusStartedAt = this.lastActiveAt;
     } else if (gapMs >= IDLE_THRESHOLD_SEC * 1000) {
@@ -160,14 +171,12 @@ class LiveSensor {
   }
 
   #onKey() {
-    // Always count — 老大 wants counts even while companion is focused.
     this.#markActive();
     this.profile.keystrokes += 1;
     this.persist();
   }
 
   #onClick() {
-    // Always count — including companion window clicks.
     this.#markActive();
     this.profile.clicks += 1;
     this.persist();
@@ -175,9 +184,7 @@ class LiveSensor {
 
   #onMove(x, y) {
     if (this.lastMouse) {
-      const dx = x - this.lastMouse.x;
-      const dy = y - this.lastMouse.y;
-      const dist = Math.hypot(dx, dy);
+      const dist = Math.hypot(x - this.lastMouse.x, y - this.lastMouse.y);
       if (dist > 0) {
         this.#markActive();
         this.profile.mouseTravel += pxToMetres(dist, this.scaleFactor);
@@ -187,17 +194,12 @@ class LiveSensor {
     this.lastMouse = { x, y };
   }
 
-  #onWheelOrSwitch() {
-    // Approximate window-switch signal: frequent alt-tab isn't available; leave for Accessibility later.
-  }
-
   #tickIdle() {
     const at = Date.now();
     if (this.powerMonitor && typeof this.powerMonitor.getSystemIdleTime === 'function') {
       const idleSec = this.powerMonitor.getSystemIdleTime();
       if (idleSec >= IDLE_THRESHOLD_SEC) {
         this.#endFocus(at);
-        // Don't double-count: only add delta since last tick via lastActiveAt gap
         const gapMs = at - this.lastActiveAt;
         if (gapMs >= IDLE_THRESHOLD_SEC * 1000) {
           this.profile.idleSec += Math.floor(gapMs / 1000);
@@ -205,64 +207,33 @@ class LiveSensor {
           this.persist();
         }
       }
-    } else {
-      const gapMs = at - this.lastActiveAt;
-      if (gapMs >= IDLE_THRESHOLD_SEC * 1000) {
-        this.#endFocus(at);
-        this.profile.idleSec += Math.floor(gapMs / 1000);
-        this.lastActiveAt = at;
-        this.persist();
-      }
+      return;
+    }
+    const gapMs = at - this.lastActiveAt;
+    if (gapMs >= IDLE_THRESHOLD_SEC * 1000) {
+      this.#endFocus(at);
+      this.profile.idleSec += Math.floor(gapMs / 1000);
+      this.lastActiveAt = at;
+      this.persist();
     }
   }
 
   async start() {
     this.ensureToday();
-    if (this.running) return { ok: true, already: true };
+    if (this.running) {
+      return { ok: true, already: true, backend: this._backend || 'running' };
+    }
     this.running = true;
     this.tickTimer = setInterval(() => this.#tickIdle(), 5000);
 
-    try {
-      // Lazy require so desk still boots if native module missing
-      const { uIOhook, UiohookKey } = require('uiohook-napi');
-      this.uiohook = uIOhook;
-      this._UiohookKey = UiohookKey;
-
-      uIOhook.on('keydown', () => this.#onKey());
-      uIOhook.on('click', () => this.#onClick());
-      uIOhook.on('mousemove', (e) => this.#onMove(e.x, e.y));
-      // Rough proxy for context switches when user presses Cmd+Tab / Ctrl+Tab
-      uIOhook.on('keydown', (e) => {
-        try {
-          const meta = e.metaKey || e.ctrlKey;
-          if (meta && e.keycode === UiohookKey.Tab) {
-            this.#markActive();
-            this.profile.windowSwitches += 1;
-            this.persist();
-          }
-        } catch {
-          // ignore
-        }
-      });
-
-      uIOhook.start();
-      this._backend = 'uiohook-napi';
+    const started = this.hook.start();
+    this._backend = started.backend;
+    if (started.backend === 'uiohook-napi') {
       console.log('[sense] liveSensor started (uiohook-napi)');
-      return { ok: true, backend: 'uiohook-napi' };
-    } catch (err) {
-      console.warn(
-        '[sense] uiohook-napi unavailable — idle-only mode. Install deps + grant Accessibility.',
-        err && err.message ? err.message : err,
-      );
-      this._backend = 'idle-only';
-      return {
-        ok: true,
-        backend: 'idle-only',
-        warning: 'uiohook-napi not loaded; key/mouse counts stay 0 until native module works',
-        permissionHint:
-          'System Settings → Privacy & Security → Accessibility — enable Electron / Loaflings',
-      };
+    } else {
+      console.warn('[sense] uiohook unavailable — idle-only', started.warning);
     }
+    return started;
   }
 
   stop() {
@@ -270,11 +241,7 @@ class LiveSensor {
     if (this.tickTimer) clearInterval(this.tickTimer);
     this.tickTimer = null;
     this.#endFocus();
-    try {
-      this.uiohook?.stop();
-    } catch {
-      // ignore
-    }
+    this.hook.stop();
     this.persist(true);
   }
 }

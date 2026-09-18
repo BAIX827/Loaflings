@@ -1,29 +1,21 @@
-# DAY-SENSE — activity profile module
+# DAY-SENSE
 
-Privacy-first, count-only metrics for Loaflings.
+Count-only activity for Loaflings.
 
-## Contract with DAY-CORE
+## Layout
 
-`DailyActivityProfile` field names match `src/core/profile.ts` exactly:
+| File | Role |
+|---|---|
+| `profile.ts` / `profile.cjs` | `DailyActivityProfile` contract (TS + Electron CJS) |
+| `inputHook.cjs` | Global key/click/move hook (no characters) |
+| `liveSensor.js` | Day profile aggregation + persist |
+| `builder.ts` | Fixture / offline builder |
+| `fixtures/` | Demo day JSON |
 
-`date`, `seedKey`, `keystrokes`, `clicks`, `mouseTravel`, `idleSec`, `activeSec`, `focusSessions[]`, `windowSwitches`, `activeHours[24]`.
+## Privacy
 
-- Demo fixture: `fixtures/demo-day.json`
-- Live profile (Electron): written under app `userData` / also mirrored for settle
+Never reads typed text, documents, screenshots, or window titles.
 
-## Live sensing
+## Refs
 
-`liveSensor.js` (main process):
-
-- `uiohook-napi` → keystrokes, clicks, mouse travel, Cmd/Ctrl+Tab as window-switch proxy
-- Electron `powerMonitor.getSystemIdleTime()` → idle accumulation
-- Keystrokes and clicks always counted (even with companion focused)
-- Never stores key characters / titles / screenshots
-
-Grant **Accessibility** (and Input Monitoring if prompted) on macOS or global hooks will not fire.
-
-## Code
-
-- Types: `profile.ts`
-- Aggregator stub: `builder.ts`
-- Live: `liveSensor.js`
+See `docs/SENSE_REFERENCES.md` (Bongo Cat–class projects).
