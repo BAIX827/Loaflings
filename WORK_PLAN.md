@@ -7,7 +7,8 @@
   - [x] DESK: daily egg → hatch loop (`119fb2f`, LEAD accepted)
   - [x] CORE: settleDay verified
   - [x] SENSE: schema + fixture + live counters (`f039926`) + ensureToday
-  - Still not: signed `.app` / Dock one-click (packaging) — next when 老大按规划排期
+  - [x] DESK: unsigned Mac `.app` pack path (`npm run pack` / `npm run dist`) — sign/notarize TODO
+  - Still optional: Developer ID sign + notarize for Gatekeeper-clean distribute
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
@@ -25,6 +26,13 @@
 - [x] TASK-006 Mac demo (dev) — reveal/collection/live sense
 
 ## Log
+
+2026-09-18 (DAY-DESK)
+- Mac packaging: electron-builder (dir + dmg), productName Loaflings / 摸鱼灵, icon `src/art/AppIcon.png`.
+- Scripts: `npm run pack` → `dist/mac-arm64/Loaflings.app` (or `dist/mac/`); `npm run dist` also builds DMG.
+- `src/desk/boot.js` entry for packaged tsx; `dist/` gitignored; unsigned MVP + README Gatekeeper note.
+- Egg/hatch/reveal/collection/live sense unchanged.
+
 
 2026-09-18 (DAY-LEAD)
 - Accepted DESK egg UI `119fb2f` (egg→hatchDay→pet; ensureToday day boundary)

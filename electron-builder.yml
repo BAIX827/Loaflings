@@ -1,0 +1,42 @@
+appId: app.loaflings.companion
+productName: Loaflings
+copyright: Copyright © Loaflings / 摸鱼灵
+directories:
+  output: dist
+  buildResources: build
+files:
+  - package.json
+  - src/**/*
+  - character/**/*
+  - "!**/*.map"
+  - "!**/__tests__/**"
+  - "!**/*.test.*"
+asar: true
+asarUnpack:
+  - "**/*.node"
+  - "**/uiohook-napi/**"
+extraMetadata:
+  main: src/desk/boot.js
+mac:
+  category: public.app-category.entertainment
+  icon: src/art/AppIcon.png
+  target:
+    - target: dir
+      arch:
+        - arm64
+        - x64
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+  # Unsigned MVP — sign/notarize later when cert available
+  identity: null
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  extendInfo:
+    CFBundleDisplayName: Loaflings / 摸鱼灵
+    CFBundleName: Loaflings
+    NSAppleEventsUsageDescription: Loaflings uses Accessibility to count activity (never reads what you type).
+dmg:
+  title: Loaflings
+  artifactName: Loaflings-${version}-${arch}.${ext}

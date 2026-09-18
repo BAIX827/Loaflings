@@ -16,6 +16,16 @@ npm start
 - Live counters need macOS **Accessibility** (and Input Monitoring if prompted) for Electron / Loaflings
 - Fixture-only settle check: `npm run settle:demo`
 
+### Packaged `.app` (Mac)
+
+```bash
+npm run pack    # → dist/mac-arm64/Loaflings.app (or dist/mac/)
+# npm run dist  # also builds .dmg
+```
+
+Details + Gatekeeper note: `src/desk/README.md` (Package Mac `.app`).
+
+
 Repo: https://github.com/BAIX827/Loaflings
 
 ## Core loop

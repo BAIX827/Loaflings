@@ -10,19 +10,25 @@
     "demo": "electron -r tsx/cjs .",
     "settle:demo": "tsx src/desk/runDemoSettle.ts",
     "postinstall": "electron-builder install-app-deps || true",
-    "rebuild:sense": "npm rebuild uiohook-napi --runtime=electron --target=33.2.1 --disturl=https://electronjs.org/headers"
+    "rebuild:sense": "npm rebuild uiohook-napi --runtime=electron --target=33.2.1 --disturl=https://electronjs.org/headers",
+    "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir,dmg --publish never",
+    "dist:dir": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
     "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
     "tsx": "^4.19.2"
   },
   "dependencies": {
+    "tsx": "^4.19.2",
     "uiohook-napi": "^1.5.5"
   },
   "allowScripts": {
     "uiohook-napi@1.5.5": true
-  }
+  },
+  "author": "Loaflings"
 }

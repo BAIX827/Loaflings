@@ -4,3 +4,7 @@ dist/
 out/
 *.log
 .npm/
+
+# electron-builder generated icons (source is src/art/AppIcon.png)
+build/icon.icns
+build/icons/

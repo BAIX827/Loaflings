@@ -42,6 +42,47 @@ Requires Node 18+.
 4. After local midnight / day roll — egg returns (SENSE `ensureToday` + desk day-state).
 5. `settle:demo` CLI path unchanged.
 
+## Package Mac `.app` (Dock / double-click)
+
+Produces an **unsigned** local `.app` (MVP). Code signing / notarization is TODO when a Developer ID cert is available — Gatekeeper may warn on first open (see below).
+
+From the **repo root** on a Mac:
+
+```bash
+git pull origin main
+npm install
+npm run pack          # .app only (faster)
+# or
+npm run dist          # .app + .dmg
+```
+
+### Where the `.app` lands
+
+| Command | Output |
+|---------|--------|
+| `npm run pack` / `npm run dist:dir` | `dist/mac-arm64/Loaflings.app` (Apple Silicon) and/or `dist/mac/Loaflings.app` (Intel) |
+| `npm run dist` | same `.app` folders **plus** `dist/Loaflings-0.1.0-*.dmg` |
+
+`dist/` is gitignored — do not commit build artifacts.
+
+### How to open
+
+1. Finder → open `dist/mac-arm64/Loaflings.app` (or `dist/mac/Loaflings.app` on Intel).
+2. Or: `open dist/mac-arm64/Loaflings.app`
+3. Drag to **Applications** / Dock if you want a permanent Dock icon.
+4. **First launch (unsigned):** right-click → **Open**, or System Settings → Privacy & Security → allow. Live sense still needs **Accessibility** (and Input Monitoring if prompted).
+
+### Icon
+
+Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generates `.icns` at pack time (no need to commit `build/icon.icns`).
+
+### Notes
+
+- Packaged entry is `src/desk/boot.js` (registers `tsx` then loads `main.js`) so CORE/SENSE `.ts` still resolve inside the asar.
+- Egg / hatch / reveal / collection / live sense behavior is unchanged vs `npm start`.
+- **Must pack on macOS** so `uiohook-napi` + `esbuild` (tsx) get darwin binaries. Config: `electron-builder.yml`.
+- Linux can assemble an `.app` shell for config smoke tests, but that build is **not** Dock-ready (wrong natives).
+
 ## Layout
 
 | Path | Role |
