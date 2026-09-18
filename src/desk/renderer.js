@@ -493,6 +493,11 @@
   }
   document.getElementById('btn-guide-ok')?.addEventListener('click', dismissGuide);
   document.getElementById('btn-close-guide')?.addEventListener('click', dismissGuide);
+  document.getElementById('btn-show-guide')?.addEventListener('click', () => {
+    setSettingsOpen(false);
+    try { localStorage.removeItem(GUIDE_KEY); } catch {}
+    setGuideOpen(true);
+  });
   // reopen from Settings? skip for MVP
   maybeShowGuide();
 

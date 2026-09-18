@@ -26,6 +26,10 @@
 ## Log
 
 2026-09-18 (DAY-DESK)
+- Clean split: window.js / ipc.js / settleBridge.js; docs/DESK_REFERENCES.md (BongoCat-mac notes). Settings can reopen guide.
+
+
+2026-09-18 (DAY-DESK)
 - Live clicks HUD (500ms), ART 03–05 paths, cute first-run guide; Quit/Settings unchanged.
 
 
