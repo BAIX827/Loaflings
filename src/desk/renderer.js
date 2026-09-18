@@ -468,7 +468,7 @@
 
 
   // —— Newbie guide (first run) ——
-  const GUIDE_KEY = 'loaflings.guide.v1.done';
+  const GUIDE_KEY = 'loaflings.guide.v2.done';
   const guideEl = document.getElementById('guide');
   function setGuideOpen(open) {
     if (guideEl) guideEl.hidden = !open;
