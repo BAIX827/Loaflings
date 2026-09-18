@@ -18,16 +18,25 @@
   const PHASE_PATHS = {
     egg: '../../character/Pet_Egg_Master.svg',
     cracking: '../../character/Pet_Egg_Cracking.svg',
-    hatched: '../../character/Pet_Base_Master.svg',
+    hatching: '../../character/Pet_Egg_Hatching.svg',
+    newborn: '../../character/Pet_Newborn.svg',
+    growing: '../../character/Pet_Growing.svg',
+    adult: '../../character/Pet_Base_Master.svg',
+  };
+  /** Until ART ships mid-stage SVGs */
+  const PHASE_FALLBACKS = {
+    hatching: '../../character/Pet_Egg_Cracking.svg',
+    newborn: '../../character/Pet_Base_Master.svg',
+    growing: '../../character/Pet_Base_Master.svg',
   };
 
   /** @type {object | null} */
   let lastPayload = null;
-  /** @type {'egg' | 'cracking' | 'hatched'} */
+  /** @type {string} */
   let phase = 'egg';
   let petLoaded = false;
   /** @type {Record<string, boolean>} */
-  const phaseArtLoaded = { egg: false, cracking: false, hatched: false };
+  const phaseArtLoaded = {};
   let lastVisualPhase = '';
 
   function setStatus(msg) {
@@ -52,30 +61,63 @@
    * @param {'egg' | 'cracking' | 'hatched' | 'growing'} next
    * @param {{ caption?: string, clicks?: number, nextAt?: number|null }} [opts]
    */
+  const EGGISH = new Set(['egg', 'cracking', 'hatching']);
+  const PETISH = new Set(['newborn', 'growing', 'adult', 'hatched']);
+
+  function normalizePhase(next) {
+    if (next === 'hatched') return 'adult';
+    if (
+      next === 'egg' ||
+      next === 'cracking' ||
+      next === 'hatching' ||
+      next === 'newborn' ||
+      next === 'growing' ||
+      next === 'adult'
+    ) {
+      return next;
+    }
+    return 'egg';
+  }
+
+  const CAPTIONS = {
+    egg: "Today’s egg",
+    cracking: 'Cracking…',
+    hatching: 'Hatching…',
+    newborn: 'Newborn',
+    growing: 'Growing…',
+    adult: 'Adult look',
+  };
+
+  /**
+   * CORE 6-stage daytime look; Day/Save still gates collection.
+   * @param {string} next
+   * @param {{ caption?: string, clicks?: number, nextAt?: number|null }} [opts]
+   */
   async function applyPhase(next, opts = {}) {
-    let visual = next;
-    if (next === 'growing') visual = 'cracking';
-    if (visual !== 'hatched' && visual !== 'cracking') visual = 'egg';
+    const visual = normalizePhase(next);
     phase = visual;
     stageEl.dataset.phase = visual;
-    if (visual === 'cracking') stageEl.dataset.growing = '1';
-    else delete stageEl.dataset.growing;
+    if (visual === 'cracking' || visual === 'hatching' || visual === 'growing') {
+      stageEl.dataset.growing = '1';
+    } else {
+      delete stageEl.dataset.growing;
+    }
 
-    const showPet = visual === 'hatched';
+    const showPet = PETISH.has(visual);
     if (eggEl) eggEl.hidden = showPet;
     if (petEl) petEl.hidden = !showPet;
 
     const cap = eggEl && eggEl.querySelector('.egg-caption');
     if (cap) {
-      if (opts.caption) cap.textContent = opts.caption;
-      else if (visual === 'cracking') cap.textContent = 'Cracking…';
-      else cap.textContent = "Today’s egg";
+      cap.textContent = opts.caption || CAPTIONS[visual] || "Today’s egg";
     }
 
-    if (visual === 'egg' || visual === 'cracking') {
+    if (EGGISH.has(visual)) {
       await loadPhaseArt(visual);
     } else {
-      await loadPetSvg();
+      // newborn/growing/adult share pet mount; reload when path differs
+      petLoaded = false;
+      await loadPetSvg(PHASE_PATHS[visual] || PHASE_PATHS.adult, visual);
     }
 
     if (typeof opts.clicks === 'number') {
@@ -148,9 +190,13 @@
     if (phaseArtLoaded[visual] && lastVisualPhase === visual && mount.childElementCount) {
       return true;
     }
-    const path = PHASE_PATHS[visual] || PHASE_PATHS.egg;
+    let path = PHASE_PATHS[visual] || PHASE_PATHS.egg;
     try {
-      const res = await fetch(path);
+      let res = await fetch(path);
+      if (!res.ok && PHASE_FALLBACKS[visual]) {
+        path = PHASE_FALLBACKS[visual];
+        res = await fetch(path);
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const svgText = await res.text();
       const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
@@ -172,10 +218,15 @@
     }
   }
 
-  async function loadPetSvg() {
-    if (petLoaded) return true;
+  async function loadPetSvg(pathOverride, cacheKey) {
+    const path = pathOverride || PHASE_PATHS.adult;
+    const key = cacheKey || path;
+    if (petLoaded && lastVisualPhase === key) return true;
     try {
-      const res = await fetch(masterPath);
+      let res = await fetch(path);
+      if (!res.ok && PHASE_FALLBACKS[cacheKey]) {
+        res = await fetch(PHASE_FALLBACKS[cacheKey]);
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const svgText = await res.text();
       const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
@@ -200,6 +251,7 @@
 
       petEl.replaceChildren(document.importNode(svg, true));
       petLoaded = true;
+      lastVisualPhase = key;
       return true;
     } catch (err) {
       setStatus(`Could not load pet SVG: ${err.message || err}`);
@@ -255,7 +307,7 @@
       }
     }
 
-    await applyPhase('hatched');
+    await applyPhase('adult');
     if (openPanel) setPanelOpen(true);
     setStatus(save ? `Hatched & saved · collection ${payload.count ?? '?'}` : 'Hatched');
     setTimeout(() => setStatus(''), 2200);
@@ -282,7 +334,7 @@
       }
       if (day.phase === 'hatched') {
         const okSvg = await loadPetSvg();
-        if (okSvg) await applyPhase('hatched');
+        if (okSvg) await applyPhase('adult');
         else applyPhase('egg');
         // Soft line if we already hatched today — settle without auto-save
         if (!lastPayload) await loadSettle(false);
@@ -375,7 +427,7 @@
     setStatus('');
     const payload = await loadSettle(true);
     if (payload?.ok) {
-      await applyPhase('hatched');
+      await applyPhase('adult');
       setPanelOpen(true);
       setStatus(`Saved · collection ${payload.count ?? '?'}`);
       setTimeout(() => setStatus(''), 2200);
@@ -394,7 +446,7 @@
       setTimeout(() => setStatus(''), 2400);
     } else if (day?.phase === 'hatched') {
       const okSvg = await loadPetSvg();
-      if (okSvg) await applyPhase('hatched');
+      if (okSvg) await applyPhase('adult');
     } else if (day?.phase === 'growing') {
       await applyPhase('cracking');
     }
@@ -404,7 +456,7 @@
     try {
       const hp = await api.getHatchProgress();
       if (!hp?.ok || !hp.progress) return;
-      const visual = hp.alreadySaved ? 'hatched' : hp.progress.phase;
+      const visual = hp.alreadySaved ? 'adult' : hp.progress.phase;
       await applyPhase(visual, {
         clicks: hp.clicks,
         nextAt: hp.progress.nextStageAt,

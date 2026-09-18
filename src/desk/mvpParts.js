@@ -5,7 +5,6 @@
 
 const MVP_PART_FIELDS = Object.freeze(['body', 'cloud', 'face', 'tail']);
 
-/** @type {Readonly<Record<string, string>>} */
 const MVP_BASE_PARTS = Object.freeze({
   body: 'body_base',
   cloud: 'cloud_base',
@@ -13,10 +12,8 @@ const MVP_BASE_PARTS = Object.freeze({
   tail: 'tail_base',
 });
 
-/** Bottom → top draw order for later compose. */
 const MVP_ASSEMBLY_ORDER = Object.freeze(['tail', 'body', 'face', 'cloud']);
 
-/** Paths relative to repo root. */
 const CHARACTER_ASSETS = Object.freeze({
   masterSvg: 'character/Pet_Base_Master.svg',
   css: 'character/loafling-standard-base.css',
@@ -24,11 +21,23 @@ const CHARACTER_ASSETS = Object.freeze({
   partsDoc: 'character/PARTS_MVP.md',
 });
 
-/** Daytime hatch look — CORE egg / cracking / hatched (character/HATCH_PHASES.md) */
+/**
+ * Daytime hatch look — CORE 6 stages (character/HATCH_PHASES.md).
+ * Missing ART mid-stages fall back in renderer until files land.
+ */
 const HATCH_PHASE_ASSETS = Object.freeze({
   egg: 'character/Pet_Egg_Master.svg',
   cracking: 'character/Pet_Egg_Cracking.svg',
-  hatched: 'character/Pet_Base_Master.svg',
+  hatching: 'character/Pet_Egg_Hatching.svg', // ART TBD
+  newborn: 'character/Pet_Newborn.svg', // ART TBD
+  growing: 'character/Pet_Growing.svg', // ART TBD
+  adult: 'character/Pet_Base_Master.svg',
+});
+
+const HATCH_PHASE_FALLBACKS = Object.freeze({
+  hatching: 'character/Pet_Egg_Cracking.svg',
+  newborn: 'character/Pet_Base_Master.svg',
+  growing: 'character/Pet_Base_Master.svg',
 });
 
 module.exports = {
@@ -37,4 +46,5 @@ module.exports = {
   MVP_ASSEMBLY_ORDER,
   CHARACTER_ASSETS,
   HATCH_PHASE_ASSETS,
+  HATCH_PHASE_FALLBACKS,
 };

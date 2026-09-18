@@ -259,3 +259,14 @@ body {
 .settings-check {
   justify-content: flex-start !important;
 }
+
+
+/* —— Mid hatch stages (hatching / newborn / growing) —— */
+.stage[data-phase='hatching'] .egg { display: block; }
+.stage[data-phase='hatching'] .pet { display: none; }
+.stage[data-phase='newborn'] .egg,
+.stage[data-phase='growing'] .egg,
+.stage[data-phase='adult'] .egg { display: none; }
+.stage[data-phase='newborn'] .pet,
+.stage[data-phase='growing'] .pet,
+.stage[data-phase='adult'] .pet { display: block; }
