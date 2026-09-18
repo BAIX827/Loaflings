@@ -1,6 +1,6 @@
 /**
  * Loaflings / 摸鱼灵 — Electron companion shell (DAY-DESK)
- * Always-on-top, frameless, transparent window. Shows base pet + end-of-day reveal.
+ * Always-on-top, frameless, transparent window. Egg by day → hatch on Day/Save.
  */
 const { app, BrowserWindow, ipcMain, nativeImage, screen } = require('electron');
 const path = require('path');
@@ -10,9 +10,15 @@ const {
   stopLiveSense,
   getLiveProfile,
   getLiveSettle,
+  ensureToday: ensureSenseToday,
   excludeWindowIds,
 } = require('./hooks/senseLive');
 const { loadCollection, saveToCollection } = require('./collection');
+const { ensureDayState, markHatched, markGrowing } = require('./dayState');
+const {
+  phaseFromProfile,
+  getApiSource,
+} = require('./hooks/coreDayCycle');
 
 const ROOT = path.join(__dirname, '../..');
 const ICON_PATH = path.join(ROOT, 'src/art/AppIcon.png');
@@ -67,12 +73,54 @@ function resolveSettleBundle() {
 function slimResult(result) {
   return {
     date: result.date,
+    kind: result.kind || 'loafling',
     energy: result.energy,
     genes: result.genes,
     personality: result.personality,
     rarity: result.rarity,
     traits: result.traits,
     events: result.events,
+  };
+}
+
+
+/**
+ * Align desk day-state + SENSE profile to the local calendar day.
+ * UI phase from CORE phaseFromProfile(profile, alreadyHatched).
+ * @returns {{ ok: boolean, date: string, phase: string, hatchedAt: string | null, newEgg: boolean, alreadyHatched: boolean, sense: object, coreApi: string, profile?: object }}
+ */
+function syncDayBoundary() {
+  const sense = ensureSenseToday();
+  const day = ensureDayState();
+  let profile = null;
+  try {
+    profile = getLiveProfile();
+  } catch {
+    profile = null;
+  }
+  let phase = day.phase;
+  if (day.alreadyHatched) {
+    phase = 'hatched';
+  } else if (profile) {
+    phase = phaseFromProfile(profile, false);
+    if (phase === 'growing' && day.phase === 'egg') {
+      try {
+        markGrowing();
+      } catch {
+        // ignore persist
+      }
+    }
+  }
+  return {
+    ok: true,
+    date: day.date,
+    phase,
+    hatchedAt: day.hatchedAt,
+    newEgg: day.newEgg,
+    alreadyHatched: day.alreadyHatched,
+    sense,
+    coreApi: getApiSource(),
+    profile: profile || undefined,
   };
 }
 
@@ -177,6 +225,7 @@ ipcMain.handle('loaflings:get-demo-settle', () => {
 
 /** Prefer live, fall back to fixture demo. */
 ipcMain.handle('loaflings:get-day-settle', () => {
+  syncDayBoundary();
   const bundle = resolveSettleBundle();
   if (!bundle.ok) return bundle;
   return {
@@ -186,6 +235,7 @@ ipcMain.handle('loaflings:get-day-settle', () => {
     persistPath: bundle.persistPath,
     profile: bundle.profile,
     result: slimResult(bundle.result),
+    day: ensureDayState(),
   };
 });
 
@@ -226,10 +276,12 @@ ipcMain.handle('loaflings:collect-day', (_e, opts = {}) => {
     }
     if (!bundle.ok) return bundle;
 
+    syncDayBoundary();
     const saved = saveToCollection(bundle.result, {
       source: bundle.source,
       seedKey: bundle.profile?.seedKey,
     });
+    const hatched = markHatched();
     return {
       ok: true,
       source: bundle.source,
@@ -239,6 +291,32 @@ ipcMain.handle('loaflings:collect-day', (_e, opts = {}) => {
       entry: saved.entry,
       count: saved.count,
       collectionPath: saved.path,
+      day: { date: hatched.date, phase: hatched.phase, hatchedAt: hatched.hatchedAt },
+    };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
+
+ipcMain.handle('loaflings:get-day-state', () => {
+  try {
+    return syncDayBoundary();
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
+/** Persist hatched phase after Day reveal (CORE hatchDay already produced result). */
+ipcMain.handle('loaflings:hatch-day', () => {
+  try {
+    syncDayBoundary();
+    const state = markHatched();
+    return {
+      ok: true,
+      date: state.date,
+      phase: state.phase,
+      hatchedAt: state.hatchedAt,
     };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
@@ -250,7 +328,9 @@ app.whenReady().then(() => {
   try {
     const bundle = getDemoBundle();
     console.log(
-      '[loaflings] demo settle',
+      '[loaflings] demo hatch',
+      getApiSource(),
+      bundle.result.kind || 'loafling',
       bundle.result.genes,
       bundle.result.personality,
       bundle.result.rarity,
@@ -266,6 +346,13 @@ app.whenReady().then(() => {
     console.warn('[loaflings] collection load', err);
   }
 
+  try {
+    const day = syncDayBoundary();
+    console.log('[loaflings] day state', day.date, day.phase, 'newEgg=', day.newEgg);
+  } catch (err) {
+    console.warn('[loaflings] day state', err);
+  }
+
   createCompanionWindow();
 
   startLiveSense(() => Boolean(companion && companion.isFocused()))
@@ -274,8 +361,28 @@ app.whenReady().then(() => {
       if (companion) {
         excludeWindowIds([String(companion.id)]);
       }
+      // Re-sync after sense starts so ensureToday owns the profile day id
+      try {
+        const day = syncDayBoundary();
+        companion?.webContents.send('loaflings:day-state', day);
+      } catch (err) {
+        console.warn('[loaflings] day sync after sense', err);
+      }
     })
     .catch((err) => console.error('[loaflings] live sense failed', err));
+
+  // Poll local midnight: new egg when calendar day rolls
+  setInterval(() => {
+    try {
+      const day = syncDayBoundary();
+      if (day.newEgg && companion && !companion.isDestroyed()) {
+        console.log('[loaflings] new day egg', day.date);
+        companion.webContents.send('loaflings:day-state', day);
+      }
+    } catch (err) {
+      console.warn('[loaflings] day poll', err);
+    }
+  }, 60_000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

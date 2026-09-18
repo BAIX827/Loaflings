@@ -27,6 +27,10 @@
 ## Log
 
 2026-09-18 (DAY-DESK)
+- Daily egg → hatch UI: companion shows egg until Day/Save; hatchDay/phaseFromProfile via hooks/coreDayCycle; ensureToday day boundary; still Pet_Base_Master after hatch.
+
+
+2026-09-18 (DAY-DESK)
 - Daily egg → hatch loop: companion starts as CSS/SVG egg; Day/Save hatch to Pet_Base_Master.svg.
 - Day boundary: desk `dayState.js` + SENSE `ensureToday()` via senseLive; midnight poll resets to new egg.
 - Copy: Day = “Day reveal — hatch today’s egg”; panel “Day hatch”; Keep Save → collection.

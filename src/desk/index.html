@@ -11,14 +11,31 @@
     <link rel="stylesheet" href="./companion.css" />
   </head>
   <body>
-    <div id="stage" class="stage" aria-label="Loaflings companion">
-      <div id="pet" class="pet" role="img" aria-label="Base Loafling"></div>
+    <div id="stage" class="stage" aria-label="Loaflings companion" data-phase="egg">
+      <div id="egg" class="egg" role="img" aria-label="Today’s egg" hidden>
+        <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="egg-shell" x1="0.2" y1="0" x2="0.85" y2="1">
+              <stop offset="0%" stop-color="#fff8f0"/>
+              <stop offset="55%" stop-color="#f3d5b5"/>
+              <stop offset="100%" stop-color="#e0b892"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="60" cy="78" rx="38" ry="48" fill="url(#egg-shell)" stroke="rgba(75,58,50,0.18)" stroke-width="1.5"/>
+          <ellipse cx="48" cy="58" rx="10" ry="14" fill="rgba(255,255,255,0.45)"/>
+          <circle class="egg-speckle" cx="72" cy="70" r="3.2" fill="rgba(75,58,50,0.12)"/>
+          <circle class="egg-speckle" cx="55" cy="92" r="2.4" fill="rgba(75,58,50,0.1)"/>
+          <circle class="egg-speckle" cx="78" cy="95" r="2" fill="rgba(75,58,50,0.08)"/>
+        </svg>
+        <p class="egg-caption">Today’s egg</p>
+      </div>
+      <div id="pet" class="pet" role="img" aria-label="Hatched Loafling" hidden></div>
 
       <div class="chrome" role="toolbar" aria-label="Companion controls">
-        <button type="button" id="btn-reveal" class="chip" title="End-of-day reveal">
+        <button type="button" id="btn-reveal" class="chip" title="Day reveal — hatch today’s egg">
           Day
         </button>
-        <button type="button" id="btn-collect" class="chip" title="Save today’s Loafling">
+        <button type="button" id="btn-collect" class="chip" title="Save hatched Loafling to collection">
           Save
         </button>
         <span id="collection-badge" class="badge" title="Local collection size">0</span>
@@ -28,9 +45,9 @@
         <p id="reveal-line" class="reveal-line"></p>
       </div>
 
-      <aside id="panel" class="panel" hidden aria-label="End-of-day reveal">
+      <aside id="panel" class="panel" hidden aria-label="Hatch reveal">
         <header class="panel-head">
-          <strong id="panel-title">End of day</strong>
+          <strong id="panel-title">Day hatch</strong>
           <button type="button" id="btn-close-panel" class="chip chip-quiet" title="Close">
             ✕
           </button>

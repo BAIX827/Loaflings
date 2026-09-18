@@ -1,5 +1,5 @@
 /**
- * Preload bridge: MVP parts + SENSE/CORE settle + local collection IPC.
+ * Preload bridge: MVP parts + day egg/hatch + settle + collection IPC.
  */
 const { contextBridge, ipcRenderer } = require('electron');
 const {
@@ -47,7 +47,18 @@ contextBridge.exposeInMainWorld('loaflings', {
   collectDay(opts) {
     return ipcRenderer.invoke('loaflings:collect-day', opts || {});
   },
+  /** Egg / hatched phase for the local calendar day (rolls with ensureToday). */
+  getDayState() {
+    return ipcRenderer.invoke('loaflings:get-day-state');
+  },
+  /** Persist UI hatched phase after Day reveal (CORE hatchDay runs in main via collect/settle). */
+  markDayHatched() {
+    return ipcRenderer.invoke('loaflings:hatch-day');
+  },
   onCompanionWindowId(cb) {
     ipcRenderer.on('loaflings:window-id', (_e, payload) => cb(payload));
+  },
+  onDayState(cb) {
+    ipcRenderer.on('loaflings:day-state', (_e, payload) => cb(payload));
   },
 });

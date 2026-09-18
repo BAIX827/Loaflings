@@ -1,14 +1,17 @@
 /**
- * Renderer: Pet_Base_Master.svg + end-of-day reveal + local collection.
+ * Renderer: egg by day → hatch to Pet_Base_Master.svg + Day reveal + collection.
  * Part IDs from window.loaflings.parts (← src/art/parts.ts).
  * Settlement from CORE via IPC — no gene formulas in DESK.
  */
 (async function boot() {
+  const stageEl = document.getElementById('stage');
+  const eggEl = document.getElementById('egg');
   const petEl = document.getElementById('pet');
   const statusEl = document.getElementById('status');
   const revealEl = document.getElementById('reveal');
   const revealLine = document.getElementById('reveal-line');
   const panelEl = document.getElementById('panel');
+  const panelTitle = document.getElementById('panel-title');
   const badgeEl = document.getElementById('collection-badge');
   const api = window.loaflings;
 
@@ -16,6 +19,9 @@
 
   /** @type {object | null} */
   let lastPayload = null;
+  /** @type {'egg' | 'growing' | 'hatched'} */
+  let phase = 'egg';
+  let petLoaded = false;
 
   function setStatus(msg) {
     if (!msg) {
@@ -31,6 +37,36 @@
     const p = result?.personality || '?';
     const r = result?.rarity || '?';
     return `${p} · ${r}`;
+  }
+
+  /**
+   * CORE phases: egg | growing | hatched.
+   * Egg art for egg+growing; Pet_Base_Master only after hatch.
+   * @param {'egg' | 'growing' | 'hatched'} next
+   * @param {{ caption?: string }} [opts]
+   */
+  function applyPhase(next, opts = {}) {
+    if (next === 'hatched') phase = 'hatched';
+    else if (next === 'growing') phase = 'growing';
+    else phase = 'egg';
+    // CSS: egg chrome for egg+growing; pet only when hatched
+    stageEl.dataset.phase = phase === 'hatched' ? 'hatched' : 'egg';
+    if (phase === 'growing') stageEl.dataset.growing = '1';
+    else delete stageEl.dataset.growing;
+    if (eggEl) {
+      eggEl.hidden = phase === 'hatched';
+      const cap = eggEl.querySelector('.egg-caption');
+      if (cap) {
+        if (opts.caption) cap.textContent = opts.caption;
+        else if (phase === 'growing') cap.textContent = 'Growing…';
+        else cap.textContent = "Today’s egg";
+      }
+    }
+    if (petEl) petEl.hidden = phase !== 'hatched';
+    if (phase !== 'hatched') {
+      revealEl.hidden = true;
+      setPanelOpen(false);
+    }
   }
 
   function fillPanel(payload) {
@@ -59,12 +95,14 @@
       .filter(Boolean)
       .join(' · ');
 
-    const eventNote = note;
+    if (panelTitle) panelTitle.textContent = 'Day hatch';
     revealEl.hidden = false;
     revealLine.textContent = [
+      'Hatched',
+      result.kind === 'loafling' ? 'Loafling' : null,
       displayName(result),
       `${g.body}/${g.cloud}/${g.face}/${g.tail}`,
-      eventNote,
+      note,
     ]
       .filter(Boolean)
       .join(' · ');
@@ -81,6 +119,41 @@
       if (col?.ok) badgeEl.textContent = String(col.count ?? col.items?.length ?? 0);
     } catch {
       // ignore
+    }
+  }
+
+  async function loadPetSvg() {
+    if (petLoaded) return true;
+    try {
+      const res = await fetch(masterPath);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const svgText = await res.text();
+      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+      const svg = doc.documentElement;
+      if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
+
+      const firstRect = svg.querySelector('rect');
+      if (firstRect) firstRect.setAttribute('fill', 'none');
+      svg.querySelectorAll('line').forEach((line) => {
+        const opacity = line.getAttribute('opacity');
+        if (opacity && Number(opacity) < 1) line.remove();
+      });
+      svg.querySelectorAll('g[opacity]').forEach((g) => {
+        const opacity = Number(g.getAttribute('opacity'));
+        if (opacity > 0 && opacity < 1) g.remove();
+      });
+
+      if (api?.parts?.fields) {
+        svg.setAttribute('data-mvp-parts', api.parts.fields.join(','));
+        svg.setAttribute('data-mvp-base', JSON.stringify(api.parts.base));
+      }
+
+      petEl.replaceChildren(document.importNode(svg, true));
+      petLoaded = true;
+      return true;
+    } catch (err) {
+      setStatus(`Could not load pet SVG: ${err.message || err}`);
+      return false;
     }
   }
 
@@ -111,42 +184,79 @@
     }
   }
 
-  try {
-    const res = await fetch(masterPath);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const svgText = await res.text();
-    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-    const svg = doc.documentElement;
-    if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
+  /**
+   * Hatch: settle → show pet → mark day hatched.
+   * @param {{ save?: boolean, openPanel?: boolean }} [opts]
+   */
+  async function hatch(opts = {}) {
+    const { save = false, openPanel = true } = opts;
+    setStatus('');
+    const payload = await loadSettle(save);
+    if (!payload?.ok) return null;
 
-    const firstRect = svg.querySelector('rect');
-    if (firstRect) firstRect.setAttribute('fill', 'none');
-    svg.querySelectorAll('line').forEach((line) => {
-      const opacity = line.getAttribute('opacity');
-      if (opacity && Number(opacity) < 1) line.remove();
-    });
-    svg.querySelectorAll('g[opacity]').forEach((g) => {
-      const opacity = Number(g.getAttribute('opacity'));
-      if (opacity > 0 && opacity < 1) g.remove();
-    });
+    const okSvg = await loadPetSvg();
+    if (!okSvg) return payload;
 
-    if (api?.parts?.fields) {
-      svg.setAttribute('data-mvp-parts', api.parts.fields.join(','));
-      svg.setAttribute('data-mvp-base', JSON.stringify(api.parts.base));
+    if (api?.markDayHatched && !save) {
+      try {
+        await api.markDayHatched();
+      } catch {
+        // ignore — UI still shows hatch
+      }
     }
 
-    petEl.replaceChildren(document.importNode(svg, true));
-  } catch (err) {
-    setStatus(`Could not load pet SVG: ${err.message || err}`);
-    return;
+    applyPhase('hatched');
+    if (openPanel) setPanelOpen(true);
+    setStatus(save ? `Hatched & saved · collection ${payload.count ?? '?'}` : 'Hatched');
+    setTimeout(() => setStatus(''), 2200);
+    return payload;
   }
 
-  await refreshBadge();
+  async function syncFromMain() {
+    if (!api?.getDayState) {
+      applyPhase('egg');
+      return;
+    }
+    try {
+      const day = await api.getDayState();
+      if (!day?.ok) {
+        applyPhase('egg');
+        return;
+      }
+      if (day.newEgg) {
+        lastPayload = null;
+        applyPhase('egg', { caption: 'New day · fresh egg' });
+        setStatus('New day — a fresh egg');
+        setTimeout(() => setStatus(''), 2400);
+        return;
+      }
+      if (day.phase === 'hatched') {
+        const okSvg = await loadPetSvg();
+        if (okSvg) applyPhase('hatched');
+        else applyPhase('egg');
+        // Soft line if we already hatched today — settle without auto-save
+        if (!lastPayload) await loadSettle(false);
+      } else if (day.phase === 'growing') {
+        applyPhase('growing');
+      } else {
+        applyPhase('egg');
+      }
+    } catch {
+      applyPhase('egg');
+    }
+  }
 
-  // Soft preview line from demo (or live if already up) — no auto-save
-  await loadSettle(false);
+  // Morning default: egg (no auto-hatch on boot)
+  applyPhase('egg');
+  await refreshBadge();
+  await syncFromMain();
 
   document.getElementById('btn-reveal')?.addEventListener('click', async () => {
+    if (phase === 'egg') {
+      await hatch({ save: false, openPanel: true });
+      return;
+    }
+    // Already hatched: toggle reveal panel
     setStatus('');
     const open = panelEl.hidden;
     if (open) {
@@ -161,9 +271,14 @@
   });
 
   document.getElementById('btn-collect')?.addEventListener('click', async () => {
+    if (phase === 'egg') {
+      await hatch({ save: true, openPanel: true });
+      return;
+    }
     setStatus('');
     const payload = await loadSettle(true);
     if (payload?.ok) {
+      applyPhase('hatched');
       setPanelOpen(true);
       setStatus(`Saved · collection ${payload.count ?? '?'}`);
       setTimeout(() => setStatus(''), 2200);
@@ -172,5 +287,19 @@
 
   api?.onCompanionWindowId?.((payload) => {
     console.log('[loaflings] companion windowId', payload?.windowId);
+  });
+
+  api?.onDayState?.(async (day) => {
+    if (day?.newEgg || day?.phase === 'egg') {
+      lastPayload = null;
+      applyPhase('egg', { caption: 'New day · fresh egg' });
+      setStatus('New day — a fresh egg');
+      setTimeout(() => setStatus(''), 2400);
+    } else if (day?.phase === 'hatched') {
+      const okSvg = await loadPetSvg();
+      if (okSvg) applyPhase('hatched');
+    } else if (day?.phase === 'growing') {
+      applyPhase('growing');
+    }
   });
 })();

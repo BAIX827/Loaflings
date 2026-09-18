@@ -56,6 +56,7 @@ function entryFromSettle(result, meta = {}) {
     savedAt: new Date().toISOString(),
     source: meta.source || 'demo',
     date,
+    kind: result?.kind || 'loafling',
     /** Display name — CORE has no name; use personality + rarity label. */
     name: `${personality} · ${rarity}`,
     /** Type alias for personality (builder / explorer / dreamer / balanced). */

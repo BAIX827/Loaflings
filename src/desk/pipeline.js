@@ -1,19 +1,19 @@
 /**
- * DESK pipeline: load SENSE demo fixture → assert shape → CORE settleDay().
+ * DESK pipeline: load SENSE demo fixture → assert shape → CORE hatchDay().
  * Formulas live in src/core / src/sense — desk only wires them.
+ * @see docs/DAY_CYCLE_MVP.md
  */
 const fs = require('fs');
 const path = require('path');
 
-// Register TS loader when not already registered via `electron -r tsx/cjs`
 try {
   require('tsx/cjs');
 } catch {
   // already registered or unavailable
 }
 
-const { settleDay } = require('../core/settle.ts');
 const { assertProfileShape } = require('../sense/profile.ts');
+const { hatchDay, getApiSource } = require('./hooks/coreDayCycle');
 
 const FIXTURE_REL = path.join('src', 'sense', 'fixtures', 'demo-day.json');
 
@@ -26,15 +26,21 @@ function fixturePath() {
 }
 
 /**
- * @returns {{ profile: object, result: object, fixturePath: string }}
+ * @returns {{ profile: object, result: object, hatch: object, fixturePath: string, apiSource: string }}
  */
 function runDemoSettle() {
   const fp = fixturePath();
   const raw = fs.readFileSync(fp, 'utf8');
   const profile = JSON.parse(raw);
   assertProfileShape(profile);
-  const result = settleDay(profile);
-  return { profile, result, fixturePath: fp };
+  const hatch = hatchDay(profile);
+  return {
+    profile,
+    result: hatch.result,
+    hatch,
+    fixturePath: fp,
+    apiSource: getApiSource(),
+  };
 }
 
 module.exports = { runDemoSettle, fixturePath, FIXTURE_REL };
