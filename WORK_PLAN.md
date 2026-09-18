@@ -112,3 +112,6 @@
 
 2026-09-18 (DAY-SENSE)
 - Real-time click HUD: emit counts on each input; desk forwards loaflings:sense-counts (instant, not only 500ms poll).
+
+2026-09-18 (DAY-SENSE)
+- HUD shows live keystrokes alongside clicks (keys were already in live-profile).

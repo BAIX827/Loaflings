@@ -72,7 +72,7 @@
    * Visual daytime phases from CORE hatchProgress: egg | cracking | hatched.
    * Day/Save still gates collection via hatchDay.
    * @param {'egg' | 'cracking' | 'hatched' | 'growing'} next
-   * @param {{ caption?: string, clicks?: number, nextAt?: number|null }} [opts]
+   * @param {{ caption?: string, clicks?: number, keystrokes?: number, nextAt?: number|null }} [opts]
    */
   const EGGISH = new Set(['egg', 'cracking', 'hatching']);
   const PETISH = new Set(['newborn', 'growing', 'adult', 'hatched']);
@@ -104,7 +104,7 @@
   /**
    * CORE 6-stage daytime look; Day/Save still gates collection.
    * @param {string} next
-   * @param {{ caption?: string, clicks?: number, nextAt?: number|null }} [opts]
+   * @param {{ caption?: string, clicks?: number, keystrokes?: number, nextAt?: number|null }} [opts]
    */
   async function applyPhase(next, opts = {}) {
     const visual = normalizePhase(next);
@@ -134,9 +134,13 @@
     }
 
     const hudC = document.getElementById('hud-clicks');
+    const hudK = document.getElementById('hud-keys');
     const hudP = document.getElementById('hud-phase');
     if (typeof opts.clicks === 'number' && hudC) {
       hudC.textContent = String(opts.clicks);
+    }
+    if (typeof opts.keystrokes === 'number' && hudK) {
+      hudK.textContent = String(opts.keystrokes);
     }
     if (hudP) hudP.textContent = visual;
     if (typeof opts.clicks === 'number') {
@@ -676,8 +680,12 @@
   if (api?.onSenseCounts) {
     api.onSenseCounts((payload) => {
       const hudC = document.getElementById('hud-clicks');
+      const hudK = document.getElementById('hud-keys');
       if (hudC && typeof payload?.clicks === 'number') {
         hudC.textContent = String(payload.clicks);
+      }
+      if (hudK && typeof payload?.keystrokes === 'number') {
+        hudK.textContent = String(payload.keystrokes);
       }
     });
   }
