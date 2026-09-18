@@ -9,14 +9,14 @@ Confirmed with 老大 + `reference/process.png`:
 
 ## Visual stages (companion art)
 
-| Stage | Phase id | Inputs (clicks+keys) | process.png |
-|------:|----------|---------------------:|-------------|
-| 0 | `egg` | 0–999 | 01 蛋 |
-| 1 | `cracking` | 1000–1999 | 02 开始裂开 |
-| 2 | `hatching` | 2000–2999 | 03 破壳而出 |
-| 3 | `newborn` | 3000–3999 | 04 初生幼体 |
-| 4 | `growing` | 4000–4999 | 05 慢慢长大 |
-| 5 | `adult` | 5000+ | 06 成体 |
+| Stage | Phase id | activityHits (keys+clicks) | process.png |
+|------:|----------|---------------------------:|-------------|
+| 0 | `egg` | 0–2999 | 01 蛋 |
+| 1 | `cracking` | 3000–7999 | 02 开始裂开 |
+| 2 | `hatching` | 8000–13999 | 03 破壳而出 |
+| 3 | `newborn` | 14000–20999 | 04 初生幼体 |
+| 4 | `growing` | 21000–28999 | 05 慢慢长大 |
+| 5 | `adult` | 29000+ | 06 成体 |
 
 Thresholds: `HATCH_STAGE_THRESHOLDS` in `src/core/hatchProgress.ts` (see `character/HATCH_PHASES.md`).
 
