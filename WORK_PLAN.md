@@ -128,3 +128,6 @@
 
 2026-09-18 (DAY-SENSE)
 - HUD shows live keystrokes alongside clicks (keys were already in live-profile).
+
+2026-09-19 (DAY-SENSE)
+- HUD shows single activityHits (keys+clicks); profile still stores both separately for CORE genes.

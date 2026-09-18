@@ -23,10 +23,8 @@
       </div>
 
       <div id="hud" class="hud" aria-live="polite">
-        <span id="hud-clicks">0</span>
-        <span class="hud-label">clicks</span>
-        <span id="hud-keys">0</span>
-        <span class="hud-label">keys</span>
+        <span id="hud-hits">0</span>
+        <span class="hud-label" data-i18n="hud.hits">hits</span>
         <span id="hud-phase" class="hud-phase">egg</span>
       </div>
       <button type="button" id="btn-chrome-peek" class="chrome-peek" title="Show controls" hidden aria-label="Show controls">⚙</button>
@@ -106,7 +104,7 @@
         </label>
         <label class="settings-row settings-check">
           <input id="set-show-hud" type="checkbox" />
-          <span>Show clicks / keys</span>
+          <span data-i18n="settings.showHud">Show activity</span>
         </label>
         <p class="panel-note">Buttons hidden时点右上角 ⚙ 可再打开。Locked: window stays put.</p>
         <button type="button" id="btn-show-guide" class="chip" style="margin-top:8px">新手引导</button>

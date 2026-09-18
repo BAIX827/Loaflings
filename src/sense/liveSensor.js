@@ -173,10 +173,13 @@ class LiveSensor extends EventEmitter {
   }
 
   #emitCounts() {
+    const keystrokes = this.profile.keystrokes;
+    const clicks = this.profile.clicks;
     this.emit('counts', {
       date: this.profile.date,
-      keystrokes: this.profile.keystrokes,
-      clicks: this.profile.clicks,
+      keystrokes,
+      clicks,
+      activityHits: keystrokes + clicks,
       mouseTravel: this.profile.mouseTravel,
     });
   }
