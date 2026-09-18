@@ -7,6 +7,7 @@ const {
   startLiveSense,
   stopLiveSense,
   excludeWindowIds,
+  onSenseCounts,
 } = require('./hooks/senseLive');
 const { getApiSource } = require('./hooks/coreDayCycle');
 const { getDemoBundle, syncDayBoundary } = require('./settleBridge');
@@ -33,8 +34,9 @@ app.whenReady().then(() => {
   createCompanionWindow();
 
   const win = getCompanion();
-  
+
   onSenseCounts((payload) => {
+    const companion = getCompanion();
     if (companion && !companion.isDestroyed()) {
       companion.webContents.send('loaflings:sense-counts', payload);
     }

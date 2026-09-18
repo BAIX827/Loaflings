@@ -34,7 +34,16 @@ async function startLiveSense(_shouldIgnoreClick) {
     scaleFactor: display.scaleFactor || 2,
   });
   lastStartInfo = await sensor.start();
+  sensor.removeAllListeners('counts');
+  sensor.on('counts', (payload) => {
+    if (typeof countsListener === 'function') countsListener(payload);
+  });
   return { ...lastStartInfo, path: persistPath(), coreApi: getApiSource() };
+}
+
+function onSenseCounts(fn) {
+  countsListener = typeof fn === 'function' ? fn : null;
+  return { ok: true };
 }
 
 function stopLiveSense() {
