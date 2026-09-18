@@ -49,12 +49,25 @@ See `src/core/settle.ts`:
 - `kind`: `loafling`
 - `energy`: `{ work, explore, dream }`
 - `genes`: `{ body, cloud, face, tail }`
-- `personality`, `rarity`, `traits[]`, `events[]`
+- `personality`, `rarity` (`common`/`rare`/`epic`), `style`, `traits[]`, `events[]`
 
 ## Sense input expectations
 
 Profile must provide at least: `date`, `seedKey`, `keystrokes`, `clicks`, `mouseTravel`, `idleSec`, `activeSec`, `focusSessions[]`, `windowSwitches`, `activeHours[24]`.  
 No content text. Align field names with DAY-SENSE schema when that lands.
+
+
+## Qualities (3 tiers — 老大)
+
+| id | 中文 (desk) | Base weight | Look (ART) |
+|---|---|---:|---|
+| `common` | 普通 | 70 | `style_common` — soft / plain |
+| `rare` | 稀有 | 25 | `style_rare` — richer palette / cloud |
+| `epic` | 史诗 | 5 | `style_epic` — distinct silhouette accents |
+
+Seeded at settle (`date|seedKey|rarity`). High energy slightly shifts weight toward rare/epic.
+`DaylingResult.rarity` + `DaylingResult.style` — presentation genes stay `body/cloud/face/tail` until ART ships variant PNGs.
+`uncommon` retired (do not emit).
 
 ## Owners
 

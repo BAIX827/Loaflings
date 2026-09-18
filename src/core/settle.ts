@@ -7,9 +7,11 @@ import {
   resolveGenes,
   resolvePersonality,
   resolveRarity,
+  styleForRarity,
   type CreatureGenes,
   type Personality,
   type Rarity,
+  type StyleId,
 } from './genes';
 import type { DailyActivityProfile } from './profile';
 import { rngFromKeys } from './rng';
@@ -35,6 +37,7 @@ export interface DaylingResult {
   genes: CreatureGenes;
   personality: Personality;
   rarity: Rarity;
+  style: StyleId;
   traits: string[];
   events: IdleEvent[];
 }
@@ -48,6 +51,7 @@ export function settleDay(profile: DailyActivityProfile): DaylingResult {
   const genes = resolveGenes(profile, energy, geneRng);
   const personality = resolvePersonality(energy);
   const rarity = resolveRarity(energy, rarityRng);
+  const style = styleForRarity(rarity);
   const traits = buildTraits(energy, personality);
   const events = rollIdleEvents(profile, energy, eventRng);
 
@@ -58,6 +62,7 @@ export function settleDay(profile: DailyActivityProfile): DaylingResult {
     genes,
     personality,
     rarity,
+    style,
     traits,
     events,
   };

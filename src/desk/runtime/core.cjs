@@ -26,6 +26,9 @@ __export(index_exports, {
   HATCH_STAGE_THRESHOLDS: () => HATCH_STAGE_THRESHOLDS,
   INPUTS_PER_HATCH_STAGE: () => INPUTS_PER_HATCH_STAGE,
   MVP_BASE_GENES: () => MVP_BASE_GENES,
+  RARITY_IDS: () => RARITY_IDS,
+  RARITY_WEIGHTS: () => RARITY_WEIGHTS,
+  STYLE_BY_RARITY: () => STYLE_BY_RARITY,
   computeEnergy: () => computeEnergy,
   createRng: () => createRng,
   dominantEnergy: () => dominantEnergy,
@@ -50,7 +53,8 @@ __export(index_exports, {
   rngFromKeys: () => rngFromKeys,
   settleDay: () => settleDay,
   shouldStartNewEgg: () => shouldStartNewEgg,
-  startEgg: () => startEgg
+  startEgg: () => startEgg,
+  styleForRarity: () => styleForRarity
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -140,10 +144,19 @@ var MVP_BASE_GENES = {
   face: "face_base",
   tail: "tail_base"
 };
+var RARITY_IDS = ["common", "rare", "epic"];
+var RARITY_WEIGHTS = {
+  common: 70,
+  rare: 25,
+  epic: 5
+};
+var STYLE_BY_RARITY = {
+  common: "style_common",
+  rare: "style_rare",
+  epic: "style_epic"
+};
 function resolveGenes(profile, energy, rng = rngFromKeys(profile.date, profile.seedKey, "genes")) {
-  void pickWeighted(rng, [
-    { id: "body_base", weight: 1 }
-  ]);
+  void pickWeighted(rng, [{ id: "body_base", weight: 1 }]);
   void energy;
   void longestFocusSec;
   return { ...MVP_BASE_GENES };
@@ -158,10 +171,28 @@ function resolvePersonality(energy) {
 function resolveRarity(energy, rng) {
   const total = energy.work + energy.explore + energy.dream;
   const imbalance = Math.max(energy.work, energy.explore, energy.dream) / Math.max(1, total / 3);
-  let roll = rng();
-  if (total > 80 && imbalance > 2.2 && roll > 0.85) return "rare";
-  if (total > 40 && roll > 0.6) return "uncommon";
-  return "common";
+  let wCommon = RARITY_WEIGHTS.common;
+  let wRare = RARITY_WEIGHTS.rare;
+  let wEpic = RARITY_WEIGHTS.epic;
+  if (total > 60) {
+    wCommon -= 8;
+    wRare += 5;
+    wEpic += 3;
+  }
+  if (total > 100 && imbalance > 2) {
+    wCommon -= 7;
+    wRare += 3;
+    wEpic += 4;
+  }
+  wCommon = Math.max(40, wCommon);
+  return pickWeighted(rng, [
+    { id: "common", weight: wCommon },
+    { id: "rare", weight: wRare },
+    { id: "epic", weight: wEpic }
+  ]);
+}
+function styleForRarity(rarity) {
+  return STYLE_BY_RARITY[rarity];
 }
 
 // src/core/settle.ts
@@ -173,6 +204,7 @@ function settleDay(profile) {
   const genes = resolveGenes(profile, energy, geneRng);
   const personality = resolvePersonality(energy);
   const rarity = resolveRarity(energy, rarityRng);
+  const style = styleForRarity(rarity);
   const traits = buildTraits(energy, personality);
   const events = rollIdleEvents(profile, energy, eventRng);
   return {
@@ -182,6 +214,7 @@ function settleDay(profile) {
     genes,
     personality,
     rarity,
+    style,
     traits,
     events
   };
@@ -387,6 +420,9 @@ function pickWeightedKey(weights, rng = Math.random) {
   HATCH_STAGE_THRESHOLDS,
   INPUTS_PER_HATCH_STAGE,
   MVP_BASE_GENES,
+  RARITY_IDS,
+  RARITY_WEIGHTS,
+  STYLE_BY_RARITY,
   computeEnergy,
   createRng,
   dominantEnergy,
@@ -411,5 +447,6 @@ function pickWeightedKey(weights, rng = Math.random) {
   rngFromKeys,
   settleDay,
   shouldStartNewEgg,
-  startEgg
+  startEgg,
+  styleForRarity
 });

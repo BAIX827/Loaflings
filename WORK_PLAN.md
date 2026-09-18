@@ -25,6 +25,9 @@
 
 ## Log
 
+2026-09-19 (DAY-CORE)
+- Locked 3 qualities: common 70% / rare 25% / epic 5% (+ energy nudge); DaylingResult.style; retired uncommon.
+
 2026-09-19 (DAY-DESK)
 - Kill reveal/status strip; ZH/EN locale; Pack calendar to view past hatches; single /Applications QA install; HUD hits.
 
