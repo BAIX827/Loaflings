@@ -16,12 +16,14 @@
   const api = window.loaflings;
 
   const masterPath = '../../character/Pet_Base_Master.svg';
+  const eggPath = '../../character/Pet_Egg_Master.svg';
 
   /** @type {object | null} */
   let lastPayload = null;
   /** @type {'egg' | 'growing' | 'hatched'} */
   let phase = 'egg';
   let petLoaded = false;
+  let eggLoaded = false;
 
   function setStatus(msg) {
     if (!msg) {
@@ -119,6 +121,35 @@
       if (col?.ok) badgeEl.textContent = String(col.count ?? col.items?.length ?? 0);
     } catch {
       // ignore
+    }
+  }
+
+
+  async function loadEggSvg() {
+    if (eggLoaded) return true;
+    const mount = document.getElementById('egg-art');
+    if (!mount) return false;
+    try {
+      const res = await fetch(eggPath);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const svgText = await res.text();
+      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+      const svg = doc.documentElement;
+      if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
+
+      const firstRect = svg.querySelector('rect');
+      if (firstRect) firstRect.setAttribute('fill', 'none');
+      svg.querySelectorAll('line').forEach((line) => {
+        const opacity = line.getAttribute('opacity');
+        if (opacity && Number(opacity) < 1) line.remove();
+      });
+
+      mount.replaceChildren(document.importNode(svg, true));
+      eggLoaded = true;
+      return true;
+    } catch (err) {
+      setStatus(`Could not load egg SVG: ${err.message || err}`);
+      return false;
     }
   }
 
@@ -247,6 +278,7 @@
   }
 
   // Morning default: egg (no auto-hatch on boot)
+  await loadEggSvg();
   applyPhase('egg');
   await refreshBadge();
   await syncFromMain();
