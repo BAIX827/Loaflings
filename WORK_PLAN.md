@@ -139,3 +139,6 @@
 
 2026-09-19 (DAY-SENSE)
 - HUD shows single activityHits (keys+clicks); profile still stores both separately for CORE genes.
+
+2026-09-19 (DAY-ART)
+- Three quality adult PNGs: character/png/style_{common,rare,epic}.png + QUALITY_STYLES.md.
