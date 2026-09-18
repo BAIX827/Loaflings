@@ -15,6 +15,7 @@ const {
   hatchProgressFromProfile,
   hatchProgressFromClicks,
   clicksPerHatchStage,
+  idleMoodFromProfile,
 } = require('./hooks/coreDayCycle');
 const {
   getDemoBundle,
@@ -80,9 +81,17 @@ function registerIpc() {
           progress,
           clicks: 0,
           clicksPerStage: clicksPerHatchStage(),
+          keystrokes: 0,
+          idleMood: null,
         };
       }
       const progress = hatchProgressFromProfile(profile, alreadySaved);
+      let idleMood = null;
+      try {
+        idleMood = idleMoodFromProfile(profile);
+      } catch (err) {
+        console.warn('[desk] idleMood', err && err.message ? err.message : err);
+      }
       return {
         ok: true,
         source: 'live',
@@ -92,6 +101,7 @@ function registerIpc() {
         clicks: profile.clicks || 0,
         clicksPerStage: clicksPerHatchStage(),
         keystrokes: profile.keystrokes || 0,
+        idleMood,
       };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };

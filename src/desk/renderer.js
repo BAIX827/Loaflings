@@ -504,6 +504,36 @@
     }
   }
 
+  let lastIdlePickAt = 0;
+  let lastIdleMood = null;
+
+  function pickWeightedLocal(weights) {
+    const keys = Object.keys(weights || {});
+    let total = 0;
+    for (const k of keys) total += Math.max(0, Number(weights[k]) || 0);
+    if (!keys.length || total <= 0) return null;
+    let roll = Math.random() * total;
+    for (const k of keys) {
+      roll -= Math.max(0, Number(weights[k]) || 0);
+      if (roll <= 0) return k;
+    }
+    return keys[keys.length - 1];
+  }
+
+  function pickIdleAssetFromMood(mood) {
+    const usePose = Math.random() < 0.4;
+    if (mood?.expr && mood?.pose) {
+      if (usePose) {
+        const short = pickWeightedLocal(mood.pose);
+        return short ? `pose_${short}` : pick(IDLE_POSE_IDS);
+      }
+      const short = pickWeightedLocal(mood.expr);
+      return short ? `expr_${short}` : pick(IDLE_EXPR_IDS);
+    }
+    if (usePose) return pick(IDLE_POSE_IDS);
+    return pick(IDLE_EXPR_IDS.filter((x) => x !== 'expr_normal'));
+  }
+
   function maybeIdleFx(hp) {
     if (!IDLE_OK_PHASES.has(phase)) {
       if (idleFxEl) {
@@ -513,6 +543,10 @@
       return;
     }
     if (Date.now() < idleBusyUntil) return;
+    if (hp?.idleMood) lastIdleMood = hp.idleMood;
+    const mood = lastIdleMood;
+    if (mood && mood.allowIdle === false) return;
+
     const clicks = hp?.clicks || 0;
     const keys = hp?.keystrokes || 0;
     const delta = clicks - lastActivityClicks + (keys - lastActivityKeys);
@@ -523,13 +557,15 @@
       return;
     }
     quietMs += 500;
-    // ~2.5s quiet → eligible; random chance each tick
+    // short quiet gate, then respect CORE intervalMs between picks
     if (quietMs < 2500) return;
-    if (Math.random() > 0.22) return;
+    const gap = (mood && mood.intervalMs) || 12000;
+    if (Date.now() - lastIdlePickAt < gap) return;
+    if (Math.random() > 0.35) return;
     quietMs = 0;
-    const usePose = Math.random() < 0.4;
-    const id = usePose ? pick(IDLE_POSE_IDS) : pick(IDLE_EXPR_IDS.filter((x) => x !== 'expr_normal'));
-    void showIdleFx(id);
+    lastIdlePickAt = Date.now();
+    const id = pickIdleAssetFromMood(mood);
+    if (id) void showIdleFx(id);
   }
 
   async function refreshHatchProgress() {
@@ -543,7 +579,11 @@
         nextAt: hp.progress.nextStageAt,
       });
       // pass keystrokes if present on payload
-      maybeIdleFx({ clicks: hp.clicks, keystrokes: hp.keystrokes || 0 });
+      maybeIdleFx({
+        clicks: hp.clicks,
+        keystrokes: hp.keystrokes || 0,
+        idleMood: hp.idleMood || null,
+      });
     } catch {
       // ignore
     }

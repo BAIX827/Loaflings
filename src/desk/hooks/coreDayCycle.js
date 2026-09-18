@@ -98,6 +98,16 @@ function clicksPerHatchStage() {
   return core.CLICKS_PER_HATCH_STAGE;
 }
 
+function idleMoodFromProfile(profile) {
+  const core = require('../runtime/core.cjs');
+  return core.idleMoodFromProfile(profile);
+}
+
+function pickWeightedKey(weights, rng) {
+  const core = require('../runtime/core.cjs');
+  return core.pickWeightedKey(weights, rng);
+}
+
 module.exports = {
   hatchDay,
   phaseFromProfile,
@@ -108,4 +118,6 @@ module.exports = {
   hatchProgressFromProfile,
   hatchProgressFromClicks,
   clicksPerHatchStage,
+  idleMoodFromProfile,
+  pickWeightedKey,
 };

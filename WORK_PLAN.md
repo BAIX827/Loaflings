@@ -25,6 +25,11 @@
 
 ## Log
 
+2026-09-18 (DAY-DESK)
+- Wire CORE idleMoodFromProfile into idle FX (weighted expr/pose + intervalMs); still no gene change.
+
+
+
 2026-09-18 (DAY-CORE)
 - Cleaner split: hatchProgress.ts + idleMood.ts; docs/CORE_REFERENCES.md (BongoCat-style thin modules).
 - Idle mood weights optional for DESK; settle/genes unchanged.
