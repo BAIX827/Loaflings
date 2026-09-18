@@ -42,3 +42,18 @@ export const HATCH_PHASE_ASSETS = {
 
 export type HatchPhaseVisual = keyof typeof HATCH_PHASE_ASSETS;
 
+/** Idle MVP pool — random play by DESK; see character/IDLE_MVP.md */
+export const IDLE_MVP_ASSETS = {
+  expressions: [
+    'character/idle/expr_normal.svg',
+    'character/idle/expr_happy.svg',
+    'character/idle/expr_sleepy.svg',
+    'character/idle/expr_surprised.svg',
+    'character/idle/expr_content.svg',
+  ],
+  poses: [
+    'character/idle/pose_sit.svg',
+    'character/idle/pose_stretch.svg',
+    'character/idle/pose_lie.svg',
+  ],
+} as const;

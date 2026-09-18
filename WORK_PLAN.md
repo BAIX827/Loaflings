@@ -79,3 +79,6 @@
 
 2026-09-18 (DAY-SENSE)
 - Always count keystrokes/clicks even when companion is focused (per 老大).
+
+2026-09-18 (DAY-ART)
+- Idle MVP: reference/actions-expressions.png + character/idle/* + IDLE_MVP.md (random expr/pose pool for DESK).
