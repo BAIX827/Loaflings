@@ -23,6 +23,7 @@ __export(index_exports, {
   ENERGY_WEIGHTS: () => ENERGY_WEIGHTS,
   GENE_FIELDS: () => GENE_FIELDS,
   HATCH_STAGE_COUNT: () => HATCH_STAGE_COUNT,
+  HATCH_STAGE_THRESHOLDS: () => HATCH_STAGE_THRESHOLDS,
   INPUTS_PER_HATCH_STAGE: () => INPUTS_PER_HATCH_STAGE,
   MVP_BASE_GENES: () => MVP_BASE_GENES,
   computeEnergy: () => computeEnergy,
@@ -212,9 +213,17 @@ function rollIdleEvents(profile, energy, rng) {
 }
 
 // src/core/hatchProgress.ts
-var INPUTS_PER_HATCH_STAGE = 1e3;
-var CLICKS_PER_HATCH_STAGE = INPUTS_PER_HATCH_STAGE;
+var HATCH_STAGE_THRESHOLDS = Object.freeze([
+  0,
+  3e3,
+  8e3,
+  14e3,
+  21e3,
+  29e3
+]);
 var HATCH_STAGE_COUNT = 6;
+var INPUTS_PER_HATCH_STAGE = 3e3;
+var CLICKS_PER_HATCH_STAGE = INPUTS_PER_HATCH_STAGE;
 var STAGE_PHASE = [
   "egg",
   "cracking",
@@ -226,14 +235,25 @@ var STAGE_PHASE = [
 function hatchInputScore(clicks, keystrokes) {
   return Math.max(0, Math.floor(clicks || 0)) + Math.max(0, Math.floor(keystrokes || 0));
 }
+function stageFromInputs(inputs) {
+  const c = Math.max(0, Math.floor(inputs || 0));
+  let stage = 0;
+  for (let i = HATCH_STAGE_THRESHOLDS.length - 1; i >= 0; i -= 1) {
+    if (c >= HATCH_STAGE_THRESHOLDS[i]) {
+      stage = i;
+      break;
+    }
+  }
+  return stage;
+}
 function progressFromInputs(inputs, clicks, keystrokes) {
   const c = Math.max(0, Math.floor(inputs || 0));
-  const raw = Math.floor(c / INPUTS_PER_HATCH_STAGE);
+  const stage = stageFromInputs(c);
   const maxStage = HATCH_STAGE_COUNT - 1;
-  const stage = Math.min(maxStage, raw);
-  const nextStageAt = stage >= maxStage ? null : (stage + 1) * INPUTS_PER_HATCH_STAGE;
-  const stageFloor = stage * INPUTS_PER_HATCH_STAGE;
-  const stageProgress = stage >= maxStage ? 1 : Math.min(1, (c - stageFloor) / INPUTS_PER_HATCH_STAGE);
+  const floor = HATCH_STAGE_THRESHOLDS[stage];
+  const nextStageAt = stage >= maxStage ? null : HATCH_STAGE_THRESHOLDS[stage + 1];
+  const band = nextStageAt == null ? Math.max(1, c - floor || 1) : nextStageAt - floor;
+  const stageProgress = stage >= maxStage ? 1 : Math.min(1, Math.max(0, (c - floor) / band));
   return {
     stage,
     phase: STAGE_PHASE[stage],
@@ -241,8 +261,8 @@ function progressFromInputs(inputs, clicks, keystrokes) {
     clicks: Math.max(0, Math.floor(clicks || 0)),
     keystrokes: Math.max(0, Math.floor(keystrokes || 0)),
     nextStageAt,
-    inputsPerStage: INPUTS_PER_HATCH_STAGE,
-    clicksPerStage: INPUTS_PER_HATCH_STAGE,
+    inputsPerStage: band,
+    clicksPerStage: band,
     stageCount: HATCH_STAGE_COUNT,
     stageProgress
   };
@@ -364,6 +384,7 @@ function pickWeightedKey(weights, rng = Math.random) {
   ENERGY_WEIGHTS,
   GENE_FIELDS,
   HATCH_STAGE_COUNT,
+  HATCH_STAGE_THRESHOLDS,
   INPUTS_PER_HATCH_STAGE,
   MVP_BASE_GENES,
   computeEnergy,

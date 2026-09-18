@@ -26,6 +26,11 @@
 ## Log
 
 2026-09-18 (DAY-DESK)
+- Follow LEAD hatch thresholds (cumulative activityHits); rebuild QA app. Docs/guide synced.
+
+
+
+2026-09-18 (DAY-DESK)
 - PNG-primary art paths (svg archived under character/svg/); hide egg caption; Settings toggles for buttons/HUD; unify art frame size; QA rebuild.
 
 

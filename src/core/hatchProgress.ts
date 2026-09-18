@@ -1,21 +1,27 @@
 /**
- * Daytime visual growth from behaviour (reference/process.png).
+ * Daytime visual growth (LEAD lock 2026-09-18).
+ * activityHits = keystrokes + clicks. Cumulative thresholds — not equal stage widths.
  * Pure helpers — no I/O. DESK switches art; ART owns assets.
  *
- * Progress units = clicks + keystrokes (老大: both count toward hatch stages).
- * Still 1000 units per stage unless LEAD retunes.
+ * @see character/HATCH_PHASES.md
  */
 
 import type { DailyActivityProfile } from './profile';
 
-/** Behaviour units (clicks + keys) per visual stage. */
-export const INPUTS_PER_HATCH_STAGE = 1000;
+/**
+ * Cumulative activityHits floors for each stage (egg=0 … adult=29000).
+ * Widths: 3k / 5k / 6k / 7k / 8k / ∞
+ */
+export const HATCH_STAGE_THRESHOLDS = Object.freeze([
+  0, 3000, 8000, 14000, 21000, 29000,
+] as const);
 
-/** @deprecated alias — same as INPUTS_PER_HATCH_STAGE */
-export const CLICKS_PER_HATCH_STAGE = INPUTS_PER_HATCH_STAGE;
-
-/** Stages 01–06 on process.png. */
 export const HATCH_STAGE_COUNT = 6;
+
+/** @deprecated equal-width stages removed — kept for old callers; equals first band width */
+export const INPUTS_PER_HATCH_STAGE = 3000;
+/** @deprecated alias */
+export const CLICKS_PER_HATCH_STAGE = INPUTS_PER_HATCH_STAGE;
 
 export type HatchVisualPhase =
   | 'egg'
@@ -26,15 +32,15 @@ export type HatchVisualPhase =
   | 'adult';
 
 export interface HatchProgress {
-  /** 0..5 ↔ process.png 01..06 */
+  /** 0..5 ↔ egg..adult */
   stage: 0 | 1 | 2 | 3 | 4 | 5;
   phase: HatchVisualPhase;
-  /** clicks + keystrokes driving the stage bar */
+  /** activityHits = clicks + keystrokes */
   inputs: number;
   clicks: number;
   keystrokes: number;
   nextStageAt: number | null;
-  /** units per stage (clicks+keys) */
+  /** width of current band (adult = null-ish large); for HUD */
   inputsPerStage: number;
   /** @deprecated alias of inputsPerStage */
   clicksPerStage: number;
@@ -55,22 +61,32 @@ export function hatchInputScore(clicks: number, keystrokes: number): number {
   return Math.max(0, Math.floor(clicks || 0)) + Math.max(0, Math.floor(keystrokes || 0));
 }
 
+function stageFromInputs(inputs: number): 0 | 1 | 2 | 3 | 4 | 5 {
+  const c = Math.max(0, Math.floor(inputs || 0));
+  let stage = 0;
+  for (let i = HATCH_STAGE_THRESHOLDS.length - 1; i >= 0; i -= 1) {
+    if (c >= HATCH_STAGE_THRESHOLDS[i]) {
+      stage = i;
+      break;
+    }
+  }
+  return stage as 0 | 1 | 2 | 3 | 4 | 5;
+}
+
 function progressFromInputs(
   inputs: number,
   clicks: number,
   keystrokes: number,
 ): HatchProgress {
   const c = Math.max(0, Math.floor(inputs || 0));
-  const raw = Math.floor(c / INPUTS_PER_HATCH_STAGE);
+  const stage = stageFromInputs(c);
   const maxStage = (HATCH_STAGE_COUNT - 1) as 5;
-  const stage = Math.min(maxStage, raw) as 0 | 1 | 2 | 3 | 4 | 5;
-  const nextStageAt =
-    stage >= maxStage ? null : (stage + 1) * INPUTS_PER_HATCH_STAGE;
-  const stageFloor = stage * INPUTS_PER_HATCH_STAGE;
+  const floor = HATCH_STAGE_THRESHOLDS[stage];
+  const nextStageAt = stage >= maxStage ? null : HATCH_STAGE_THRESHOLDS[stage + 1];
+  const band =
+    nextStageAt == null ? Math.max(1, c - floor || 1) : nextStageAt - floor;
   const stageProgress =
-    stage >= maxStage
-      ? 1
-      : Math.min(1, (c - stageFloor) / INPUTS_PER_HATCH_STAGE);
+    stage >= maxStage ? 1 : Math.min(1, Math.max(0, (c - floor) / band));
   return {
     stage,
     phase: STAGE_PHASE[stage],
@@ -78,8 +94,8 @@ function progressFromInputs(
     clicks: Math.max(0, Math.floor(clicks || 0)),
     keystrokes: Math.max(0, Math.floor(keystrokes || 0)),
     nextStageAt,
-    inputsPerStage: INPUTS_PER_HATCH_STAGE,
-    clicksPerStage: INPUTS_PER_HATCH_STAGE,
+    inputsPerStage: band,
+    clicksPerStage: band,
     stageCount: HATCH_STAGE_COUNT,
     stageProgress,
   };

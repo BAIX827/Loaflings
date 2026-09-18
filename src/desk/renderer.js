@@ -202,7 +202,7 @@
       const nextAt = opts.nextAt;
       // keep status subtle; HUD shows the live number
       if (nextAt != null) {
-        setStatus(`next stage @ ${nextAt}`);
+        /* keep HUD only — no bottom status line */
       }
     }
   }

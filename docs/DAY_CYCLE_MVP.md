@@ -3,8 +3,9 @@
 Confirmed with 老大 + `reference/process.png`:
 
 1. **One egg per day** → grow from behaviour → Save hatches one Loafling into collection → next day new egg.
-2. **Visual growth**: **6 stages**, **one stage per 1000 input units**.
-   Input units = **clicks + keystrokes** (both count; 老大 asked for keyboard too).
+2. **Visual growth**: **6 stages**, **cumulative activityHits** (LEAD 2026-09-18).
+   activityHits = **clicks + keystrokes**. Thresholds: 0 / 3k / 8k / 14k / 21k / 29k → adult.
+   See `character/HATCH_PHASES.md` (old equal 1000/stage retired).
 
 ## Visual stages (companion art)
 
@@ -17,7 +18,7 @@ Confirmed with 老大 + `reference/process.png`:
 | 4 | `growing` | 4000–4999 | 05 慢慢长大 |
 | 5 | `adult` | 5000+ | 06 成体 |
 
-Constant: `INPUTS_PER_HATCH_STAGE = 1000` (`CLICKS_PER_HATCH_STAGE` kept as alias) in `src/core/hatchProgress.ts`.
+Thresholds: `HATCH_STAGE_THRESHOLDS` in `src/core/hatchProgress.ts` (see `character/HATCH_PHASES.md`).
 
 ```ts
 hatchProgressFromProfile(profile, alreadySaved)
