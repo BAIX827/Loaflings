@@ -2,7 +2,7 @@
   "name": "loaflings",
   "productName": "Loaflings",
   "version": "0.1.0",
-  "description": "Loaflings / \u6478\u9c7c\u7075 \u2014 Mac companion demo",
+  "description": "Loaflings / 摸鱼灵 — Mac companion demo",
   "main": "src/desk/main.js",
   "scripts": {
     "start": "npm run compile:runtime && electron .",
@@ -14,7 +14,8 @@
     "pack": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
     "dist": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir,dmg --publish never",
     "dist:dir": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
-    "compile:runtime": "node scripts/compile-runtime.mjs"
+    "compile:runtime": "node scripts/compile-runtime.mjs",
+    "install:qa": "bash scripts/install-qa-app.sh"
   },
   "engines": {
     "node": ">=18"

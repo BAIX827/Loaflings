@@ -26,6 +26,11 @@
 ## Log
 
 2026-09-18 (DAY-DESK)
+- QA click-to-open: pack Loaflings.app → /Applications + Desktop; `npm run install:qa` / docs/QA_OPEN.md.
+
+
+
+2026-09-18 (DAY-DESK)
 - Idle 3-layer compose: body (pose|expr) + ART cloud_*; strip baked cloud so mood layer shows.
 
 
