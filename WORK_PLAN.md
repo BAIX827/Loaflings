@@ -4,7 +4,7 @@
 - [x] TASK-006 Mac demo app — **MVP demo DoD met (dev launch)**
   - [x] DESK: companion + AppIcon + pet + fixture/live→settle
   - [x] DESK: end-of-day reveal + local collection (`c890305`)
-  - [x] DESK: daily egg → hatch loop (day-state + ensureToday wire)
+  - [x] DESK: daily egg → hatch loop (`119fb2f`, LEAD accepted)
   - [x] CORE: settleDay verified
   - [x] SENSE: schema + fixture + live counters (`f039926`) + ensureToday
   - Still not: signed `.app` / Dock one-click (packaging) — next when 老大按规划排期
@@ -25,6 +25,10 @@
 - [x] TASK-006 Mac demo (dev) — reveal/collection/live sense
 
 ## Log
+
+2026-09-18 (DAY-LEAD)
+- Accepted DESK egg UI `119fb2f` (egg→hatchDay→pet; ensureToday day boundary)
+- Status for 老大: MVP demo loop完整可玩（dev）；下一拍正式 `.app` 包 + TASK-004 权限打磨；蛋专图有空再补不挡进度
 
 2026-09-18 (DAY-DESK)
 - Daily egg → hatch UI: companion shows egg until Day/Save; hatchDay/phaseFromProfile via hooks/coreDayCycle; ensureToday day boundary; still Pet_Base_Master after hatch.
