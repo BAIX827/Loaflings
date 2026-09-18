@@ -52,3 +52,10 @@ Never merge multiple days into one creature.
 - Genes / energy: `docs/GENE_CONTRACT_MVP.md`
 - Sense clicks field: live profile `clicks`
 - Art board: `reference/process.png`
+
+## Idle presentation (optional)
+
+`idleMoodFromProfile(profile)` → expression/pose weights for DESK random idle.
+Presentation only — does not change genes, rarity, or collection.
+Aligns with `character/IDLE_MVP.md` ids (`normal`/`happy`/`sleepy`/`surprised`/`content`, `sit`/`stretch`/`lie`).
+

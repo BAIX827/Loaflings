@@ -25,6 +25,10 @@
 
 ## Log
 
+2026-09-18 (DAY-CORE)
+- Cleaner split: hatchProgress.ts + idleMood.ts; docs/CORE_REFERENCES.md (BongoCat-style thin modules).
+- Idle mood weights optional for DESK; settle/genes unchanged.
+
 2026-09-18 (DAY-DESK)
 - Idle random expr/pose from character/idle (ART IDLE_MVP): quiet ~2.5s on newborn/growing/adult; less when typing/clicking.
 

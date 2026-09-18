@@ -32,11 +32,14 @@ __export(index_exports, {
   hatchDay: () => hatchDay,
   hatchProgressFromClicks: () => hatchProgressFromClicks,
   hatchProgressFromProfile: () => hatchProgressFromProfile,
+  idleMoodFromEnergy: () => idleMoodFromEnergy,
+  idleMoodFromProfile: () => idleMoodFromProfile,
   localToday: () => localToday,
   longestFocusSec: () => longestFocusSec,
   markGrowing: () => markGrowing,
   phaseFromProfile: () => phaseFromProfile,
   pickWeighted: () => pickWeighted,
+  pickWeightedKey: () => pickWeightedKey,
   resolveGenes: () => resolveGenes,
   resolvePersonality: () => resolvePersonality,
   resolveRarity: () => resolveRarity,
@@ -205,7 +208,7 @@ function rollIdleEvents(profile, energy, rng) {
   return [{ kind: "brought_item", note: "Brought back a mysterious crumb." }];
 }
 
-// src/core/dayCycle.ts
+// src/core/hatchProgress.ts
 var CLICKS_PER_HATCH_STAGE = 1e3;
 var HATCH_STAGE_COUNT = 6;
 var STAGE_PHASE = [
@@ -216,25 +219,17 @@ var STAGE_PHASE = [
   "growing",
   "adult"
 ];
-function startEgg(date, seedKey) {
-  return { date, seedKey, phase: "egg" };
-}
-function markGrowing(egg) {
-  if (egg.phase === "growing") return egg;
-  return { ...egg, phase: "growing" };
-}
 function hatchProgressFromClicks(clicks) {
   const c = Math.max(0, Math.floor(clicks || 0));
   const raw = Math.floor(c / CLICKS_PER_HATCH_STAGE);
   const maxStage = HATCH_STAGE_COUNT - 1;
   const stage = Math.min(maxStage, raw);
-  const phase = STAGE_PHASE[stage];
   const nextStageAt = stage >= maxStage ? null : (stage + 1) * CLICKS_PER_HATCH_STAGE;
   const stageFloor = stage * CLICKS_PER_HATCH_STAGE;
   const stageProgress = stage >= maxStage ? 1 : Math.min(1, (c - stageFloor) / CLICKS_PER_HATCH_STAGE);
   return {
     stage,
-    phase,
+    phase: STAGE_PHASE[stage],
     clicks: c,
     nextStageAt,
     clicksPerStage: CLICKS_PER_HATCH_STAGE,
@@ -244,16 +239,23 @@ function hatchProgressFromClicks(clicks) {
 }
 function hatchProgressFromProfile(profile, alreadySaved) {
   const progress = hatchProgressFromClicks(profile.clicks);
-  if (alreadySaved) {
-    return {
-      ...progress,
-      stage: 5,
-      phase: "adult",
-      nextStageAt: null,
-      stageProgress: 1
-    };
-  }
-  return progress;
+  if (!alreadySaved) return progress;
+  return {
+    ...progress,
+    stage: 5,
+    phase: "adult",
+    nextStageAt: null,
+    stageProgress: 1
+  };
+}
+
+// src/core/dayCycle.ts
+function startEgg(date, seedKey) {
+  return { date, seedKey, phase: "egg" };
+}
+function markGrowing(egg) {
+  if (egg.phase === "growing") return egg;
+  return { ...egg, phase: "growing" };
 }
 function phaseFromProfile(profile, alreadyHatched) {
   if (alreadyHatched) return "hatched";
@@ -265,11 +267,7 @@ function phaseFromProfile(profile, alreadyHatched) {
 }
 function hatchDay(profile) {
   const result = settleDay(profile);
-  return {
-    date: profile.date,
-    phase: "hatched",
-    result
-  };
+  return { date: profile.date, phase: "hatched", result };
 }
 function shouldStartNewEgg(lastDate, today) {
   if (!lastDate) return true;
@@ -280,6 +278,62 @@ function localToday(now = /* @__PURE__ */ new Date()) {
   const m = String(now.getMonth() + 1).padStart(2, "0");
   const d = String(now.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+// src/core/idleMood.ts
+var EXPR_BASE = {
+  normal: 3,
+  happy: 2,
+  sleepy: 1,
+  surprised: 1,
+  content: 2
+};
+var POSE_BASE = {
+  sit: 3,
+  stretch: 2,
+  lie: 2
+};
+function idleMoodFromEnergy(pool) {
+  const dominant = dominantEnergy(pool);
+  const expr = { ...EXPR_BASE };
+  const pose = { ...POSE_BASE };
+  let intervalMs = 12e3;
+  if (dominant === "dream") {
+    expr.sleepy += 4;
+    expr.content += 2;
+    expr.happy = Math.max(1, expr.happy - 1);
+    pose.lie += 3;
+    pose.sit += 1;
+    intervalMs = 16e3;
+  } else if (dominant === "work") {
+    expr.surprised += 2;
+    expr.normal += 1;
+    pose.stretch += 3;
+    pose.lie = Math.max(1, pose.lie - 1);
+    intervalMs = 1e4;
+  } else {
+    expr.happy += 3;
+    expr.content += 1;
+    pose.sit += 2;
+    pose.stretch += 1;
+    intervalMs = 12e3;
+  }
+  return { allowIdle: true, intervalMs, expr, pose, dominant };
+}
+function idleMoodFromProfile(profile) {
+  return idleMoodFromEnergy(computeEnergy(profile));
+}
+function pickWeightedKey(weights, rng = Math.random) {
+  const keys = Object.keys(weights);
+  let total = 0;
+  for (const k of keys) total += Math.max(0, weights[k]);
+  if (total <= 0) return keys[0];
+  let roll = rng() * total;
+  for (const k of keys) {
+    roll -= Math.max(0, weights[k]);
+    if (roll <= 0) return k;
+  }
+  return keys[keys.length - 1];
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
@@ -296,11 +350,14 @@ function localToday(now = /* @__PURE__ */ new Date()) {
   hatchDay,
   hatchProgressFromClicks,
   hatchProgressFromProfile,
+  idleMoodFromEnergy,
+  idleMoodFromProfile,
   localToday,
   longestFocusSec,
   markGrowing,
   phaseFromProfile,
   pickWeighted,
+  pickWeightedKey,
   resolveGenes,
   resolvePersonality,
   resolveRarity,
