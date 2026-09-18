@@ -5,7 +5,7 @@
 | Signal | Source |
 |---|---|
 | keystrokes | `uiohook-napi` keydown (count only, no characters) |
-| clicks | `uiohook-napi` click (skipped while companion focused) |
+| clicks | `uiohook-napi` click (counted always (including companion window)) |
 | mouseTravel | mousemove distance → metres |
 | windowSwitches | Cmd/Ctrl+Tab proxy (MVP) |
 | idleSec / activeSec / focusSessions / activeHours | gaps + Electron `powerMonitor` |

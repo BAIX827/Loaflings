@@ -72,3 +72,6 @@
 
 2026-09-18 (DAY-ART)
 - Six-stage hatch art: hatching / newborn / growing (+ Pet_Adult alias); HATCH_PHASES.md updated for CORE 1c8a1ff.
+
+2026-09-18 (DAY-SENSE)
+- Always count keystrokes/clicks even when companion is focused (per 老大).

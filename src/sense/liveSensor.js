@@ -160,14 +160,14 @@ class LiveSensor {
   }
 
   #onKey() {
-    if (this.shouldIgnoreClick()) return; // companion focused — own-window exclusion
+    // Always count — 老大 wants counts even while companion is focused.
     this.#markActive();
     this.profile.keystrokes += 1;
     this.persist();
   }
 
   #onClick() {
-    if (this.shouldIgnoreClick()) return;
+    // Always count — including companion window clicks.
     this.#markActive();
     this.profile.clicks += 1;
     this.persist();
