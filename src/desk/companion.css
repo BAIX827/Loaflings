@@ -20,20 +20,27 @@ body {
   justify-content: center;
   -webkit-app-region: drag;
   cursor: grab;
+  --art-w: 200px;
+  --art-h: 150px; /* 4:3 — matches cozy loaf proportions */
 }
 
 .pet {
-  width: 88%;
-  height: 58%;
+  width: var(--art-w, 200px);
+  height: var(--art-h, 150px);
+  max-width: 88%;
+  max-height: 62%;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
 }
 
-.pet svg {
+.pet svg,
+.pet img {
   width: 100%;
   height: 100%;
-  overflow: visible;
+  object-fit: contain;
+  overflow: hidden;
   filter: drop-shadow(0 6px 10px rgba(75, 58, 50, 0.18));
 }
 
@@ -158,13 +165,16 @@ body {
 
 /* —— Egg (morning / unsettled) —— */
 .egg {
-  width: 72%;
-  height: 52%;
+  width: var(--art-w, 200px);
+  height: var(--art-h, 150px);
+  max-width: 88%;
+  max-height: 62%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 0;
+  flex: 0 0 auto;
 }
 
 .egg-art {
@@ -175,15 +185,19 @@ body {
   justify-content: center;
 }
 .egg-art svg,
-.egg svg {
-  width: 78%;
-  height: 78%;
-  overflow: visible;
+.egg-art img,
+.egg svg,
+.egg img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  overflow: hidden;
   filter: drop-shadow(0 6px 10px rgba(75, 58, 50, 0.16));
   animation: egg-breathe 3.2s ease-in-out infinite;
 }
 
 .egg-caption {
+  display: none !important;
   margin: 0;
   font-size: 11px;
   color: rgba(75, 58, 50, 0.72);
@@ -320,7 +334,13 @@ body {
 /* —— Idle expression / pose / cloud FX (3-layer) —— */
 .idle-fx {
   position: absolute;
-  inset: 36px 12px 72px;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: var(--art-w, 200px);
+  height: var(--art-h, 150px);
+  max-width: 88%;
+  max-height: 62%;
   pointer-events: none;
   z-index: 2;
 }
@@ -337,10 +357,11 @@ body {
 .idle-fx-body {
   z-index: 1;
 }
-.idle-fx svg {
-  width: min(100%, 220px);
-  height: auto;
-  max-height: 100%;
+.idle-fx svg,
+.idle-fx img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   animation: idle-pop 0.35s ease-out;
 }
 @keyframes idle-pop {
@@ -350,5 +371,37 @@ body {
 .stage[data-phase='egg'] .idle-fx,
 .stage[data-phase='cracking'] .idle-fx,
 .stage[data-phase='hatching'] .idle-fx {
+  display: none !important;
+}
+
+/* —— Chrome visibility —— */
+.stage[data-chrome='0'] .chrome {
+  display: none !important;
+}
+.chrome-peek {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 5;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(75, 58, 50, 0.85);
+  background: rgba(255, 253, 252, 0.82);
+  box-shadow: 0 1px 4px rgba(75, 58, 50, 0.12);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  opacity: 0.35;
+}
+.chrome-peek:hover {
+  opacity: 1;
+}
+.stage[data-chrome='1'] .chrome-peek {
+  display: none !important;
+}
+.stage[data-hud='0'] .hud {
   display: none !important;
 }

@@ -15,15 +15,70 @@
   const badgeEl = document.getElementById('collection-badge');
   const api = window.loaflings;
 
-  const PHASE_PATHS = {
-    egg: '../../character/Pet_Egg_Master.svg',
-    cracking: '../../character/Pet_Egg_Cracking.svg',
-    hatching: '../../character/Pet_Hatching.svg',
-    newborn: '../../character/Pet_Newborn.svg',
-    growing: '../../character/Pet_Growing.svg',
-    adult: '../../character/Pet_Base_Master.svg',
+  /** Basenames under character/png (primary) then character/svg (archive). */
+  const PHASE_FILES = {
+    egg: 'Pet_Egg_Master',
+    cracking: 'Pet_Egg_Cracking',
+    hatching: 'Pet_Hatching',
+    newborn: 'Pet_Newborn',
+    growing: 'Pet_Growing',
+    adult: 'Pet_Base_Master',
   };
-  const PHASE_FALLBACKS = {};
+
+  async function resolveArtUrl(relBaseNoExt) {
+    const png = `../../character/png/${relBaseNoExt}.png`;
+    const svg = `../../character/svg/${relBaseNoExt}.svg`;
+    try {
+      const res = await fetch(png, { method: 'HEAD' });
+      if (res.ok) return { url: png, kind: 'png' };
+    } catch {
+      // fall through
+    }
+    // Some Electron builds dislike HEAD — try GET lightly via img probe fallback later
+    try {
+      const res = await fetch(png);
+      if (res.ok) return { url: png, kind: 'png' };
+    } catch {
+      // ignore
+    }
+    return { url: svg, kind: 'svg' };
+  }
+
+  async function resolveIdleUrl(id) {
+    const png = `../../character/png/idle/${id}.png`;
+    const svg = `../../character/svg/idle/${id}.svg`;
+    try {
+      const res = await fetch(png);
+      if (res.ok) return { url: png, kind: 'png' };
+    } catch {
+      // ignore
+    }
+    return { url: svg, kind: 'svg' };
+  }
+
+  function mountRaster(mount, url) {
+    const img = document.createElement('img');
+    img.alt = '';
+    img.draggable = false;
+    img.src = url;
+    mount.replaceChildren(img);
+  }
+
+  async function mountSvgText(mount, svgText, { stripGuides = true } = {}) {
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    const svg = doc.documentElement;
+    if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
+    const firstRect = svg.querySelector('rect');
+    if (firstRect) firstRect.setAttribute('fill', 'none');
+    if (stripGuides) {
+      svg.querySelectorAll('line').forEach((line) => {
+        const opacity = line.getAttribute('opacity');
+        if (opacity && Number(opacity) < 1) line.remove();
+      });
+    }
+    mount.replaceChildren(document.importNode(svg, true));
+    return svg;
+  }
 
   const IDLE_EXPR_IDS = [
     'expr_normal',
@@ -130,7 +185,7 @@
     } else {
       // newborn/growing/adult share pet mount; reload when path differs
       petLoaded = false;
-      await loadPetSvg(PHASE_PATHS[visual] || PHASE_PATHS.adult, visual);
+      await loadPetArt(visual);
     }
 
     const hudC = document.getElementById('hud-clicks');
@@ -212,71 +267,51 @@
     if (phaseArtLoaded[visual] && lastVisualPhase === visual && mount.childElementCount) {
       return true;
     }
-    let path = PHASE_PATHS[visual] || PHASE_PATHS.egg;
+    const base = PHASE_FILES[visual] || PHASE_FILES.egg;
     try {
-      let res = await fetch(path);
-      if (!res.ok && PHASE_FALLBACKS[visual]) {
-        path = PHASE_FALLBACKS[visual];
-        res = await fetch(path);
+      const art = await resolveArtUrl(base);
+      if (art.kind === 'png') {
+        mountRaster(mount, art.url);
+      } else {
+        const res = await fetch(art.url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        await mountSvgText(mount, await res.text());
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const svgText = await res.text();
-      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-      const svg = doc.documentElement;
-      if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
-      const firstRect = svg.querySelector('rect');
-      if (firstRect) firstRect.setAttribute('fill', 'none');
-      svg.querySelectorAll('line').forEach((line) => {
-        const opacity = line.getAttribute('opacity');
-        if (opacity && Number(opacity) < 1) line.remove();
-      });
-      mount.replaceChildren(document.importNode(svg, true));
       phaseArtLoaded[visual] = true;
       lastVisualPhase = visual;
       return true;
     } catch (err) {
-      setStatus(`Could not load ${visual} SVG: ${err.message || err}`);
+      setStatus(`Could not load ${visual} art: ${err.message || err}`);
       return false;
     }
   }
 
-  async function loadPetSvg(pathOverride, cacheKey) {
-    const path = pathOverride || PHASE_PATHS.adult;
-    const key = cacheKey || path;
+  async function loadPetArt(cacheKey) {
+    const key = cacheKey || 'adult';
     if (petLoaded && lastVisualPhase === key) return true;
+    const base = PHASE_FILES[key] || PHASE_FILES.adult;
     try {
-      let res = await fetch(path);
-      if (!res.ok && PHASE_FALLBACKS[cacheKey]) {
-        res = await fetch(PHASE_FALLBACKS[cacheKey]);
+      const art = await resolveArtUrl(base);
+      if (art.kind === 'png') {
+        mountRaster(petEl, art.url);
+      } else {
+        const res = await fetch(art.url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const svg = await mountSvgText(petEl, await res.text());
+        svg.querySelectorAll('g[opacity]').forEach((g) => {
+          const opacity = Number(g.getAttribute('opacity'));
+          if (opacity > 0 && opacity < 1) g.remove();
+        });
+        if (api?.parts?.fields) {
+          svg.setAttribute('data-mvp-parts', api.parts.fields.join(','));
+          svg.setAttribute('data-mvp-base', JSON.stringify(api.parts.base));
+        }
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const svgText = await res.text();
-      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-      const svg = doc.documentElement;
-      if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
-
-      const firstRect = svg.querySelector('rect');
-      if (firstRect) firstRect.setAttribute('fill', 'none');
-      svg.querySelectorAll('line').forEach((line) => {
-        const opacity = line.getAttribute('opacity');
-        if (opacity && Number(opacity) < 1) line.remove();
-      });
-      svg.querySelectorAll('g[opacity]').forEach((g) => {
-        const opacity = Number(g.getAttribute('opacity'));
-        if (opacity > 0 && opacity < 1) g.remove();
-      });
-
-      if (api?.parts?.fields) {
-        svg.setAttribute('data-mvp-parts', api.parts.fields.join(','));
-        svg.setAttribute('data-mvp-base', JSON.stringify(api.parts.base));
-      }
-
-      petEl.replaceChildren(document.importNode(svg, true));
       petLoaded = true;
       lastVisualPhase = key;
       return true;
     } catch (err) {
-      setStatus(`Could not load pet SVG: ${err.message || err}`);
+      setStatus(`Could not load pet art: ${err.message || err}`);
       return false;
     }
   }
@@ -318,7 +353,7 @@
     const payload = await loadSettle(save);
     if (!payload?.ok) return null;
 
-    const okSvg = await loadPetSvg();
+    const okSvg = await loadPetArt();
     if (!okSvg) return payload;
 
     if (api?.markDayHatched && !save) {
@@ -355,7 +390,7 @@
         return;
       }
       if (day.phase === 'hatched') {
-        const okSvg = await loadPetSvg();
+        const okSvg = await loadPetArt();
         if (okSvg) await applyPhase('adult');
         else applyPhase('egg');
         // Soft line if we already hatched today — settle without auto-save
@@ -400,9 +435,22 @@
   const opacityEl = document.getElementById('set-opacity');
   const scaleEl = document.getElementById('set-scale');
   const lockEl = document.getElementById('set-lock');
+  const showChromeEl = document.getElementById('set-show-chrome');
+  const showHudEl = document.getElementById('set-show-hud');
+  const chromePeekEl = document.getElementById('btn-chrome-peek');
 
   function setSettingsOpen(open) {
     if (settingsEl) settingsEl.hidden = !open;
+  }
+
+  function applyChromePrefs(s) {
+    const showChrome = s?.showChrome !== false;
+    const showHud = s?.showHud !== false;
+    if (stageEl) {
+      stageEl.dataset.chrome = showChrome ? '1' : '0';
+      stageEl.dataset.hud = showHud ? '1' : '0';
+    }
+    if (chromePeekEl) chromePeekEl.hidden = showChrome;
   }
 
   async function hydrateSettings() {
@@ -414,6 +462,9 @@
       if (opacityEl) opacityEl.value = String(s.opacity);
       if (scaleEl) scaleEl.value = String(s.scale);
       if (lockEl) lockEl.checked = Boolean(s.lockPosition);
+      if (showChromeEl) showChromeEl.checked = s.showChrome !== false;
+      if (showHudEl) showHudEl.checked = s.showHud !== false;
+      applyChromePrefs(s);
     } catch {
       // ignore
     }
@@ -427,6 +478,11 @@
   document.getElementById('btn-close-settings')?.addEventListener('click', () => {
     setSettingsOpen(false);
   });
+  chromePeekEl?.addEventListener('click', async () => {
+    await api?.setSettings?.({ showChrome: true });
+    await hydrateSettings();
+    setSettingsOpen(true);
+  });
   opacityEl?.addEventListener('input', () => {
     api?.setSettings?.({ opacity: Number(opacityEl.value) });
   });
@@ -435,6 +491,19 @@
   });
   lockEl?.addEventListener('change', () => {
     api?.setSettings?.({ lockPosition: Boolean(lockEl.checked) });
+  });
+  showChromeEl?.addEventListener('change', async () => {
+    const showChrome = Boolean(showChromeEl.checked);
+    await api?.setSettings?.({ showChrome });
+    applyChromePrefs({ showChrome, showHud: showHudEl ? showHudEl.checked : true });
+  });
+  showHudEl?.addEventListener('change', async () => {
+    const showHud = Boolean(showHudEl.checked);
+    await api?.setSettings?.({ showHud });
+    applyChromePrefs({
+      showChrome: showChromeEl ? showChromeEl.checked : true,
+      showHud,
+    });
   });
 
   document.getElementById('btn-quit')?.addEventListener('click', () => {
@@ -467,7 +536,7 @@
       setStatus('New day — a fresh egg');
       setTimeout(() => setStatus(''), 2400);
     } else if (day?.phase === 'hatched') {
-      const okSvg = await loadPetSvg();
+      const okSvg = await loadPetArt();
       if (okSvg) await applyPhase('adult');
     } else if (day?.phase === 'growing') {
       await applyPhase('cracking');
@@ -521,8 +590,16 @@
     });
   }
 
-  async function loadIdleSvg(id, { stripCloud = false } = {}) {
-    const res = await fetch(`../../character/idle/${id}.svg`);
+  async function loadIdleAsset(id, { stripCloud = false } = {}) {
+    const art = await resolveIdleUrl(id);
+    if (art.kind === 'png') {
+      const img = document.createElement('img');
+      img.alt = '';
+      img.draggable = false;
+      img.src = art.url;
+      return img;
+    }
+    const res = await fetch(art.url);
     if (!res.ok) throw new Error(`${id} ${res.status}`);
     const svgText = await res.text();
     const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
@@ -566,8 +643,8 @@
       return;
     }
     try {
-      const bodySvg = await loadIdleSvg(layers.body, { stripCloud: true });
-      const cloudSvg = await loadIdleSvg(layers.cloud, { stripCloud: false });
+      const bodySvg = await loadIdleAsset(layers.body, { stripCloud: true });
+      const cloudSvg = await loadIdleAsset(layers.cloud, { stripCloud: false });
       idleBodyEl.replaceChildren(bodySvg);
       idleCloudEl.replaceChildren(cloudSvg);
       idleFxEl.hidden = false;

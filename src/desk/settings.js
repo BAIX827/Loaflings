@@ -1,5 +1,5 @@
 /**
- * Companion window prefs (opacity / size / lock position).
+ * Companion window prefs.
  * Persisted under Electron userData/desk-settings.json.
  */
 const fs = require('fs');
@@ -7,10 +7,14 @@ const path = require('path');
 const { app } = require('electron');
 
 const DEFAULTS = Object.freeze({
-  version: 1,
+  version: 2,
   opacity: 1,
   scale: 1,
   lockPosition: false,
+  /** Show Day/Save/Settings/Quit chips */
+  showChrome: true,
+  /** Show clicks/keys/phase HUD */
+  showHud: true,
   /** @type {{ x: number, y: number } | null} */
   position: null,
 });
@@ -25,10 +29,12 @@ function clamp(n, lo, hi) {
 
 function normalize(raw) {
   const s = { ...DEFAULTS, ...(raw && typeof raw === 'object' ? raw : {}) };
-  s.version = 1;
+  s.version = 2;
   s.opacity = clamp(Number(s.opacity) || 1, 0.25, 1);
   s.scale = clamp(Number(s.scale) || 1, 0.6, 1.6);
   s.lockPosition = Boolean(s.lockPosition);
+  s.showChrome = s.showChrome !== false;
+  s.showHud = s.showHud !== false;
   if (
     s.position &&
     typeof s.position.x === 'number' &&

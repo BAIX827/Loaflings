@@ -14,7 +14,7 @@
     <div id="stage" class="stage" aria-label="Loaflings companion" data-phase="egg">
       <div id="egg" class="egg" role="img" aria-label="Today’s egg" hidden>
         <div id="egg-art" class="egg-art" aria-hidden="true"></div>
-        <p class="egg-caption">Today’s egg</p>
+        <p class="egg-caption" hidden aria-hidden="true"></p>
       </div>
       <div id="pet" class="pet" role="img" aria-label="Hatched Loafling" hidden></div>
       <div id="idle-fx" class="idle-fx" hidden aria-hidden="true">
@@ -29,7 +29,8 @@
         <span class="hud-label">keys</span>
         <span id="hud-phase" class="hud-phase">egg</span>
       </div>
-      <div class="chrome" role="toolbar" aria-label="Companion controls">
+      <button type="button" id="btn-chrome-peek" class="chrome-peek" title="Show controls" hidden aria-label="Show controls">⚙</button>
+      <div id="chrome" class="chrome" role="toolbar" aria-label="Companion controls">
         <button type="button" id="btn-reveal" class="chip" title="Day reveal — hatch today’s egg">
           Day
         </button>
@@ -78,7 +79,7 @@
           <li>顶上的数字会<strong>实时</strong>跳动；每 <strong>1000</strong> 次点击换一档。</li>
           <li>档位：蛋 → 裂开 → 破壳 → 初生 → 长大 → 成体。</li>
           <li>点 <strong>Day</strong> 看今天结算，<strong>Save</strong> 收进收藏；一天一只哦。</li>
-          <li><strong>Settings</strong> 可调透明/大小/锁定；<strong>Quit</strong> 退出。</li>
+          <li><strong>Settings</strong> 可调透明/大小/锁定，还能隐藏按键与计数；<strong>Quit</strong> 退出。</li>
         </ol>
         <button type="button" id="btn-guide-ok" class="chip" style="margin-top:8px">知道啦 ✿</button>
       </aside>
@@ -99,7 +100,15 @@
           <input id="set-lock" type="checkbox" />
           <span>Lock position</span>
         </label>
-        <p class="panel-note">Locked: window stays put (no drag).</p>
+        <label class="settings-row settings-check">
+          <input id="set-show-chrome" type="checkbox" />
+          <span>Show buttons</span>
+        </label>
+        <label class="settings-row settings-check">
+          <input id="set-show-hud" type="checkbox" />
+          <span>Show clicks / keys</span>
+        </label>
+        <p class="panel-note">Buttons hidden时点右上角 ⚙ 可再打开。Locked: window stays put.</p>
         <button type="button" id="btn-show-guide" class="chip" style="margin-top:8px">新手引导</button>
       </aside>
       <p id="status" class="status" hidden></p>

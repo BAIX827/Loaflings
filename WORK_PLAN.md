@@ -25,6 +25,11 @@
 
 ## Log
 
+2026-09-18 (DAY-DESK)
+- PNG-primary art paths (svg archived under character/svg/); hide egg caption; Settings toggles for buttons/HUD; unify art frame size; QA rebuild.
+
+
+
 2026-09-18 (DAY-CORE)
 - Hatch stages advance on clicks + keystrokes (1000 units/stage); HUD keys already live.
 

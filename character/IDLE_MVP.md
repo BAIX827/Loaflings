@@ -1,3 +1,4 @@
+<!-- PNG is primary runtime format; SVG archived under character/svg/ -->
 # Idle expression & action MVP (DAY-ART)
 
 Authoritative sheet: `reference/actions-expressions.png`
@@ -8,7 +9,7 @@ While the companion is idle (not busy typing bursts), randomly play a short expr
 
 ## MVP pool (v1)
 
-### Expressions (`character/idle/expr_*.svg`)
+### Expressions (`character/svg/idle/ (archive) / character/png/idle/ (primary) expr_*.svg`)
 | id | look |
 |---|---|
 | `expr_normal` | default face + blue cloud |
@@ -17,7 +18,7 @@ While the companion is idle (not busy typing bursts), randomly play a short expr
 | `expr_surprised` | big round eyes |
 | `expr_content` | soft smile |
 
-### Poses (`character/idle/pose_*.svg`)
+### Poses (`character/svg/idle/ (archive) / character/png/idle/ (primary) pose_*.svg`)
 | id | look |
 |---|---|
 | `pose_sit` | sitting |
@@ -36,7 +37,7 @@ Adult base geometry still follows `Pet_Base_Master.svg` / cozy style.
 
 Remaining expressions, cloud states, and actions from the sheet.
 
-### Cloud moods (`character/idle/cloud_*.svg`)
+### Cloud moods (`character/svg/idle/ (archive) / character/png/idle/ (primary) cloud_*.svg`)
 | id | look |
 |---|---|
 | `cloud_normal` | default blue cloud |

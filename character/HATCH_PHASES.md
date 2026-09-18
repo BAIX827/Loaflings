@@ -1,3 +1,4 @@
+<!-- PNG is primary runtime format; SVG archived under character/svg/ -->
 # Hatch visual phases (DAY-ART)
 
 Aligned with DAY-CORE `1c8a1ff` + `reference/process.png` (6 stages, 1000 clicks each):
