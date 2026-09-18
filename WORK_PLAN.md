@@ -25,6 +25,10 @@
 
 ## Log
 
+2026-09-18 (DAY-CORE)
+- Hatch visual progress: egg → cracking → hatched every 1000 clicks (hatchProgressFromProfile).
+- Docs: docs/DAY_CYCLE_MVP.md updated; DESK/ART consume phase ids.
+
 2026-09-18 (DAY-LEAD)
 - Packaged-app crash triage: accepted DESK `0db6a39` (no tsx/esbuild in .app) + SENSE `cc9181f` (profile.cjs)
 - Smoke: liveSensor + runtime/core.cjs load OK; no remaining require(*.ts) in desk/sense JS

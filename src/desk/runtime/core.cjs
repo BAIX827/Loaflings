@@ -19,6 +19,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/core/index.ts
 var index_exports = {};
 __export(index_exports, {
+  CLICKS_PER_HATCH_STAGE: () => CLICKS_PER_HATCH_STAGE,
   ENERGY_WEIGHTS: () => ENERGY_WEIGHTS,
   GENE_FIELDS: () => GENE_FIELDS,
   MVP_BASE_GENES: () => MVP_BASE_GENES,
@@ -28,6 +29,8 @@ __export(index_exports, {
   emptyProfile: () => emptyProfile,
   hashSeed: () => hashSeed,
   hatchDay: () => hatchDay,
+  hatchProgressFromClicks: () => hatchProgressFromClicks,
+  hatchProgressFromProfile: () => hatchProgressFromProfile,
   localToday: () => localToday,
   longestFocusSec: () => longestFocusSec,
   markGrowing: () => markGrowing,
@@ -202,6 +205,8 @@ function rollIdleEvents(profile, energy, rng) {
 }
 
 // src/core/dayCycle.ts
+var CLICKS_PER_HATCH_STAGE = 1e3;
+var STAGE_PHASE = ["egg", "cracking", "hatched"];
 function startEgg(date, seedKey) {
   return { date, seedKey, phase: "egg" };
 }
@@ -209,8 +214,41 @@ function markGrowing(egg) {
   if (egg.phase === "growing") return egg;
   return { ...egg, phase: "growing" };
 }
+function hatchProgressFromClicks(clicks) {
+  const c = Math.max(0, Math.floor(clicks || 0));
+  const raw = Math.floor(c / CLICKS_PER_HATCH_STAGE);
+  const stage = Math.min(2, raw);
+  const phase = STAGE_PHASE[stage];
+  const nextStageAt = stage >= 2 ? null : (stage + 1) * CLICKS_PER_HATCH_STAGE;
+  const stageFloor = stage * CLICKS_PER_HATCH_STAGE;
+  const stageProgress = stage >= 2 ? 1 : Math.min(1, (c - stageFloor) / CLICKS_PER_HATCH_STAGE);
+  return {
+    stage,
+    phase,
+    clicks: c,
+    nextStageAt,
+    clicksPerStage: CLICKS_PER_HATCH_STAGE,
+    stageProgress
+  };
+}
+function hatchProgressFromProfile(profile, alreadySaved) {
+  const progress = hatchProgressFromClicks(profile.clicks);
+  if (alreadySaved) {
+    return {
+      ...progress,
+      stage: 2,
+      phase: "hatched",
+      nextStageAt: null,
+      stageProgress: 1
+    };
+  }
+  return progress;
+}
 function phaseFromProfile(profile, alreadyHatched) {
   if (alreadyHatched) return "hatched";
+  const progress = hatchProgressFromClicks(profile.clicks);
+  if (progress.stage >= 2) return "hatched";
+  if (progress.stage >= 1) return "growing";
   const active = profile.keystrokes + profile.clicks + profile.mouseTravel + profile.activeSec > 0;
   return active ? "growing" : "egg";
 }
@@ -234,6 +272,7 @@ function localToday(now = /* @__PURE__ */ new Date()) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  CLICKS_PER_HATCH_STAGE,
   ENERGY_WEIGHTS,
   GENE_FIELDS,
   MVP_BASE_GENES,
@@ -243,6 +282,8 @@ function localToday(now = /* @__PURE__ */ new Date()) {
   emptyProfile,
   hashSeed,
   hatchDay,
+  hatchProgressFromClicks,
+  hatchProgressFromProfile,
   localToday,
   longestFocusSec,
   markGrowing,

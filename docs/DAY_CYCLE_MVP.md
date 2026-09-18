@@ -1,35 +1,48 @@
 # Loaflings MVP — Daily Egg Cycle (DAY-CORE)
 
-Confirmed with 老大: **one egg per day → hatch one pet → next day new egg**.
+Confirmed with 老大:
 
-## Loop
+1. **One egg per day** → grow from behaviour → hatch one Loafling → next day new egg.
+2. **Visual hatch progress**: egg → cracking → fully hatched, **one stage per 1000 clicks**.
 
-```text
-start of local day     → egg (embryo / undefined)
-computer behaviour     → growing (SENSE profile accumulates)
-end of day / Save      → hatchDay(profile) → one Loafling in collection
-next local date        → shouldStartNewEgg → startEgg(today)
+## Visual stages (companion art)
+
+| Stage | Phase id | Clicks | Art |
+|------:|----------|-------:|-----|
+| 0 | `egg` | 0–999 | whole egg |
+| 1 | `cracking` | 1000–1999 | slightly hatched / cracked |
+| 2 | `hatched` | 2000+ | fully hatched look |
+
+Constant: `CLICKS_PER_HATCH_STAGE = 1000` in `src/core/dayCycle.ts`.
+
+```ts
+hatchProgressFromProfile(profile, alreadySaved)
+// → { stage, phase, clicks, nextStageAt, stageProgress, clicksPerStage }
 ```
 
-Never fold multiple days into one creature.
+- @DAY-DESK: poll live profile clicks, switch @DAY-ART assets by `phase`.
+- @DAY-ART: provide SVG/PNG for `egg` / `cracking` / `hatched`.
+- Threshold change: 老大 says the number; CORE updates the constant.
 
-## API
+`alreadySaved === true` forces visual `hatched` after Day/Save into collection.
 
-| Function | Owner use |
-|---|---|
-| `startEgg(date, seedKey)` | DESK / SENSE on day roll |
-| `phaseFromProfile(profile, alreadyHatched)` | DESK UI: egg vs growing vs hatched |
-| `hatchDay(profile)` | DESK Day/Save reveal — wraps `settleDay()` |
-| `shouldStartNewEgg(lastDate, today)` | Align with SENSE `ensureToday()` |
-| `localToday()` | Helper for local `YYYY-MM-DD` |
+## Day / Save (genes + collection)
 
-## Persistence rules (DESK)
+```text
+hatchDay(profile) → one DaylingResult for profile.date
+```
 
-- Collection entries keyed by `date` (one hatch per date)
-- Refusing a second hatch for the same `date` is correct
-- Live profile date must match egg date before hatch
+Visual stage 2 ≠ necessarily saved. Save still calls `hatchDay()` once per date.
+
+## Cross-day
+
+```text
+shouldStartNewEgg(lastDate, today) + SENSE ensureToday()
+```
+
+Never merge multiple days into one creature.
 
 ## Related
 
 - Genes / energy: `docs/GENE_CONTRACT_MVP.md`
-- Sense day boundary: `ensureToday()` in live sensor
+- Sense clicks field: live profile `clicks`
