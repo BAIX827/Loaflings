@@ -121,9 +121,31 @@
   }
 
   function displayName(result) {
-    const p = result?.personality || '?';
-    const r = result?.rarity || '?';
-    return `${p} · ${r}`;
+    const p = labelPersonality(result?.personality);
+    const rarity = labelRarity(result?.rarity);
+    return `${p} · ${rarity}`;
+  }
+
+  function labelPersonality(id) {
+    try {
+      return api?.i18n?.labelId?.(locale, 'personality', id) || id || '—';
+    } catch {
+      return id || '—';
+    }
+  }
+
+  function labelRarity(id) {
+    try {
+      return api?.i18n?.labelId?.(locale, 'rarity', id) || id || '—';
+    } catch {
+      return id || '—';
+    }
+  }
+
+  function labelSource(src) {
+    const key = `panel.source.${src}`;
+    const hit = tr(key);
+    return hit === key ? (src || '—') : hit;
   }
 
   /**
@@ -205,10 +227,11 @@
   function fillPanel(payload) {
     const result = payload?.result || {};
     const g = result.genes || {};
+    if (panelTitle) panelTitle.textContent = tr('panel.title');
     document.getElementById('f-name').textContent = displayName(result);
-    document.getElementById('f-type').textContent = result.personality || '—';
-    document.getElementById('f-rarity').textContent = result.rarity || '—';
-    document.getElementById('f-personality').textContent = result.personality || '—';
+    document.getElementById('f-type').textContent = labelPersonality(result.personality);
+    document.getElementById('f-rarity').textContent = labelRarity(result.rarity);
+    document.getElementById('f-personality').textContent = labelPersonality(result.personality);
     document.getElementById('f-genes').textContent = [
       g.body,
       g.cloud,
@@ -220,7 +243,7 @@
     document.getElementById('f-traits').textContent = Array.isArray(result.traits)
       ? result.traits.join(', ') || '—'
       : '—';
-    document.getElementById('f-source').textContent = payload?.source || '—';
+    document.getElementById('f-source').textContent = labelSource(payload?.source);
 
     const note = result.events?.[0]?.note || '';
     const date = result.date || '';
@@ -680,6 +703,13 @@
     locale = localeEl.value === 'en' ? 'en' : 'zh';
     await api?.setSettings?.({ locale });
     applyLocale();
+    if (lastPayload && panelEl && !panelEl.hidden) fillPanel(lastPayload);
+    if (viewingEntry) {
+      const banner = document.getElementById('view-banner');
+      if (banner && !banner.hidden) {
+        banner.textContent = `${tr('bag.viewing')} ${viewingEntry.date} · ${viewingEntry.name || ''}`;
+      }
+    }
   });
 
   document.getElementById('btn-quit')?.addEventListener('click', () => {

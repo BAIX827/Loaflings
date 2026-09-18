@@ -19,6 +19,16 @@ const STRINGS = {
     'settings.guide': '新手引导',
     'settings.note': '隐藏按键后点右上角 ⚙ 可再打开。',
     'panel.title': '今日孵化',
+    'panel.name': '名字',
+    'panel.type': '类型',
+    'panel.rarity': '品质',
+    'panel.personality': '性格',
+    'panel.genes': '基因',
+    'panel.traits': '特质',
+    'panel.source': '来源',
+    'panel.source.live': '今日感应',
+    'panel.source.demo': '演示',
+    'panel.source.collection': '背包',
     'bag.title': '背包 · 日历',
     'bag.cal': '日历',
     'bag.list': '收藏',
@@ -27,6 +37,14 @@ const STRINGS = {
     'bag.viewing': '正在看',
     'guide.title': '嗨～我是摸鱼灵蛋',
     'guide.ok': '知道啦 ✿',
+    'rarity.common': '普通',
+    'rarity.rare': '稀有',
+    'rarity.epic': '史诗',
+    'rarity.legendary': '传说',
+    'personality.builder': '建造者',
+    'personality.explorer': '探索者',
+    'personality.dreamer': '梦想家',
+    'personality.balanced': '均衡',
   },
   en: {
     'hud.hits': 'hits',
@@ -45,6 +63,16 @@ const STRINGS = {
     'settings.guide': 'Guide',
     'settings.note': 'If buttons are hidden, tap ⚙ top-right to reopen.',
     'panel.title': 'Day hatch',
+    'panel.name': 'Name',
+    'panel.type': 'Type',
+    'panel.rarity': 'Rarity',
+    'panel.personality': 'Personality',
+    'panel.genes': 'Genes',
+    'panel.traits': 'Traits',
+    'panel.source': 'Source',
+    'panel.source.live': 'Live sense',
+    'panel.source.demo': 'Demo',
+    'panel.source.collection': 'Pack',
     'bag.title': 'Pack · Calendar',
     'bag.cal': 'Calendar',
     'bag.list': 'Collection',
@@ -53,12 +81,28 @@ const STRINGS = {
     'bag.viewing': 'Viewing',
     'guide.title': 'Hi — I’m your Loafling egg',
     'guide.ok': 'Got it ✿',
+    'rarity.common': 'Common',
+    'rarity.rare': 'Rare',
+    'rarity.epic': 'Epic',
+    'rarity.legendary': 'Legendary',
+    'personality.builder': 'Builder',
+    'personality.explorer': 'Explorer',
+    'personality.dreamer': 'Dreamer',
+    'personality.balanced': 'Balanced',
   },
 };
 
 function t(locale, key) {
   const pack = STRINGS[locale] || STRINGS.zh;
   return pack[key] || STRINGS.en[key] || key;
+}
+
+/** Map CORE id → localized label; unknown ids pass through. */
+function labelId(locale, kind, id) {
+  if (!id) return '—';
+  const key = `${kind}.${String(id).toLowerCase()}`;
+  const hit = t(locale, key);
+  return hit === key ? String(id) : hit;
 }
 
 function applyDomI18n(locale) {
@@ -70,4 +114,4 @@ function applyDomI18n(locale) {
   document.documentElement.lang = locale === 'en' ? 'en' : 'zh-CN';
 }
 
-module.exports = { STRINGS, t, applyDomI18n };
+module.exports = { STRINGS, t, labelId, applyDomI18n };
