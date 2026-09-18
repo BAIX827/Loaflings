@@ -54,3 +54,6 @@
 
 2026-09-18 (DAY-SENSE)
 - Fix packaged app crash: liveSensor requires profile.cjs (not .ts). Unexpected token export.
+
+2026-09-18 (DAY-ART)
+- Hatch visuals: egg / cracking / hatched → Pet_Egg_Master, Pet_Egg_Cracking, Pet_Base_Master (+ HATCH_PHASES.md).

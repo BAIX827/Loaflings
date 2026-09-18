@@ -1,0 +1,53 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#FFFDFC"/>
+  <line opacity="0.35" x1="600" y1="80" x2="600" y2="760" stroke="#CFC7C2" stroke-dasharray="8 8"/>
+  <line opacity="0.35" x1="320" y1="720" x2="880" y2="720" stroke="#CFC7C2" stroke-dasharray="8 8"/>
+
+  <!-- lower shell half -->
+  <path d="M390 470
+           C390 590 470 720 600 720
+           C730 720 810 590 810 470
+           C810 430 780 400 740 385
+           L700 470
+           L600 430
+           L500 470
+           L460 385
+           C420 400 390 430 390 470Z"
+        fill="#FFF8F1" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- upper shell pieces (slightly open) -->
+  <path d="M400 455
+           C410 320 490 210 600 210
+           C640 210 675 230 700 260
+           L660 360
+           L560 340
+           L480 400
+           Z"
+        fill="#FFF8F1" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M720 265
+           C760 300 810 360 810 450
+           L740 400
+           L700 330
+           Z"
+        fill="#FFF8F1" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- crack lines -->
+  <path d="M560 340 L600 430 L660 360" stroke="#4B3A32" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M500 470 L560 500" stroke="#4B3A32" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+  <path d="M700 470 L650 510" stroke="#4B3A32" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- peek: soft dough blob + tiny face inside crack -->
+  <ellipse cx="600" cy="400" rx="70" ry="48" fill="#FFF8F1" stroke="#4B3A32" stroke-width="6"/>
+  <ellipse cx="575" cy="395" rx="7" ry="10" fill="#4B3A32"/>
+  <ellipse cx="625" cy="395" rx="7" ry="10" fill="#4B3A32"/>
+  <ellipse cx="560" cy="412" rx="14" ry="7" fill="#FFD6D6"/>
+  <ellipse cx="640" cy="412" rx="14" ry="7" fill="#FFD6D6"/>
+  <path d="M588 418 C588 418 595 426 600 418 C600 418 605 426 612 418" stroke="#4B3A32" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- floating cloud (signature) -->
+  <circle cx="521" cy="120" r="42.5" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="596.5" cy="97.5" r="60" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="671" cy="120" r="42.5" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="600.5" cy="134.5" r="50" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="601" cy="206" r="7" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+</svg>

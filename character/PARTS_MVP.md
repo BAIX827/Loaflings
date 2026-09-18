@@ -42,3 +42,11 @@ Pet art may be replaced later. Keep these four IDs stable unless @DAY-LEAD / @DA
 - Raster preview: `src/art/Egg.png`
 - Companion UI uses cozy egg+cloud inline SVG in `src/desk/index.html` (aligned to master palette)
 - Egg has no face / limbs — undefined day form until hatch
+
+## Hatch phases (daytime look)
+
+See `HATCH_PHASES.md`.
+
+- `egg` → `Pet_Egg_Master.svg`
+- `cracking` → `Pet_Egg_Cracking.svg`
+- `hatched` → `Pet_Base_Master.svg`
