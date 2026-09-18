@@ -24,9 +24,17 @@ const CHARACTER_ASSETS = Object.freeze({
   partsDoc: 'character/PARTS_MVP.md',
 });
 
+/** Daytime hatch look — CORE egg / cracking / hatched (character/HATCH_PHASES.md) */
+const HATCH_PHASE_ASSETS = Object.freeze({
+  egg: 'character/Pet_Egg_Master.svg',
+  cracking: 'character/Pet_Egg_Cracking.svg',
+  hatched: 'character/Pet_Base_Master.svg',
+});
+
 module.exports = {
   MVP_PART_FIELDS,
   MVP_BASE_PARTS,
   MVP_ASSEMBLY_ORDER,
   CHARACTER_ASSETS,
+  HATCH_PHASE_ASSETS,
 };

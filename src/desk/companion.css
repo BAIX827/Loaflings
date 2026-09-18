@@ -229,3 +229,15 @@ body {
 .stage[data-growing='1'] .egg svg {
   animation-duration: 2.4s;
 }
+
+
+/* —— Cracking stage (1000–1999 clicks) —— */
+.stage[data-phase='cracking'] .egg {
+  display: block;
+}
+.stage[data-phase='cracking'] .pet {
+  display: none;
+}
+.stage[data-phase='cracking'] .egg-caption {
+  opacity: 0.95;
+}

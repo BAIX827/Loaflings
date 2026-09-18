@@ -15,15 +15,20 @@
   const badgeEl = document.getElementById('collection-badge');
   const api = window.loaflings;
 
-  const masterPath = '../../character/Pet_Base_Master.svg';
-  const eggPath = '../../character/Pet_Egg_Master.svg';
+  const PHASE_PATHS = {
+    egg: '../../character/Pet_Egg_Master.svg',
+    cracking: '../../character/Pet_Egg_Cracking.svg',
+    hatched: '../../character/Pet_Base_Master.svg',
+  };
 
   /** @type {object | null} */
   let lastPayload = null;
-  /** @type {'egg' | 'growing' | 'hatched'} */
+  /** @type {'egg' | 'cracking' | 'hatched'} */
   let phase = 'egg';
   let petLoaded = false;
-  let eggLoaded = false;
+  /** @type {Record<string, boolean>} */
+  const phaseArtLoaded = { egg: false, cracking: false, hatched: false };
+  let lastVisualPhase = '';
 
   function setStatus(msg) {
     if (!msg) {
@@ -42,32 +47,44 @@
   }
 
   /**
-   * CORE phases: egg | growing | hatched.
-   * Egg art for egg+growing; Pet_Base_Master only after hatch.
-   * @param {'egg' | 'growing' | 'hatched'} next
-   * @param {{ caption?: string }} [opts]
+   * Visual daytime phases from CORE hatchProgress: egg | cracking | hatched.
+   * Day/Save still gates collection via hatchDay.
+   * @param {'egg' | 'cracking' | 'hatched' | 'growing'} next
+   * @param {{ caption?: string, clicks?: number, nextAt?: number|null }} [opts]
    */
-  function applyPhase(next, opts = {}) {
-    if (next === 'hatched') phase = 'hatched';
-    else if (next === 'growing') phase = 'growing';
-    else phase = 'egg';
-    // CSS: egg chrome for egg+growing; pet only when hatched
-    stageEl.dataset.phase = phase === 'hatched' ? 'hatched' : 'egg';
-    if (phase === 'growing') stageEl.dataset.growing = '1';
+  async function applyPhase(next, opts = {}) {
+    let visual = next;
+    if (next === 'growing') visual = 'cracking';
+    if (visual !== 'hatched' && visual !== 'cracking') visual = 'egg';
+    phase = visual;
+    stageEl.dataset.phase = visual;
+    if (visual === 'cracking') stageEl.dataset.growing = '1';
     else delete stageEl.dataset.growing;
-    if (eggEl) {
-      eggEl.hidden = phase === 'hatched';
-      const cap = eggEl.querySelector('.egg-caption');
-      if (cap) {
-        if (opts.caption) cap.textContent = opts.caption;
-        else if (phase === 'growing') cap.textContent = 'Growing…';
-        else cap.textContent = "Today’s egg";
-      }
+
+    const showPet = visual === 'hatched';
+    if (eggEl) eggEl.hidden = showPet;
+    if (petEl) petEl.hidden = !showPet;
+
+    const cap = eggEl && eggEl.querySelector('.egg-caption');
+    if (cap) {
+      if (opts.caption) cap.textContent = opts.caption;
+      else if (visual === 'cracking') cap.textContent = 'Cracking…';
+      else cap.textContent = "Today’s egg";
     }
-    if (petEl) petEl.hidden = phase !== 'hatched';
-    if (phase !== 'hatched') {
-      revealEl.hidden = true;
-      setPanelOpen(false);
+
+    if (visual === 'egg' || visual === 'cracking') {
+      await loadPhaseArt(visual);
+    } else {
+      await loadPetSvg();
+    }
+
+    if (typeof opts.clicks === 'number') {
+      const nextAt = opts.nextAt;
+      setStatus(
+        nextAt == null
+          ? `${opts.clicks} clicks · ${visual}`
+          : `${opts.clicks} clicks · ${visual} (next ${nextAt})`,
+      );
     }
   }
 
@@ -125,30 +142,32 @@
   }
 
 
-  async function loadEggSvg() {
-    if (eggLoaded) return true;
+  async function loadPhaseArt(visual) {
     const mount = document.getElementById('egg-art');
     if (!mount) return false;
+    if (phaseArtLoaded[visual] && lastVisualPhase === visual && mount.childElementCount) {
+      return true;
+    }
+    const path = PHASE_PATHS[visual] || PHASE_PATHS.egg;
     try {
-      const res = await fetch(eggPath);
+      const res = await fetch(path);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const svgText = await res.text();
       const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
       const svg = doc.documentElement;
       if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
-
       const firstRect = svg.querySelector('rect');
       if (firstRect) firstRect.setAttribute('fill', 'none');
       svg.querySelectorAll('line').forEach((line) => {
         const opacity = line.getAttribute('opacity');
         if (opacity && Number(opacity) < 1) line.remove();
       });
-
       mount.replaceChildren(document.importNode(svg, true));
-      eggLoaded = true;
+      phaseArtLoaded[visual] = true;
+      lastVisualPhase = visual;
       return true;
     } catch (err) {
-      setStatus(`Could not load egg SVG: ${err.message || err}`);
+      setStatus(`Could not load ${visual} SVG: ${err.message || err}`);
       return false;
     }
   }
@@ -236,7 +255,7 @@
       }
     }
 
-    applyPhase('hatched');
+    await applyPhase('hatched');
     if (openPanel) setPanelOpen(true);
     setStatus(save ? `Hatched & saved · collection ${payload.count ?? '?'}` : 'Hatched');
     setTimeout(() => setStatus(''), 2200);
@@ -245,41 +264,40 @@
 
   async function syncFromMain() {
     if (!api?.getDayState) {
-      applyPhase('egg');
+      await applyPhase('egg');
       return;
     }
     try {
       const day = await api.getDayState();
       if (!day?.ok) {
-        applyPhase('egg');
+        await applyPhase('egg');
         return;
       }
       if (day.newEgg) {
         lastPayload = null;
-        applyPhase('egg', { caption: 'New day · fresh egg' });
+        await applyPhase('egg', { caption: 'New day · fresh egg' });
         setStatus('New day — a fresh egg');
         setTimeout(() => setStatus(''), 2400);
         return;
       }
       if (day.phase === 'hatched') {
         const okSvg = await loadPetSvg();
-        if (okSvg) applyPhase('hatched');
+        if (okSvg) await applyPhase('hatched');
         else applyPhase('egg');
         // Soft line if we already hatched today — settle without auto-save
         if (!lastPayload) await loadSettle(false);
       } else if (day.phase === 'growing') {
-        applyPhase('growing');
+        await applyPhase('cracking');
       } else {
-        applyPhase('egg');
+        await applyPhase('egg');
       }
     } catch {
-      applyPhase('egg');
+      await applyPhase('egg');
     }
   }
 
   // Morning default: egg (no auto-hatch on boot)
-  await loadEggSvg();
-  applyPhase('egg');
+  await applyPhase('egg');
   await refreshBadge();
   await syncFromMain();
 
@@ -302,6 +320,10 @@
     setPanelOpen(false);
   });
 
+  document.getElementById('btn-quit')?.addEventListener('click', () => {
+    api?.quitApp?.();
+  });
+
   document.getElementById('btn-collect')?.addEventListener('click', async () => {
     if (phase === 'egg') {
       await hatch({ save: true, openPanel: true });
@@ -310,7 +332,7 @@
     setStatus('');
     const payload = await loadSettle(true);
     if (payload?.ok) {
-      applyPhase('hatched');
+      await applyPhase('hatched');
       setPanelOpen(true);
       setStatus(`Saved · collection ${payload.count ?? '?'}`);
       setTimeout(() => setStatus(''), 2200);
@@ -324,16 +346,34 @@
   api?.onDayState?.(async (day) => {
     if (day?.newEgg || day?.phase === 'egg') {
       lastPayload = null;
-      applyPhase('egg', { caption: 'New day · fresh egg' });
+      await applyPhase('egg', { caption: 'New day · fresh egg' });
       setStatus('New day — a fresh egg');
       setTimeout(() => setStatus(''), 2400);
     } else if (day?.phase === 'hatched') {
       const okSvg = await loadPetSvg();
-      if (okSvg) applyPhase('hatched');
+      if (okSvg) await applyPhase('hatched');
     } else if (day?.phase === 'growing') {
-      applyPhase('growing');
+      await applyPhase('cracking');
     }
   });
+  async function refreshHatchProgress() {
+    if (!api?.getHatchProgress) return;
+    try {
+      const hp = await api.getHatchProgress();
+      if (!hp?.ok || !hp.progress) return;
+      const visual = hp.alreadySaved ? 'hatched' : hp.progress.phase;
+      await applyPhase(visual, {
+        clicks: hp.clicks,
+        nextAt: hp.progress.nextStageAt,
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  await refreshHatchProgress();
+  setInterval(refreshHatchProgress, 2500);
+
 })();
 
 

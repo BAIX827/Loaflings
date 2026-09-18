@@ -20,6 +20,9 @@ const { ensureDayState, markHatched, markGrowing } = require('./dayState');
 const {
   phaseFromProfile,
   getApiSource,
+  hatchProgressFromProfile,
+  hatchProgressFromClicks,
+  clicksPerHatchStage,
 } = require('./hooks/coreDayCycle');
 
 const ROOT = path.join(__dirname, '../..');
@@ -190,6 +193,52 @@ ipcMain.handle('loaflings:get-sense-status', () => {
 });
 
 ipcMain.handle('loaflings:open-accessibility', async () => openAccessibilitySettings());
+
+ipcMain.handle('loaflings:quit', () => {
+  app.quit();
+  return { ok: true };
+});
+
+
+ipcMain.handle('loaflings:get-hatch-progress', () => {
+  try {
+    syncDayBoundary();
+    const day = ensureDayState();
+    const alreadySaved = Boolean(day.hatchedAt);
+    let profile = null;
+    try {
+      profile = getLiveProfile();
+    } catch {
+      profile = null;
+    }
+    if (!profile) {
+      // no live yet — egg stage with 0 clicks
+      const progress = hatchProgressFromClicks(0);
+      return {
+        ok: true,
+        source: 'idle',
+        alreadySaved,
+        day,
+        progress,
+        clicks: 0,
+        clicksPerStage: clicksPerHatchStage(),
+      };
+    }
+    const progress = hatchProgressFromProfile(profile, alreadySaved);
+    return {
+      ok: true,
+      source: 'live',
+      alreadySaved,
+      day,
+      progress,
+      clicks: profile.clicks || 0,
+      clicksPerStage: clicksPerHatchStage(),
+      keystrokes: profile.keystrokes || 0,
+    };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
 
 ipcMain.handle('loaflings:get-live-profile', () => {
   try {

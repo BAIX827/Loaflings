@@ -14,6 +14,7 @@ function loadCore() {
   try {
     const core = require('../runtime/core.cjs');
     settleDayFn = core.settleDay;
+    // visual progress helpers kept on module via core ref below
     if (typeof core.hatchDay === 'function') {
       hatchDayFn = core.hatchDay;
       phaseFromProfileFn = core.phaseFromProfile;
@@ -82,6 +83,21 @@ function getApiSource() {
   return apiSource;
 }
 
+function hatchProgressFromProfile(profile, alreadySaved) {
+  const core = require('../runtime/core.cjs');
+  return core.hatchProgressFromProfile(profile, alreadySaved);
+}
+
+function hatchProgressFromClicks(clicks) {
+  const core = require('../runtime/core.cjs');
+  return core.hatchProgressFromClicks(clicks);
+}
+
+function clicksPerHatchStage() {
+  const core = require('../runtime/core.cjs');
+  return core.CLICKS_PER_HATCH_STAGE;
+}
+
 module.exports = {
   hatchDay,
   phaseFromProfile,
@@ -89,4 +105,7 @@ module.exports = {
   localToday,
   settleOrHatch,
   getApiSource,
+  hatchProgressFromProfile,
+  hatchProgressFromClicks,
+  clicksPerHatchStage,
 };

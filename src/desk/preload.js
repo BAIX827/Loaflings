@@ -7,6 +7,7 @@ const {
   MVP_BASE_PARTS,
   MVP_ASSEMBLY_ORDER,
   CHARACTER_ASSETS,
+  HATCH_PHASE_ASSETS,
 } = require('./mvpParts');
 
 contextBridge.exposeInMainWorld('loaflings', {
@@ -19,6 +20,7 @@ contextBridge.exposeInMainWorld('loaflings', {
     base: MVP_BASE_PARTS,
     order: MVP_ASSEMBLY_ORDER,
     assets: CHARACTER_ASSETS,
+    hatch: HATCH_PHASE_ASSETS,
   },
   /**
    * Loads src/sense/fixtures/demo-day.json → assertProfileShape → settleDay().
@@ -29,6 +31,9 @@ contextBridge.exposeInMainWorld('loaflings', {
   },
   getLiveProfile() {
     return ipcRenderer.invoke('loaflings:get-live-profile');
+  },
+  getHatchProgress() {
+    return ipcRenderer.invoke('loaflings:get-hatch-progress');
   },
   getLiveSettle() {
     return ipcRenderer.invoke('loaflings:get-live-settle');
@@ -66,5 +71,8 @@ contextBridge.exposeInMainWorld('loaflings', {
   },
   openAccessibilitySettings() {
     return ipcRenderer.invoke('loaflings:open-accessibility');
+  },
+  quitApp() {
+    return ipcRenderer.invoke('loaflings:quit');
   },
 });
