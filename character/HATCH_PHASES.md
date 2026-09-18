@@ -1,17 +1,14 @@
-# Hatch visual phases
+# Hatch visual phases (DAY-ART)
 
-**Source of truth:** DAY-CORE `hatchProgressFromProfile` + `docs/DAY_CYCLE_MVP.md`  
-**Board:** `reference/process.png` (6 stages)
+Aligned with DAY-CORE `1c8a1ff` + `reference/process.png` (6 stages, 1000 clicks each):
 
-| Stage | Phase | Clicks | Asset (ART fills gaps) |
-|------:|-------|-------:|------------------------|
-| 0 | `egg` | 0–999 | `character/Pet_Egg_Master.svg` |
-| 1 | `cracking` | 1000–1999 | `character/Pet_Egg_Cracking.svg` |
-| 2 | `hatching` | 2000–2999 | _(ART TBD — peek from shell)_ |
-| 3 | `newborn` | 3000–3999 | _(ART TBD)_ |
-| 4 | `growing` | 4000–4999 | _(ART TBD)_ |
-| 5 | `adult` | 5000+ | `character/Pet_Base_Master.svg` |
+| Phase | Clicks | Asset |
+|---|---|---|
+| `egg` | 0–999 | `character/Pet_Egg_Master.svg` |
+| `cracking` | 1000–1999 | `character/Pet_Egg_Cracking.svg` |
+| `hatching` | 2000–2999 | `character/Pet_Hatching.svg` |
+| `newborn` | 3000–3999 | `character/Pet_Newborn.svg` |
+| `growing` | 4000–4999 | `character/Pet_Growing.svg` |
+| `adult` | 5000+ | `character/Pet_Base_Master.svg` (also `Pet_Adult.svg`) |
 
-Notes:
-- Day-end Save still uses `hatchDay()` for collection — these are daytime look stages.
-- Do not invent extra phase ids without LEAD/CORE.
+Day-end Save still uses `hatchDay()` for collection. Style: `STYLE_NOTES.md` + `process.png`.

@@ -30,11 +30,14 @@ export const CHARACTER_ASSETS = {
   partsDoc: 'character/PARTS_MVP.md',
 } as const;
 
-/** Daytime hatch look — CORE phases egg / cracking / hatched */
+/** Daytime hatch look — CORE 6 phases (1000 clicks each) */
 export const HATCH_PHASE_ASSETS = {
   egg: 'character/Pet_Egg_Master.svg',
   cracking: 'character/Pet_Egg_Cracking.svg',
-  hatched: 'character/Pet_Base_Master.svg',
+  hatching: 'character/Pet_Hatching.svg',
+  newborn: 'character/Pet_Newborn.svg',
+  growing: 'character/Pet_Growing.svg',
+  adult: 'character/Pet_Base_Master.svg',
 } as const;
 
 export type HatchPhaseVisual = keyof typeof HATCH_PHASE_ASSETS;

@@ -1,0 +1,30 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#FFFDFC"/>
+  <!-- body (between newborn and adult) -->
+  <path d="M360 560
+           C340 500 360 430 420 390
+           C460 340 540 310 600 310
+           C660 310 740 340 780 390
+           C840 430 860 500 840 560
+           C820 610 760 640 700 630
+           C660 655 540 655 500 630
+           C440 640 380 610 360 560Z"
+        fill="#FFFEF9" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"/>
+  <!-- paws -->
+  <ellipse cx="480" cy="620" rx="48" ry="34" fill="#FFFEF9" stroke="#4B3A32" stroke-width="7"/>
+  <ellipse cx="720" cy="620" rx="48" ry="34" fill="#FFFEF9" stroke="#4B3A32" stroke-width="7"/>
+  <!-- soft peach hint of tail starting -->
+  <ellipse cx="820" cy="540" rx="36" ry="46" fill="#FFE9DB" stroke="#4B3A32" stroke-width="6" transform="rotate(10 820 540)"/>
+  <!-- face -->
+  <ellipse cx="500" cy="470" rx="12" ry="18" fill="#4B3A32"/>
+  <ellipse cx="700" cy="470" rx="12" ry="18" fill="#4B3A32"/>
+  <ellipse cx="480" cy="505" rx="28" ry="14" fill="#FFD6D6"/>
+  <ellipse cx="720" cy="505" rx="28" ry="14" fill="#FFD6D6"/>
+  <path d="M570 500 C570 500 585 515 600 500 C600 500 615 515 630 500" stroke="#4B3A32" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- medium cloud -->
+  <circle cx="530" cy="170" r="36" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="595" cy="145" r="52" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="660" cy="170" r="36" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="600" cy="185" r="42" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="600" cy="250" r="6" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+</svg>

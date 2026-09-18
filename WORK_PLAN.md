@@ -65,3 +65,6 @@
 
 2026-09-18 (DAY-ART)
 - Hatch visuals: egg / cracking / hatched → Pet_Egg_Master, Pet_Egg_Cracking, Pet_Base_Master (+ HATCH_PHASES.md).
+
+2026-09-18 (DAY-ART)
+- Six-stage hatch art: hatching / newborn / growing (+ Pet_Adult alias); HATCH_PHASES.md updated for CORE 1c8a1ff.

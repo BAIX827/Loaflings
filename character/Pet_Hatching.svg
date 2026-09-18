@@ -1,0 +1,20 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#FFFDFC"/>
+  <!-- lower shell cup -->
+  <path d="M400 480 C400 620 490 730 600 730 C710 730 800 620 800 480 C800 430 760 400 720 390 L680 500 L600 460 L520 500 L480 390 C440 400 400 430 400 480Z"
+        fill="#F5E6D3" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"/>
+  <!-- lifted top shell -->
+  <path d="M430 400 C450 280 520 200 600 200 C680 200 750 280 770 400 L700 360 L600 320 L500 360 Z"
+        fill="#F5E6D3" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"
+        transform="rotate(-12 600 300)"/>
+  <!-- peek body -->
+  <ellipse cx="600" cy="470" rx="95" ry="70" fill="#FFFEF9" stroke="#4B3A32" stroke-width="7"/>
+  <ellipse cx="565" cy="460" rx="9" ry="13" fill="#4B3A32"/>
+  <ellipse cx="635" cy="460" rx="9" ry="13" fill="#4B3A32"/>
+  <path d="M590 485 C590 485 597 493 600 485 C600 485 603 493 610 485" stroke="#4B3A32" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- tiny cloud just appearing -->
+  <circle cx="575" cy="140" r="28" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+  <circle cx="610" cy="125" r="38" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+  <circle cx="645" cy="140" r="28" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+  <circle cx="610" cy="190" r="5" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="3"/>
+</svg>

@@ -1,0 +1,23 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#FFFDFC"/>
+  <!-- shell fragments -->
+  <path d="M340 620 L390 580 L420 640 Z" fill="#F5E6D3" stroke="#4B3A32" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M820 600 L870 630 L790 650 Z" fill="#F5E6D3" stroke="#4B3A32" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M700 680 L740 650 L760 700 Z" fill="#F5E6D3" stroke="#4B3A32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- tiny body -->
+  <ellipse cx="600" cy="520" rx="130" ry="100" fill="#FFFEF9" stroke="#4B3A32" stroke-width="8" stroke-linejoin="round"/>
+  <!-- tiny paws -->
+  <ellipse cx="545" cy="590" rx="28" ry="20" fill="#FFFEF9" stroke="#4B3A32" stroke-width="6"/>
+  <ellipse cx="655" cy="590" rx="28" ry="20" fill="#FFFEF9" stroke="#4B3A32" stroke-width="6"/>
+  <!-- face -->
+  <ellipse cx="560" cy="500" rx="8" ry="11" fill="#4B3A32"/>
+  <ellipse cx="640" cy="500" rx="8" ry="11" fill="#4B3A32"/>
+  <ellipse cx="545" cy="520" rx="16" ry="8" fill="#FFD6D6" opacity="0.7"/>
+  <ellipse cx="655" cy="520" rx="16" ry="8" fill="#FFD6D6" opacity="0.7"/>
+  <path d="M585 525 C585 525 592 532 600 525 C600 525 608 532 615 525" stroke="#4B3A32" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- tiny cloud -->
+  <circle cx="575" cy="280" r="22" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+  <circle cx="605" cy="268" r="30" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+  <circle cx="635" cy="280" r="22" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+  <circle cx="605" cy="320" r="5" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="3"/>
+</svg>
