@@ -25,6 +25,9 @@
         <button type="button" id="btn-collect" class="chip" title="Save hatched Loafling to collection">
           Save
         </button>
+        <button type="button" id="btn-settings" class="chip chip-quiet" title="Settings">
+          Settings
+        </button>
         <button type="button" id="btn-quit" class="chip chip-quiet" title="Quit Loaflings">
           Quit
         </button>
@@ -54,6 +57,25 @@
         <p id="panel-note" class="panel-note"></p>
       </aside>
 
+      <aside id="settings" class="panel settings" hidden aria-label="Settings">
+        <header class="panel-head">
+          <strong>Settings</strong>
+          <button type="button" id="btn-close-settings" class="chip chip-quiet" title="Close">✕</button>
+        </header>
+        <label class="settings-row">
+          <span>Opacity</span>
+          <input id="set-opacity" type="range" min="0.25" max="1" step="0.05" />
+        </label>
+        <label class="settings-row">
+          <span>Size</span>
+          <input id="set-scale" type="range" min="0.6" max="1.6" step="0.05" />
+        </label>
+        <label class="settings-row settings-check">
+          <input id="set-lock" type="checkbox" />
+          <span>Lock position</span>
+        </label>
+        <p class="panel-note">Locked: window stays put (no drag).</p>
+      </aside>
       <p id="status" class="status" hidden></p>
     </div>
     <script src="./renderer.js"></script>

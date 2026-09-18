@@ -16,6 +16,7 @@ const {
   openAccessibilitySettings,
 } = require('./hooks/senseLive');
 const { loadCollection, saveToCollection } = require('./collection');
+const { loadSettings, saveSettings } = require('./settings');
 const { ensureDayState, markHatched, markGrowing } = require('./dayState');
 const {
   phaseFromProfile,
@@ -174,6 +175,8 @@ function createCompanionWindow() {
     companion?.webContents.send('loaflings:window-id', { windowId: id });
   });
 
+  applyWindowSettings(companion, loadSettings());
+  companion.on('moved', () => rememberPosition(companion));
   companion.loadFile(path.join(__dirname, 'index.html'));
 
   companion.on('closed', () => {
@@ -194,10 +197,54 @@ ipcMain.handle('loaflings:get-sense-status', () => {
 
 ipcMain.handle('loaflings:open-accessibility', async () => openAccessibilitySettings());
 
+
+function applyWindowSettings(win, settings) {
+  if (!win || win.isDestroyed()) return;
+  const s = settings || loadSettings();
+  win.setOpacity(s.opacity);
+  // size via content size relative to base 280x320-ish — use current and scale from design base
+  const baseW = 280;
+  const baseH = 340;
+  const w = Math.round(baseW * s.scale);
+  const h = Math.round(baseH * s.scale);
+  win.setContentSize(w, h);
+  win.setMovable(!s.lockPosition);
+  if (s.position && typeof s.position.x === 'number') {
+    win.setPosition(Math.round(s.position.x), Math.round(s.position.y));
+  }
+}
+
+function rememberPosition(win) {
+  if (!win || win.isDestroyed()) return;
+  const s = loadSettings();
+  if (s.lockPosition) return;
+  const [x, y] = win.getPosition();
+  saveSettings({ position: { x, y } });
+}
+
 ipcMain.handle('loaflings:quit', () => {
   app.quit();
   return { ok: true };
 });
+
+ipcMain.handle('loaflings:get-settings', () => {
+  try {
+    return { ok: true, settings: loadSettings() };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
+ipcMain.handle('loaflings:set-settings', (_e, partial) => {
+  try {
+    const settings = saveSettings(partial || {});
+    if (companion && !companion.isDestroyed()) applyWindowSettings(companion, settings);
+    return { ok: true, settings };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
 
 
 ipcMain.handle('loaflings:get-hatch-progress', () => {

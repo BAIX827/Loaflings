@@ -75,4 +75,10 @@ contextBridge.exposeInMainWorld('loaflings', {
   quitApp() {
     return ipcRenderer.invoke('loaflings:quit');
   },
+  getSettings() {
+    return ipcRenderer.invoke('loaflings:get-settings');
+  },
+  setSettings(partial) {
+    return ipcRenderer.invoke('loaflings:set-settings', partial || {});
+  },
 });

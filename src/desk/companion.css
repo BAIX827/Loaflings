@@ -241,3 +241,21 @@ body {
 .stage[data-phase='cracking'] .egg-caption {
   opacity: 0.95;
 }
+
+
+/* —— Settings —— */
+.settings .settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.settings .settings-row input[type='range'] {
+  flex: 1;
+  max-width: 140px;
+}
+.settings-check {
+  justify-content: flex-start !important;
+}

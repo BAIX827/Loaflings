@@ -25,6 +25,10 @@
 
 ## Log
 
+2026-09-18 (DAY-DESK)
+- Companion Settings: opacity / size / lock position; Quit button. Hatch stages (3) + process.png reference for 6-stage next lock.
+
+
 2026-09-18 (DAY-CORE)
 - Hatch visual progress: egg → cracking → hatched every 1000 clicks (hatchProgressFromProfile).
 - Docs: docs/DAY_CYCLE_MVP.md updated; DESK/ART consume phase ids.

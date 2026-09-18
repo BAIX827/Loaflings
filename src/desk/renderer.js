@@ -320,6 +320,49 @@
     setPanelOpen(false);
   });
 
+
+  // —— Settings ——
+  const settingsEl = document.getElementById('settings');
+  const opacityEl = document.getElementById('set-opacity');
+  const scaleEl = document.getElementById('set-scale');
+  const lockEl = document.getElementById('set-lock');
+
+  function setSettingsOpen(open) {
+    if (settingsEl) settingsEl.hidden = !open;
+  }
+
+  async function hydrateSettings() {
+    if (!api?.getSettings) return;
+    try {
+      const res = await api.getSettings();
+      if (!res?.ok || !res.settings) return;
+      const s = res.settings;
+      if (opacityEl) opacityEl.value = String(s.opacity);
+      if (scaleEl) scaleEl.value = String(s.scale);
+      if (lockEl) lockEl.checked = Boolean(s.lockPosition);
+    } catch {
+      // ignore
+    }
+  }
+
+  document.getElementById('btn-settings')?.addEventListener('click', async () => {
+    setPanelOpen(false);
+    await hydrateSettings();
+    setSettingsOpen(true);
+  });
+  document.getElementById('btn-close-settings')?.addEventListener('click', () => {
+    setSettingsOpen(false);
+  });
+  opacityEl?.addEventListener('input', () => {
+    api?.setSettings?.({ opacity: Number(opacityEl.value) });
+  });
+  scaleEl?.addEventListener('input', () => {
+    api?.setSettings?.({ scale: Number(scaleEl.value) });
+  });
+  lockEl?.addEventListener('change', () => {
+    api?.setSettings?.({ lockPosition: Boolean(lockEl.checked) });
+  });
+
   document.getElementById('btn-quit')?.addEventListener('click', () => {
     api?.quitApp?.();
   });
