@@ -18,17 +18,12 @@
   const PHASE_PATHS = {
     egg: '../../character/Pet_Egg_Master.svg',
     cracking: '../../character/Pet_Egg_Cracking.svg',
-    hatching: '../../character/Pet_Egg_Hatching.svg',
+    hatching: '../../character/Pet_Hatching.svg',
     newborn: '../../character/Pet_Newborn.svg',
     growing: '../../character/Pet_Growing.svg',
     adult: '../../character/Pet_Base_Master.svg',
   };
-  /** Until ART ships mid-stage SVGs */
-  const PHASE_FALLBACKS = {
-    hatching: '../../character/Pet_Egg_Cracking.svg',
-    newborn: '../../character/Pet_Base_Master.svg',
-    growing: '../../character/Pet_Base_Master.svg',
-  };
+  const PHASE_FALLBACKS = {};
 
   /** @type {object | null} */
   let lastPayload = null;
@@ -120,13 +115,18 @@
       await loadPetSvg(PHASE_PATHS[visual] || PHASE_PATHS.adult, visual);
     }
 
+    const hudC = document.getElementById('hud-clicks');
+    const hudP = document.getElementById('hud-phase');
+    if (typeof opts.clicks === 'number' && hudC) {
+      hudC.textContent = String(opts.clicks);
+    }
+    if (hudP) hudP.textContent = visual;
     if (typeof opts.clicks === 'number') {
       const nextAt = opts.nextAt;
-      setStatus(
-        nextAt == null
-          ? `${opts.clicks} clicks · ${visual}`
-          : `${opts.clicks} clicks · ${visual} (next ${nextAt})`,
-      );
+      // keep status subtle; HUD shows the live number
+      if (nextAt != null) {
+        setStatus(`next stage @ ${nextAt}`);
+      }
     }
   }
 
@@ -466,8 +466,38 @@
     }
   }
 
+
+  // —— Newbie guide (first run) ——
+  const GUIDE_KEY = 'loaflings.guide.v1.done';
+  const guideEl = document.getElementById('guide');
+  function setGuideOpen(open) {
+    if (guideEl) guideEl.hidden = !open;
+  }
+  function maybeShowGuide() {
+    try {
+      if (localStorage.getItem(GUIDE_KEY) === '1') return;
+    } catch {
+      // ignore
+    }
+    setSettingsOpen(false);
+    setPanelOpen(false);
+    setGuideOpen(true);
+  }
+  function dismissGuide() {
+    try {
+      localStorage.setItem(GUIDE_KEY, '1');
+    } catch {
+      // ignore
+    }
+    setGuideOpen(false);
+  }
+  document.getElementById('btn-guide-ok')?.addEventListener('click', dismissGuide);
+  document.getElementById('btn-close-guide')?.addEventListener('click', dismissGuide);
+  // reopen from Settings? skip for MVP
+  maybeShowGuide();
+
   await refreshHatchProgress();
-  setInterval(refreshHatchProgress, 2500);
+  setInterval(refreshHatchProgress, 500);
 
 })();
 

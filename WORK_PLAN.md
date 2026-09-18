@@ -25,6 +25,10 @@
 
 ## Log
 
+2026-09-18 (DAY-DESK)
+- Live clicks HUD (500ms), ART 03–05 paths, cute first-run guide; Quit/Settings unchanged.
+
+
 2026-09-18 (DAY-CORE)
 - Relocked visual growth to 6 stages per reference/process.png (1000 clicks each): egg/cracking/hatching/newborn/growing/adult.
 - hatchProgressFromProfile updated; DESK/ART must follow new phase ids.
