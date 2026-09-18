@@ -85,3 +85,6 @@
 2026-09-18 (DAY-SENSE)
 - Added root README.md (structure + quick start + owners).
 - liveSensor: ensureToday() one egg per local day.
+
+2026-09-18 (DAY-SENSE)
+- TASK-004: permission status IPC + Accessibility deep-link; own-window skips keys+clicks while companion focused; excludeWindowIds stored.

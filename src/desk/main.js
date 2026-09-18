@@ -12,6 +12,8 @@ const {
   getLiveSettle,
   ensureToday: ensureSenseToday,
   excludeWindowIds,
+  getSenseStatus,
+  openAccessibilitySettings,
 } = require('./hooks/senseLive');
 const { loadCollection, saveToCollection } = require('./collection');
 const { ensureDayState, markHatched, markGrowing } = require('./dayState');
@@ -177,6 +179,17 @@ function createCompanionWindow() {
 
   return companion;
 }
+
+
+ipcMain.handle('loaflings:get-sense-status', () => {
+  try {
+    return getSenseStatus();
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+});
+
+ipcMain.handle('loaflings:open-accessibility', async () => openAccessibilitySettings());
 
 ipcMain.handle('loaflings:get-live-profile', () => {
   try {

@@ -303,3 +303,22 @@
     }
   });
 })();
+
+
+// DAY-SENSE: quiet when healthy; surface Accessibility hint if hooks idle-only
+(async function sensePermissionHint() {
+  const api = window.loaflings;
+  const statusEl = document.getElementById('status');
+  if (!api?.getSenseStatus || !statusEl) return;
+  try {
+    const s = await api.getSenseStatus();
+    if (s?.permissionHint && s.backend !== 'uiohook-napi') {
+      statusEl.hidden = false;
+      statusEl.textContent = `Sense (${s.backend || 'off'}): tap to open Accessibility`;
+      statusEl.style.cursor = 'pointer';
+      statusEl.onclick = () => api.openAccessibilitySettings?.();
+    }
+  } catch (err) {
+    console.warn('[loaflings] sense status', err);
+  }
+})();

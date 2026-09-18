@@ -2,13 +2,15 @@
  * DAY-SENSE live bridge for DESK main process.
  */
 const path = require('path');
-const { app, screen } = require('electron');
+const { app, screen, shell } = require('electron');
 const { LiveSensor } = require('../../sense/liveSensor.js');
 const { assertProfileShape } = require('../../sense/profile.ts');
 const { hatchDay, getApiSource } = require('./coreDayCycle');
 
 /** @type {import('../../sense/liveSensor.js').LiveSensor | null} */
 let sensor = null;
+/** @type {object | null} */
+let lastStartInfo = null;
 
 function persistPath() {
   return path.join(app.getPath('userData'), 'live-profile.json');
@@ -18,7 +20,10 @@ function persistPath() {
  * @param {() => boolean} shouldIgnoreClick
  */
 async function startLiveSense(shouldIgnoreClick) {
-  if (sensor) return { ok: true, already: true, path: persistPath() };
+  if (sensor) {
+    sensor.ensureToday();
+    return { ok: true, already: true, path: persistPath(), ...(lastStartInfo || {}), coreApi: getApiSource() };
+  }
   const display = screen.getPrimaryDisplay();
   sensor = new LiveSensor({
     persistPath: persistPath(),
@@ -27,8 +32,8 @@ async function startLiveSense(shouldIgnoreClick) {
     powerMonitor: require('electron').powerMonitor,
     scaleFactor: display.scaleFactor || 2,
   });
-  const started = await sensor.start();
-  return { ...started, path: persistPath(), coreApi: getApiSource() };
+  lastStartInfo = await sensor.start();
+  return { ...lastStartInfo, path: persistPath(), coreApi: getApiSource() };
 }
 
 function stopLiveSense() {
@@ -80,6 +85,30 @@ function excludeWindowIds(ids) {
   return sensor?.excludeWindowIds(ids) ?? { ok: false, reason: 'not-started' };
 }
 
+function getSenseStatus() {
+  if (!sensor) {
+    return {
+      ok: false,
+      running: false,
+      permissionHint:
+        'System Settings → Privacy & Security → Accessibility — enable Electron / Loaflings',
+      start: lastStartInfo,
+    };
+  }
+  return { ok: true, ...sensor.getStatus(), start: lastStartInfo };
+}
+
+async function openAccessibilitySettings() {
+  try {
+    await shell.openExternal(
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility'
+    );
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 module.exports = {
   startLiveSense,
   stopLiveSense,
@@ -87,5 +116,7 @@ module.exports = {
   getLiveSettle,
   ensureToday,
   excludeWindowIds,
+  getSenseStatus,
+  openAccessibilitySettings,
   persistPath,
 };

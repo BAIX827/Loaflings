@@ -43,6 +43,8 @@ class LiveSensor {
     this.tickTimer = null;
     this.uiohook = null;
     this.running = false;
+    this._excludedWindowIds = [];
+    this._backend = null;
     this.focusStartedAt = null;
     this.lastActiveAt = Date.now();
   }
@@ -107,9 +109,28 @@ class LiveSensor {
     };
   }
 
-  excludeWindowIds(_ids) {
-    // Desktop passes companion id; click ignore uses shouldIgnoreClick() for MVP.
-    return { ok: true };
+  excludeWindowIds(ids) {
+    this._excludedWindowIds = (ids || []).map(String);
+    return { ok: true, ids: [...this._excludedWindowIds] };
+  }
+
+  getStatus() {
+    return {
+      backend: this._backend || (this.running ? 'running' : 'stopped'),
+      running: this.running,
+      date: this.profile.date,
+      keystrokes: this.profile.keystrokes,
+      clicks: this.profile.clicks,
+      mouseTravel: Number(this.profile.mouseTravel.toFixed(4)),
+      idleSec: this.profile.idleSec,
+      activeSec: this.profile.activeSec,
+      windowSwitches: this.profile.windowSwitches,
+      excludedWindowIds: [...(this._excludedWindowIds || [])],
+      permissionHint:
+        this._backend === 'uiohook-napi'
+          ? null
+          : 'System Settings → Privacy & Security → Accessibility — enable Electron / Loaflings',
+    };
   }
 
   #markActive(at = Date.now()) {
@@ -139,6 +160,7 @@ class LiveSensor {
   }
 
   #onKey() {
+    if (this.shouldIgnoreClick()) return; // companion focused — own-window exclusion
     this.#markActive();
     this.profile.keystrokes += 1;
     this.persist();
@@ -224,6 +246,7 @@ class LiveSensor {
       });
 
       uIOhook.start();
+      this._backend = 'uiohook-napi';
       console.log('[sense] liveSensor started (uiohook-napi)');
       return { ok: true, backend: 'uiohook-napi' };
     } catch (err) {
@@ -231,10 +254,13 @@ class LiveSensor {
         '[sense] uiohook-napi unavailable — idle-only mode. Install deps + grant Accessibility.',
         err && err.message ? err.message : err,
       );
+      this._backend = 'idle-only';
       return {
         ok: true,
         backend: 'idle-only',
         warning: 'uiohook-napi not loaded; key/mouse counts stay 0 until native module works',
+        permissionHint:
+          'System Settings → Privacy & Security → Accessibility — enable Electron / Loaflings',
       };
     }
   }

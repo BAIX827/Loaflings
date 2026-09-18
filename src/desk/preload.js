@@ -61,4 +61,10 @@ contextBridge.exposeInMainWorld('loaflings', {
   onDayState(cb) {
     ipcRenderer.on('loaflings:day-state', (_e, payload) => cb(payload));
   },
+  getSenseStatus() {
+    return ipcRenderer.invoke('loaflings:get-sense-status');
+  },
+  openAccessibilitySettings() {
+    return ipcRenderer.invoke('loaflings:open-accessibility');
+  },
 });
