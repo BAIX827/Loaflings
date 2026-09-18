@@ -4,7 +4,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { emptyProfile, assertProfileShape } = require('./profile.ts');
+const { emptyProfile, assertProfileShape } = require('./profile.cjs');
 
 const IDLE_THRESHOLD_SEC = 60;
 

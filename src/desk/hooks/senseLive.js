@@ -4,7 +4,7 @@
 const path = require('path');
 const { app, screen, shell } = require('electron');
 const { LiveSensor } = require('../../sense/liveSensor.js');
-const { assertProfileShape } = require('../runtime/sense-profile.cjs');
+const { assertProfileShape } = require('../../sense/profile.cjs');
 const { hatchDay, getApiSource } = require('./coreDayCycle');
 
 /** @type {import('../../sense/liveSensor.js').LiveSensor | null} */

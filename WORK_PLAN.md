@@ -42,3 +42,6 @@
 
 2026-09-18 (DAY-SENSE)
 - TASK-004: focus skips key+click; getSenseStatus + open Accessibility
+
+2026-09-18 (DAY-SENSE)
+- Fix packaged app crash: liveSensor requires profile.cjs (not .ts). Unexpected token export.
