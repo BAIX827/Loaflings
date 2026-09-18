@@ -23,6 +23,7 @@ __export(index_exports, {
   ENERGY_WEIGHTS: () => ENERGY_WEIGHTS,
   GENE_FIELDS: () => GENE_FIELDS,
   HATCH_STAGE_COUNT: () => HATCH_STAGE_COUNT,
+  INPUTS_PER_HATCH_STAGE: () => INPUTS_PER_HATCH_STAGE,
   MVP_BASE_GENES: () => MVP_BASE_GENES,
   computeEnergy: () => computeEnergy,
   createRng: () => createRng,
@@ -30,7 +31,9 @@ __export(index_exports, {
   emptyProfile: () => emptyProfile,
   hashSeed: () => hashSeed,
   hatchDay: () => hatchDay,
+  hatchInputScore: () => hatchInputScore,
   hatchProgressFromClicks: () => hatchProgressFromClicks,
+  hatchProgressFromClicksAndKeys: () => hatchProgressFromClicksAndKeys,
   hatchProgressFromProfile: () => hatchProgressFromProfile,
   idleMoodFromEnergy: () => idleMoodFromEnergy,
   idleMoodFromProfile: () => idleMoodFromProfile,
@@ -209,7 +212,8 @@ function rollIdleEvents(profile, energy, rng) {
 }
 
 // src/core/hatchProgress.ts
-var CLICKS_PER_HATCH_STAGE = 1e3;
+var INPUTS_PER_HATCH_STAGE = 1e3;
+var CLICKS_PER_HATCH_STAGE = INPUTS_PER_HATCH_STAGE;
 var HATCH_STAGE_COUNT = 6;
 var STAGE_PHASE = [
   "egg",
@@ -219,26 +223,45 @@ var STAGE_PHASE = [
   "growing",
   "adult"
 ];
-function hatchProgressFromClicks(clicks) {
-  const c = Math.max(0, Math.floor(clicks || 0));
-  const raw = Math.floor(c / CLICKS_PER_HATCH_STAGE);
+function hatchInputScore(clicks, keystrokes) {
+  return Math.max(0, Math.floor(clicks || 0)) + Math.max(0, Math.floor(keystrokes || 0));
+}
+function progressFromInputs(inputs, clicks, keystrokes) {
+  const c = Math.max(0, Math.floor(inputs || 0));
+  const raw = Math.floor(c / INPUTS_PER_HATCH_STAGE);
   const maxStage = HATCH_STAGE_COUNT - 1;
   const stage = Math.min(maxStage, raw);
-  const nextStageAt = stage >= maxStage ? null : (stage + 1) * CLICKS_PER_HATCH_STAGE;
-  const stageFloor = stage * CLICKS_PER_HATCH_STAGE;
-  const stageProgress = stage >= maxStage ? 1 : Math.min(1, (c - stageFloor) / CLICKS_PER_HATCH_STAGE);
+  const nextStageAt = stage >= maxStage ? null : (stage + 1) * INPUTS_PER_HATCH_STAGE;
+  const stageFloor = stage * INPUTS_PER_HATCH_STAGE;
+  const stageProgress = stage >= maxStage ? 1 : Math.min(1, (c - stageFloor) / INPUTS_PER_HATCH_STAGE);
   return {
     stage,
     phase: STAGE_PHASE[stage],
-    clicks: c,
+    inputs: c,
+    clicks: Math.max(0, Math.floor(clicks || 0)),
+    keystrokes: Math.max(0, Math.floor(keystrokes || 0)),
     nextStageAt,
-    clicksPerStage: CLICKS_PER_HATCH_STAGE,
+    inputsPerStage: INPUTS_PER_HATCH_STAGE,
+    clicksPerStage: INPUTS_PER_HATCH_STAGE,
     stageCount: HATCH_STAGE_COUNT,
     stageProgress
   };
 }
+function hatchProgressFromClicks(clicks) {
+  return progressFromInputs(clicks, clicks, 0);
+}
+function hatchProgressFromClicksAndKeys(clicks, keystrokes) {
+  return progressFromInputs(
+    hatchInputScore(clicks, keystrokes),
+    clicks,
+    keystrokes
+  );
+}
 function hatchProgressFromProfile(profile, alreadySaved) {
-  const progress = hatchProgressFromClicks(profile.clicks);
+  const progress = hatchProgressFromClicksAndKeys(
+    profile.clicks,
+    profile.keystrokes
+  );
   if (!alreadySaved) return progress;
   return {
     ...progress,
@@ -341,6 +364,7 @@ function pickWeightedKey(weights, rng = Math.random) {
   ENERGY_WEIGHTS,
   GENE_FIELDS,
   HATCH_STAGE_COUNT,
+  INPUTS_PER_HATCH_STAGE,
   MVP_BASE_GENES,
   computeEnergy,
   createRng,
@@ -348,7 +372,9 @@ function pickWeightedKey(weights, rng = Math.random) {
   emptyProfile,
   hashSeed,
   hatchDay,
+  hatchInputScore,
   hatchProgressFromClicks,
+  hatchProgressFromClicksAndKeys,
   hatchProgressFromProfile,
   idleMoodFromEnergy,
   idleMoodFromProfile,

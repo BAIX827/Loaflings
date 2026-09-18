@@ -3,12 +3,13 @@
 Confirmed with 老大 + `reference/process.png`:
 
 1. **One egg per day** → grow from behaviour → Save hatches one Loafling into collection → next day new egg.
-2. **Visual growth**: **6 stages**, **one stage per 1000 clicks**.
+2. **Visual growth**: **6 stages**, **one stage per 1000 input units**.
+   Input units = **clicks + keystrokes** (both count; 老大 asked for keyboard too).
 
 ## Visual stages (companion art)
 
-| Stage | Phase id | Clicks | process.png |
-|------:|----------|-------:|-------------|
+| Stage | Phase id | Inputs (clicks+keys) | process.png |
+|------:|----------|---------------------:|-------------|
 | 0 | `egg` | 0–999 | 01 蛋 |
 | 1 | `cracking` | 1000–1999 | 02 开始裂开 |
 | 2 | `hatching` | 2000–2999 | 03 破壳而出 |
@@ -16,15 +17,15 @@ Confirmed with 老大 + `reference/process.png`:
 | 4 | `growing` | 4000–4999 | 05 慢慢长大 |
 | 5 | `adult` | 5000+ | 06 成体 |
 
-Constant: `CLICKS_PER_HATCH_STAGE = 1000`, `HATCH_STAGE_COUNT = 6` in `src/core/dayCycle.ts`.
+Constant: `INPUTS_PER_HATCH_STAGE = 1000` (`CLICKS_PER_HATCH_STAGE` kept as alias) in `src/core/hatchProgress.ts`.
 
 ```ts
 hatchProgressFromProfile(profile, alreadySaved)
-// → { stage, phase, clicks, nextStageAt, stageProgress, clicksPerStage, stageCount }
+// → { stage, phase, inputs, clicks, keystrokes, nextStageAt, stageProgress, ... }
 ```
 
-- @DAY-DESK: poll live `clicks`, switch art by `phase`.
-- @DAY-ART: six assets keyed to the phase ids above (reuse existing egg/cracking/base where they fit; fill gaps).
+- @DAY-DESK: use live profile (clicks **and** keys); switch art by `phase`.
+- @DAY-ART: six assets keyed to the phase ids above.
 - Threshold change: 老大 says the number; CORE updates the constant.
 
 `alreadySaved === true` forces visual `adult` after Day/Save into collection.

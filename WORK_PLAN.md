@@ -25,6 +25,9 @@
 
 ## Log
 
+2026-09-18 (DAY-CORE)
+- Hatch stages advance on clicks + keystrokes (1000 units/stage); HUD keys already live.
+
 2026-09-18 (DAY-DESK)
 - QA click-to-open: pack Loaflings.app → /Applications + Desktop; `npm run install:qa` / docs/QA_OPEN.md.
 
