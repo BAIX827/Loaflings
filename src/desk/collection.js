@@ -63,6 +63,7 @@ function entryFromSettle(result, meta = {}) {
     type: personality,
     personality,
     rarity,
+    style: result?.style || null,
     genes: result?.genes || {},
     traits: Array.isArray(result?.traits) ? result.traits : [],
     events: Array.isArray(result?.events) ? result.events : [],

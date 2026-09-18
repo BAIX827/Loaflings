@@ -142,6 +142,14 @@
     }
   }
 
+  function labelStyle(id) {
+    try {
+      return api?.i18n?.labelId?.(locale, 'style', id) || id || '—';
+    } catch {
+      return id || '—';
+    }
+  }
+
   function labelSource(src) {
     const key = `panel.source.${src}`;
     const hit = tr(key);
@@ -231,6 +239,8 @@
     document.getElementById('f-name').textContent = displayName(result);
     document.getElementById('f-type').textContent = labelPersonality(result.personality);
     document.getElementById('f-rarity').textContent = labelRarity(result.rarity);
+    const styleEl = document.getElementById('f-style');
+    if (styleEl) styleEl.textContent = labelStyle(result.style);
     document.getElementById('f-personality').textContent = labelPersonality(result.personality);
     document.getElementById('f-genes').textContent = [
       g.body,
@@ -572,6 +582,7 @@
         kind: entry.kind || 'loafling',
         personality: entry.personality,
         rarity: entry.rarity,
+        style: entry.style,
         genes: entry.genes,
         traits: entry.traits,
         events: entry.events,
