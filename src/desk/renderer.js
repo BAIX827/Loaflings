@@ -512,7 +512,7 @@
       if (stroke === '#F5C84C' || fill === '#F5C84C') el.remove();
       if (/z/i.test(el.textContent || '')) el.remove();
       // tiny upper sparkle paths (rough: only M points with y < 200)
-      const ys = [...d.matchAll(/([\\d.]+)\\s+([\\d.]+)/g)].map((m) => Number(m[2]));
+      const ys = [...d.matchAll(/([\d.]+)\s+([\d.]+)/g)].map((m) => Number(m[2]));
       if (ys.length && ys.every((y) => y < 220)) el.remove();
     });
   }
