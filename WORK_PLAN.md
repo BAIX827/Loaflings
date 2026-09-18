@@ -109,3 +109,6 @@
 
 2026-09-18 (DAY-ART)
 - Added idle cloud_* mood layer (normal/happy/excited/sleepy/angry/sad) for three-layer assemble.
+
+2026-09-18 (DAY-SENSE)
+- Real-time click HUD: emit counts on each input; desk forwards loaflings:sense-counts (instant, not only 500ms poll).

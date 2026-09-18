@@ -671,6 +671,17 @@
   maybeShowGuide();
 
   await refreshHatchProgress();
+  
+  // Live counts from DAY-SENSE (immediate, not waiting for 500ms poll)
+  if (api?.onSenseCounts) {
+    api.onSenseCounts((payload) => {
+      const hudC = document.getElementById('hud-clicks');
+      if (hudC && typeof payload?.clicks === 'number') {
+        hudC.textContent = String(payload.clicks);
+      }
+    });
+  }
+
   setInterval(refreshHatchProgress, 500);
 
 })();

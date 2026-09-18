@@ -11,6 +11,8 @@ const { hatchDay, getApiSource } = require('./coreDayCycle');
 let sensor = null;
 /** @type {object | null} */
 let lastStartInfo = null;
+/** @type {null | ((payload: object) => void)} */
+let countsListener = null;
 
 function persistPath() {
   return path.join(app.getPath('userData'), 'live-profile.json');
@@ -117,5 +119,6 @@ module.exports = {
   excludeWindowIds,
   getSenseStatus,
   openAccessibilitySettings,
+  onSenseCounts,
   persistPath,
 };

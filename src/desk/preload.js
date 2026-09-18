@@ -72,6 +72,11 @@ contextBridge.exposeInMainWorld('loaflings', {
   openAccessibilitySettings() {
     return ipcRenderer.invoke('loaflings:open-accessibility');
   },
+  onSenseCounts(cb) {
+    const handler = (_e, payload) => cb(payload);
+    ipcRenderer.on('loaflings:sense-counts', handler);
+    return () => ipcRenderer.removeListener('loaflings:sense-counts', handler);
+  },
   quitApp() {
     return ipcRenderer.invoke('loaflings:quit');
   },

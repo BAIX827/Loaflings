@@ -33,6 +33,13 @@ app.whenReady().then(() => {
   createCompanionWindow();
 
   const win = getCompanion();
+  
+  onSenseCounts((payload) => {
+    if (companion && !companion.isDestroyed()) {
+      companion.webContents.send('loaflings:sense-counts', payload);
+    }
+  });
+
   startLiveSense(() => false)
     .then((info) => {
       console.log('[loaflings] live sense', info);

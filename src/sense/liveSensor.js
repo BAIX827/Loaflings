@@ -7,6 +7,7 @@
  */
 'use strict';
 
+const { EventEmitter } = require('events');
 const fs = require('fs');
 const path = require('path');
 const { emptyProfile, assertProfileShape } = require('./profile.cjs');
@@ -27,7 +28,7 @@ function todayLocal() {
   return `${y}-${m}-${day}`;
 }
 
-class LiveSensor {
+class LiveSensor extends EventEmitter {
   /**
    * @param {object} opts
    * @param {string} opts.persistPath
@@ -36,6 +37,7 @@ class LiveSensor {
    * @param {number} [opts.scaleFactor]
    */
   constructor(opts) {
+    super();
     this.persistPath = opts.persistPath;
     this.seedKey = opts.seedKey || 'local';
     this.powerMonitor = opts.powerMonitor || null;
@@ -107,7 +109,7 @@ class LiveSensor {
   persist(force = false) {
     this.ensureToday();
     const now = Date.now();
-    if (!force && now - this.lastPersistAt < 2000) return;
+    if (!force && now - this.lastPersistAt < 250) return;
     this.lastPersistAt = now;
     this.#writePersist();
   }
@@ -170,15 +172,26 @@ class LiveSensor {
     this.focusStartedAt = null;
   }
 
+  #emitCounts() {
+    this.emit('counts', {
+      date: this.profile.date,
+      keystrokes: this.profile.keystrokes,
+      clicks: this.profile.clicks,
+      mouseTravel: this.profile.mouseTravel,
+    });
+  }
+
   #onKey() {
     this.#markActive();
     this.profile.keystrokes += 1;
+    this.#emitCounts();
     this.persist();
   }
 
   #onClick() {
     this.#markActive();
     this.profile.clicks += 1;
+    this.#emitCounts();
     this.persist();
   }
 
