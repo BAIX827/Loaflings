@@ -22,6 +22,7 @@ __export(index_exports, {
   CLICKS_PER_HATCH_STAGE: () => CLICKS_PER_HATCH_STAGE,
   ENERGY_WEIGHTS: () => ENERGY_WEIGHTS,
   GENE_FIELDS: () => GENE_FIELDS,
+  HATCH_STAGE_COUNT: () => HATCH_STAGE_COUNT,
   MVP_BASE_GENES: () => MVP_BASE_GENES,
   computeEnergy: () => computeEnergy,
   createRng: () => createRng,
@@ -206,7 +207,15 @@ function rollIdleEvents(profile, energy, rng) {
 
 // src/core/dayCycle.ts
 var CLICKS_PER_HATCH_STAGE = 1e3;
-var STAGE_PHASE = ["egg", "cracking", "hatched"];
+var HATCH_STAGE_COUNT = 6;
+var STAGE_PHASE = [
+  "egg",
+  "cracking",
+  "hatching",
+  "newborn",
+  "growing",
+  "adult"
+];
 function startEgg(date, seedKey) {
   return { date, seedKey, phase: "egg" };
 }
@@ -217,17 +226,19 @@ function markGrowing(egg) {
 function hatchProgressFromClicks(clicks) {
   const c = Math.max(0, Math.floor(clicks || 0));
   const raw = Math.floor(c / CLICKS_PER_HATCH_STAGE);
-  const stage = Math.min(2, raw);
+  const maxStage = HATCH_STAGE_COUNT - 1;
+  const stage = Math.min(maxStage, raw);
   const phase = STAGE_PHASE[stage];
-  const nextStageAt = stage >= 2 ? null : (stage + 1) * CLICKS_PER_HATCH_STAGE;
+  const nextStageAt = stage >= maxStage ? null : (stage + 1) * CLICKS_PER_HATCH_STAGE;
   const stageFloor = stage * CLICKS_PER_HATCH_STAGE;
-  const stageProgress = stage >= 2 ? 1 : Math.min(1, (c - stageFloor) / CLICKS_PER_HATCH_STAGE);
+  const stageProgress = stage >= maxStage ? 1 : Math.min(1, (c - stageFloor) / CLICKS_PER_HATCH_STAGE);
   return {
     stage,
     phase,
     clicks: c,
     nextStageAt,
     clicksPerStage: CLICKS_PER_HATCH_STAGE,
+    stageCount: HATCH_STAGE_COUNT,
     stageProgress
   };
 }
@@ -236,8 +247,8 @@ function hatchProgressFromProfile(profile, alreadySaved) {
   if (alreadySaved) {
     return {
       ...progress,
-      stage: 2,
-      phase: "hatched",
+      stage: 5,
+      phase: "adult",
       nextStageAt: null,
       stageProgress: 1
     };
@@ -247,7 +258,7 @@ function hatchProgressFromProfile(profile, alreadySaved) {
 function phaseFromProfile(profile, alreadyHatched) {
   if (alreadyHatched) return "hatched";
   const progress = hatchProgressFromClicks(profile.clicks);
-  if (progress.stage >= 2) return "hatched";
+  if (progress.stage >= 5) return "hatched";
   if (progress.stage >= 1) return "growing";
   const active = profile.keystrokes + profile.clicks + profile.mouseTravel + profile.activeSec > 0;
   return active ? "growing" : "egg";
@@ -275,6 +286,7 @@ function localToday(now = /* @__PURE__ */ new Date()) {
   CLICKS_PER_HATCH_STAGE,
   ENERGY_WEIGHTS,
   GENE_FIELDS,
+  HATCH_STAGE_COUNT,
   MVP_BASE_GENES,
   computeEnergy,
   createRng,

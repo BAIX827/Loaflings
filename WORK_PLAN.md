@@ -25,6 +25,10 @@
 
 ## Log
 
+2026-09-18 (DAY-CORE)
+- Relocked visual growth to 6 stages per reference/process.png (1000 clicks each): egg/cracking/hatching/newborn/growing/adult.
+- hatchProgressFromProfile updated; DESK/ART must follow new phase ids.
+
 2026-09-18 (DAY-DESK)
 - Companion Settings: opacity / size / lock position; Quit button. Hatch stages (3) + process.png reference for 6-stage next lock.
 

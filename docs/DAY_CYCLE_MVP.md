@@ -1,30 +1,35 @@
-# Loaflings MVP — Daily Egg Cycle (DAY-CORE)
+# Loaflings MVP — Daily Growth Cycle (DAY-CORE)
 
-Confirmed with 老大:
+Confirmed with 老大 + `reference/process.png`:
 
-1. **One egg per day** → grow from behaviour → hatch one Loafling → next day new egg.
-2. **Visual hatch progress**: egg → cracking → fully hatched, **one stage per 1000 clicks**.
+1. **One egg per day** → grow from behaviour → Save hatches one Loafling into collection → next day new egg.
+2. **Visual growth**: **6 stages**, **one stage per 1000 clicks**.
 
 ## Visual stages (companion art)
 
-| Stage | Phase id | Clicks | Art |
-|------:|----------|-------:|-----|
-| 0 | `egg` | 0–999 | whole egg |
-| 1 | `cracking` | 1000–1999 | slightly hatched / cracked |
-| 2 | `hatched` | 2000+ | fully hatched look |
+| Stage | Phase id | Clicks | process.png |
+|------:|----------|-------:|-------------|
+| 0 | `egg` | 0–999 | 01 蛋 |
+| 1 | `cracking` | 1000–1999 | 02 开始裂开 |
+| 2 | `hatching` | 2000–2999 | 03 破壳而出 |
+| 3 | `newborn` | 3000–3999 | 04 初生幼体 |
+| 4 | `growing` | 4000–4999 | 05 慢慢长大 |
+| 5 | `adult` | 5000+ | 06 成体 |
 
-Constant: `CLICKS_PER_HATCH_STAGE = 1000` in `src/core/dayCycle.ts`.
+Constant: `CLICKS_PER_HATCH_STAGE = 1000`, `HATCH_STAGE_COUNT = 6` in `src/core/dayCycle.ts`.
 
 ```ts
 hatchProgressFromProfile(profile, alreadySaved)
-// → { stage, phase, clicks, nextStageAt, stageProgress, clicksPerStage }
+// → { stage, phase, clicks, nextStageAt, stageProgress, clicksPerStage, stageCount }
 ```
 
-- @DAY-DESK: poll live profile clicks, switch @DAY-ART assets by `phase`.
-- @DAY-ART: provide SVG/PNG for `egg` / `cracking` / `hatched`.
+- @DAY-DESK: poll live `clicks`, switch art by `phase`.
+- @DAY-ART: six assets keyed to the phase ids above (reuse existing egg/cracking/base where they fit; fill gaps).
 - Threshold change: 老大 says the number; CORE updates the constant.
 
-`alreadySaved === true` forces visual `hatched` after Day/Save into collection.
+`alreadySaved === true` forces visual `adult` after Day/Save into collection.
+
+**Breaking vs prior 3-phase MVP:** old `hatched` visual id is replaced by `hatching` / `newborn` / `growing` / `adult`. DESK must not expect only three phases.
 
 ## Day / Save (genes + collection)
 
@@ -32,7 +37,7 @@ hatchProgressFromProfile(profile, alreadySaved)
 hatchDay(profile) → one DaylingResult for profile.date
 ```
 
-Visual stage 2 ≠ necessarily saved. Save still calls `hatchDay()` once per date.
+Visual `adult` ≠ necessarily saved. Save still calls `hatchDay()` once per date.
 
 ## Cross-day
 
@@ -46,3 +51,4 @@ Never merge multiple days into one creature.
 
 - Genes / energy: `docs/GENE_CONTRACT_MVP.md`
 - Sense clicks field: live profile `clicks`
+- Art board: `reference/process.png`
