@@ -188,23 +188,14 @@
       await loadPetArt(visual);
     }
 
-    const hudC = document.getElementById('hud-clicks');
-    const hudK = document.getElementById('hud-keys');
+    const hudH = document.getElementById('hud-hits');
     const hudP = document.getElementById('hud-phase');
-    if (typeof opts.clicks === 'number' && hudC) {
-      hudC.textContent = String(opts.clicks);
-    }
-    if (typeof opts.keystrokes === 'number' && hudK) {
-      hudK.textContent = String(opts.keystrokes);
+    const clicks = typeof opts.clicks === 'number' ? opts.clicks : null;
+    const keys = typeof opts.keystrokes === 'number' ? opts.keystrokes : null;
+    if (hudH && (clicks != null || keys != null)) {
+      hudH.textContent = String((clicks || 0) + (keys || 0));
     }
     if (hudP) hudP.textContent = visual;
-    if (typeof opts.clicks === 'number') {
-      const nextAt = opts.nextAt;
-      // keep status subtle; HUD shows the live number
-      if (nextAt != null) {
-        /* keep HUD only — no bottom status line */
-      }
-    }
   }
 
   function fillPanel(payload) {
@@ -756,14 +747,15 @@
   // Live counts from DAY-SENSE (immediate, not waiting for 500ms poll)
   if (api?.onSenseCounts) {
     api.onSenseCounts((payload) => {
-      const hudC = document.getElementById('hud-clicks');
-      const hudK = document.getElementById('hud-keys');
-      if (hudC && typeof payload?.clicks === 'number') {
-        hudC.textContent = String(payload.clicks);
+      const hudH = document.getElementById('hud-hits');
+      if (!hudH) return;
+      if (typeof payload?.activityHits === 'number') {
+        hudH.textContent = String(payload.activityHits);
+        return;
       }
-      if (hudK && typeof payload?.keystrokes === 'number') {
-        hudK.textContent = String(payload.keystrokes);
-      }
+      const clicks = typeof payload?.clicks === 'number' ? payload.clicks : 0;
+      const keys = typeof payload?.keystrokes === 'number' ? payload.keystrokes : 0;
+      hudH.textContent = String(clicks + keys);
     });
   }
 
