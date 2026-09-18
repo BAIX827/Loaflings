@@ -96,3 +96,6 @@
 
 2026-09-18 (DAY-ART)
 - Idle MVP: reference/actions-expressions.png + character/idle/* + IDLE_MVP.md (random expr/pose pool for DESK).
+
+2026-09-18 (DAY-ART)
+- Added idle cloud_* mood layer (normal/happy/excited/sleepy/angry/sad) for three-layer assemble.

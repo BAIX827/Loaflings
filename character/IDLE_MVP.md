@@ -35,3 +35,15 @@ Adult base geometry still follows `Pet_Base_Master.svg` / cozy style.
 ## Later
 
 Remaining expressions, cloud states, and actions from the sheet.
+
+### Cloud moods (`character/idle/cloud_*.svg`)
+| id | look |
+|---|---|
+| `cloud_normal` | default blue cloud |
+| `cloud_happy` | blue cloud + yellow sparkles |
+| `cloud_excited` | warm cloud + stars |
+| `cloud_sleepy` | cooler cloud + zZ |
+| `cloud_angry` | grey cloud + lightning |
+| `cloud_sad` | grey cloud + raindrops |
+
+Assembly (LEAD lock): `pose_*` + `expr_*` + `cloud_*` — separate from gene parts.

@@ -1,0 +1,13 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- cloud mood layer only; overlay on pose/expr -->
+  
+  <circle cx="521" cy="155" r="42.5" fill="#FFF4C8" stroke="#F5C84C" stroke-width="5"/>
+  <circle cx="596.5" cy="132" r="60" fill="#FFF4C8" stroke="#F5C84C" stroke-width="5"/>
+  <circle cx="671" cy="155" r="42.5" fill="#FFF4C8" stroke="#F5C84C" stroke-width="5"/>
+  <circle cx="600.5" cy="170" r="50" fill="#FFF4C8" stroke="#F5C84C" stroke-width="5"/>
+  <circle cx="601" cy="242" r="7" fill="#FFF4C8" stroke="#F5C84C" stroke-width="4"/>
+  <path d="M600 95 L608 115 L630 115 L612 128 L620 148 L600 136 L580 148 L588 128 L570 115 L592 115 Z" fill="#F5C84C"/>
+  <path d="M520 105 L525 115 L536 115 L527 122 L531 133 L520 126 L509 133 L513 122 L504 115 L515 115 Z" fill="#F5C84C"/>
+  <path d="M680 105 L685 115 L696 115 L687 122 L691 133 L680 126 L669 133 L673 122 L664 115 L675 115 Z" fill="#F5C84C"/>
+
+</svg>

@@ -57,3 +57,12 @@ export const IDLE_MVP_ASSETS = {
     'character/idle/pose_lie.svg',
   ],
 } as const;
+
+export const IDLE_CLOUD_ASSETS = [
+  'character/idle/cloud_normal.svg',
+  'character/idle/cloud_happy.svg',
+  'character/idle/cloud_excited.svg',
+  'character/idle/cloud_sleepy.svg',
+  'character/idle/cloud_angry.svg',
+  'character/idle/cloud_sad.svg',
+] as const;
