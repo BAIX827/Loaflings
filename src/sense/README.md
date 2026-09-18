@@ -17,7 +17,7 @@ Privacy-first, count-only metrics for Loaflings.
 
 - `uiohook-napi` → keystrokes, clicks, mouse travel, Cmd/Ctrl+Tab as window-switch proxy
 - Electron `powerMonitor.getSystemIdleTime()` → idle accumulation
-- Clicks ignored while companion window is focused (`shouldIgnoreClick`)
+- Keystrokes and clicks always counted (even with companion focused)
 - Never stores key characters / titles / screenshots
 
 Grant **Accessibility** (and Input Monitoring if prompted) on macOS or global hooks will not fire.

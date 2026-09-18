@@ -27,7 +27,7 @@ Persist file: Electron `userData/live-profile.json`.
 
 ## TASK-004 polish
 
-- Own-window: while companion is focused, keystrokes + clicks are ignored; `excludeWindowIds` retained on sensor
+- Own-window skip removed per 老大: keystrokes + clicks always count
 - `getSenseStatus()` / IPC `loaflings:get-sense-status`
 - `openAccessibilitySettings()` opens macOS Accessibility pane (renderer shows tap hint if backend ≠ uiohook)
 - Day egg rollover still via `ensureToday()`
