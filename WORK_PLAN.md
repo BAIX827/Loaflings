@@ -25,6 +25,10 @@
 
 ## Log
 
+2026-09-18 (DAY-DESK)
+- Fix packaged .app spawn ENOTDIR: compile CORE/SENSE to CJS at pack time; drop tsx from runtime.
+
+
 2026-09-18 (DAY-LEAD)
 - Accepted: SENSE `bcb3cc6`, DESK pack `8972239`, ART egg `2388af6`, DESK egg wire `7dfd3f4`
 - 老大可开：`dist/mac-arm64/Loaflings.app`（或 `npm run pack` 重打）；辅助功能勾 **Loaflings.app**

@@ -2,18 +2,19 @@
   "name": "loaflings",
   "productName": "Loaflings",
   "version": "0.1.0",
-  "description": "Loaflings / 摸鱼灵 — Mac companion demo",
+  "description": "Loaflings / \u6478\u9c7c\u7075 \u2014 Mac companion demo",
   "main": "src/desk/main.js",
   "scripts": {
-    "start": "electron -r tsx/cjs .",
-    "desk": "electron -r tsx/cjs .",
-    "demo": "electron -r tsx/cjs .",
-    "settle:demo": "tsx src/desk/runDemoSettle.ts",
+    "start": "npm run compile:runtime && electron .",
+    "desk": "npm run compile:runtime && electron .",
+    "demo": "npm run compile:runtime && electron .",
+    "settle:demo": "npm run compile:runtime && node src/desk/runDemoSettle.js",
     "postinstall": "electron-builder install-app-deps || true",
     "rebuild:sense": "npm rebuild uiohook-napi --runtime=electron --target=33.2.1 --disturl=https://electronjs.org/headers",
-    "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
-    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir,dmg --publish never",
-    "dist:dir": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never"
+    "pack": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
+    "dist": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir,dmg --publish never",
+    "dist:dir": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
+    "compile:runtime": "node scripts/compile-runtime.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -21,10 +22,10 @@
   "devDependencies": {
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "esbuild": "^0.25.0"
   },
   "dependencies": {
-    "tsx": "^4.19.2",
     "uiohook-napi": "^1.5.5"
   },
   "allowScripts": {

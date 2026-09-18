@@ -1,12 +1,5 @@
 /**
- * Packaged-app entry: register tsx so CORE/SENSE .ts modules load,
- * then hand off to the Electron companion (main.js).
- * Dev still uses `electron -r tsx/cjs .` (package.json scripts).
+ * Packaged-app entry. Uses precompiled CJS (npm run compile:runtime).
+ * Do not load tsx/esbuild here — asar cannot spawn their workers (ENOTDIR).
  */
-try {
-  require('tsx/cjs');
-} catch (err) {
-  console.error('[loaflings] tsx/cjs required for CORE/SENSE TypeScript', err);
-  throw err;
-}
 require('./main.js');

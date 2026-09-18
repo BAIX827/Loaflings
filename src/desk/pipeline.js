@@ -6,13 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-try {
-  require('tsx/cjs');
-} catch {
-  // already registered or unavailable
-}
-
-const { assertProfileShape } = require('../sense/profile.ts');
+const { assertProfileShape } = require('./runtime/sense-profile.cjs');
 const { hatchDay, getApiSource } = require('./hooks/coreDayCycle');
 
 const FIXTURE_REL = path.join('src', 'sense', 'fixtures', 'demo-day.json');

@@ -33,3 +33,10 @@ First launch (unsigned): right-click → **Open**, or allow in Privacy & Securit
 | Sign/notarize | TODO — `identity: null` for local MVP |
 
 Egg / hatch / reveal / collection / live sense unchanged vs `npm start`.
+
+
+## Runtime compile
+
+Packaged apps must NOT load `tsx`/`esbuild` (asar `spawn ENOTDIR`).
+Run `npm run compile:runtime` before pack (already chained in `npm run pack`).
+Dev: `npm start` also compiles first, then launches Electron without `-r tsx/cjs`.

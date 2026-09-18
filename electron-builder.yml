@@ -11,6 +11,9 @@ files:
   - "!**/*.map"
   - "!**/__tests__/**"
   - "!**/*.test.*"
+  - "!**/node_modules/tsx/**"
+  - "!**/node_modules/esbuild/**"
+  - "!**/node_modules/@esbuild/**"
 asar: true
 asarUnpack:
   - "**/*.node"
