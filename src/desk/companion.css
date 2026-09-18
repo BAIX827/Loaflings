@@ -317,15 +317,25 @@ body {
 .guide .guide-steps li { margin: 6px 0; }
 
 
-/* —— Idle expression / pose FX —— */
+/* —— Idle expression / pose / cloud FX (3-layer) —— */
 .idle-fx {
   position: absolute;
   inset: 36px 12px 72px;
+  pointer-events: none;
+  z-index: 2;
+}
+.idle-fx-layer {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
+}
+.idle-fx-cloud {
   z-index: 2;
+}
+.idle-fx-body {
+  z-index: 1;
 }
 .idle-fx svg {
   width: min(100%, 220px);

@@ -1,6 +1,6 @@
 /**
  * MVP idle FX pool — mirrors character/IDLE_MVP.md (DAY-ART).
- * Not genes — cosmetic only. Weights come from CORE idleMood.
+ * Assembly (LEAD): pose_* + expr_* + cloud_* — not genes.
  */
 
 const IDLE_EXPR = Object.freeze([
@@ -17,18 +17,42 @@ const IDLE_POSES = Object.freeze([
   'pose_lie',
 ]);
 
-/** Paths relative to src/desk/ (renderer fetch) */
+const IDLE_CLOUDS = Object.freeze([
+  'cloud_normal',
+  'cloud_happy',
+  'cloud_excited',
+  'cloud_sleepy',
+  'cloud_angry',
+  'cloud_sad',
+]);
+
+/** expr short id → cloud_* (MVP map until CORE weights clouds) */
+const EXPR_TO_CLOUD = Object.freeze({
+  normal: 'cloud_normal',
+  happy: 'cloud_happy',
+  sleepy: 'cloud_sleepy',
+  surprised: 'cloud_excited',
+  content: 'cloud_happy',
+});
+
 function idleAssetPath(id) {
   return `../../character/idle/${id}.svg`;
 }
 
-/** CORE short id → ART file id */
 function exprAssetId(shortId) {
   return `expr_${shortId}`;
 }
 
 function poseAssetId(shortId) {
   return `pose_${shortId}`;
+}
+
+function cloudAssetId(shortId) {
+  return `cloud_${shortId}`;
+}
+
+function cloudForExprShort(shortId) {
+  return EXPR_TO_CLOUD[shortId] || 'cloud_normal';
 }
 
 function pickWeightedKey(weights, rng = Math.random) {
@@ -45,32 +69,49 @@ function pickWeightedKey(weights, rng = Math.random) {
 }
 
 /**
- * Pick an ART idle asset id from CORE IdleMood, or fall back to flat random.
- * @returns {'expr_*'|'pose_*'|null}
+ * Pick a 3-layer idle clip from CORE IdleMood (or flat random).
+ * @returns {{ pose: string|null, expr: string, cloud: string }}
  */
-function pickIdleAssetId(mood, rng = Math.random) {
-  const usePose = rng() < 0.4;
-  if (mood && mood.expr && mood.pose) {
+function pickIdleLayers(mood, rng = Math.random) {
+  let exprShort;
+  let poseShort = null;
+  const usePose = rng() < 0.45;
+
+  if (mood?.expr && mood?.pose) {
+    exprShort = pickWeightedKey(mood.expr, rng) || 'normal';
+    if (usePose) poseShort = pickWeightedKey(mood.pose, rng);
+  } else {
+    const exprs = ['happy', 'sleepy', 'surprised', 'content', 'normal'];
+    exprShort = exprs[Math.floor(rng() * exprs.length)];
     if (usePose) {
-      const short = pickWeightedKey(mood.pose, rng);
-      return short ? poseAssetId(short) : null;
+      const poses = ['sit', 'stretch', 'lie'];
+      poseShort = poses[Math.floor(rng() * poses.length)];
     }
-    const short = pickWeightedKey(mood.expr, rng);
-    return short ? exprAssetId(short) : null;
   }
-  if (usePose) {
-    return IDLE_POSES[Math.floor(rng() * IDLE_POSES.length)];
-  }
-  const exprs = IDLE_EXPR.filter((x) => x !== 'expr_normal');
-  return exprs[Math.floor(rng() * exprs.length)];
+
+  // dream-heavy: prefer sleepy cloud even on content faces
+  let cloud = cloudForExprShort(exprShort);
+  if (mood?.dominant === 'dream' && rng() < 0.55) cloud = 'cloud_sleepy';
+  if (mood?.dominant === 'explore' && exprShort === 'happy') cloud = 'cloud_happy';
+  if (mood?.dominant === 'work' && exprShort === 'surprised') cloud = 'cloud_excited';
+
+  return {
+    pose: poseShort ? poseAssetId(poseShort) : null,
+    expr: exprAssetId(exprShort),
+    cloud,
+  };
 }
 
 module.exports = {
   IDLE_EXPR,
   IDLE_POSES,
+  IDLE_CLOUDS,
+  EXPR_TO_CLOUD,
   idleAssetPath,
   exprAssetId,
   poseAssetId,
+  cloudAssetId,
+  cloudForExprShort,
   pickWeightedKey,
-  pickIdleAssetId,
+  pickIdleLayers,
 };

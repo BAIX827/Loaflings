@@ -26,6 +26,11 @@
 ## Log
 
 2026-09-18 (DAY-DESK)
+- Idle 3-layer compose: body (pose|expr) + ART cloud_*; strip baked cloud so mood layer shows.
+
+
+
+2026-09-18 (DAY-DESK)
 - Wire CORE idleMoodFromProfile into idle FX (weighted expr/pose + intervalMs); still no gene change.
 
 

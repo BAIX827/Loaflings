@@ -33,6 +33,13 @@
     'expr_content',
   ];
   const IDLE_POSE_IDS = ['pose_sit', 'pose_stretch', 'pose_lie'];
+  const IDLE_CLOUD_BY_EXPR = {
+    normal: 'cloud_normal',
+    happy: 'cloud_happy',
+    sleepy: 'cloud_sleepy',
+    surprised: 'cloud_excited',
+    content: 'cloud_happy',
+  };
   const IDLE_OK_PHASES = new Set(['newborn', 'growing', 'adult']);
 
 
@@ -463,49 +470,20 @@
     }
   });
 
-  // —— Idle random FX (DAY-ART IDLE_MVP) ——
+  // —— Idle FX: pose + expr + cloud (LEAD 3-layer; not genes) ——
   const idleFxEl = document.getElementById('idle-fx');
+  const idleBodyEl = document.getElementById('idle-fx-body');
+  const idleCloudEl = document.getElementById('idle-fx-cloud');
   let idleBusyUntil = 0;
   let lastActivityClicks = 0;
   let lastActivityKeys = 0;
   let quietMs = 0;
+  let lastIdlePickAt = 0;
+  let lastIdleMood = null;
 
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
-
-  async function showIdleFx(id) {
-    if (!idleFxEl || !IDLE_OK_PHASES.has(phase)) {
-      if (idleFxEl) idleFxEl.hidden = true;
-      return;
-    }
-    try {
-      const res = await fetch(`../../character/idle/${id}.svg`);
-      if (!res.ok) throw new Error(String(res.status));
-      const svgText = await res.text();
-      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-      const svg = doc.documentElement;
-      if (svg.querySelector('parsererror')) throw new Error('parse');
-      const firstRect = svg.querySelector('rect');
-      if (firstRect) firstRect.setAttribute('fill', 'none');
-      idleFxEl.replaceChildren(document.importNode(svg, true));
-      idleFxEl.hidden = false;
-      // hide base pet briefly so pose/expr reads cleanly
-      if (petEl) petEl.style.opacity = id.startsWith('pose_') ? '0' : '0.35';
-      idleBusyUntil = Date.now() + (id.startsWith('pose_') ? 4200 : 2800);
-      setTimeout(() => {
-        if (Date.now() < idleBusyUntil - 50) return;
-        idleFxEl.hidden = true;
-        idleFxEl.replaceChildren();
-        if (petEl) petEl.style.opacity = '';
-      }, id.startsWith('pose_') ? 4200 : 2800);
-    } catch (err) {
-      console.warn('[loaflings] idle fx', id, err);
-    }
-  }
-
-  let lastIdlePickAt = 0;
-  let lastIdleMood = null;
 
   function pickWeightedLocal(weights) {
     const keys = Object.keys(weights || {});
@@ -520,18 +498,88 @@
     return keys[keys.length - 1];
   }
 
-  function pickIdleAssetFromMood(mood) {
-    const usePose = Math.random() < 0.4;
+  /** Strip baked thought-cloud (y < 300) so cloud_* layer owns mood. */
+  function stripBakedCloud(svg) {
+    svg.querySelectorAll('circle').forEach((el) => {
+      const cy = Number(el.getAttribute('cy'));
+      if (Number.isFinite(cy) && cy < 300) el.remove();
+    });
+    // sparkles / zZ / lightning often sit with the baked cloud
+    svg.querySelectorAll('path, text').forEach((el) => {
+      const d = el.getAttribute('d') || '';
+      const fill = (el.getAttribute('fill') || '').toUpperCase();
+      const stroke = (el.getAttribute('stroke') || '').toUpperCase();
+      if (stroke === '#F5C84C' || fill === '#F5C84C') el.remove();
+      if (/z/i.test(el.textContent || '')) el.remove();
+      // tiny upper sparkle paths (rough: only M points with y < 200)
+      const ys = [...d.matchAll(/([\\d.]+)\\s+([\\d.]+)/g)].map((m) => Number(m[2]));
+      if (ys.length && ys.every((y) => y < 220)) el.remove();
+    });
+  }
+
+  async function loadIdleSvg(id, { stripCloud = false } = {}) {
+    const res = await fetch(`../../character/idle/${id}.svg`);
+    if (!res.ok) throw new Error(`${id} ${res.status}`);
+    const svgText = await res.text();
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    const svg = doc.documentElement;
+    if (svg.querySelector('parsererror')) throw new Error(`parse ${id}`);
+    const firstRect = svg.querySelector('rect');
+    if (firstRect) firstRect.setAttribute('fill', 'none');
+    if (stripCloud) stripBakedCloud(svg);
+    return document.importNode(svg, true);
+  }
+
+  function pickIdleLayers(mood) {
+    let exprShort = 'happy';
+    let poseId = null;
+    const usePose = Math.random() < 0.45;
     if (mood?.expr && mood?.pose) {
+      exprShort = pickWeightedLocal(mood.expr) || 'normal';
       if (usePose) {
-        const short = pickWeightedLocal(mood.pose);
-        return short ? `pose_${short}` : pick(IDLE_POSE_IDS);
+        const ps = pickWeightedLocal(mood.pose);
+        poseId = ps ? `pose_${ps}` : pick(IDLE_POSE_IDS);
       }
-      const short = pickWeightedLocal(mood.expr);
-      return short ? `expr_${short}` : pick(IDLE_EXPR_IDS);
+    } else {
+      exprShort = pick(['happy', 'sleepy', 'surprised', 'content', 'normal']);
+      if (usePose) poseId = pick(IDLE_POSE_IDS);
     }
-    if (usePose) return pick(IDLE_POSE_IDS);
-    return pick(IDLE_EXPR_IDS.filter((x) => x !== 'expr_normal'));
+    let cloud = IDLE_CLOUD_BY_EXPR[exprShort] || 'cloud_normal';
+    if (mood?.dominant === 'dream' && Math.random() < 0.55) cloud = 'cloud_sleepy';
+    if (mood?.dominant === 'work' && exprShort === 'surprised') cloud = 'cloud_excited';
+    return {
+      // MVP assets are full frames: prefer pose body, else expr body
+      body: poseId || `expr_${exprShort}`,
+      exprShort,
+      cloud,
+      isPose: Boolean(poseId),
+    };
+  }
+
+  async function showIdleCompose(layers) {
+    if (!idleFxEl || !idleBodyEl || !idleCloudEl || !IDLE_OK_PHASES.has(phase)) {
+      if (idleFxEl) idleFxEl.hidden = true;
+      return;
+    }
+    try {
+      const bodySvg = await loadIdleSvg(layers.body, { stripCloud: true });
+      const cloudSvg = await loadIdleSvg(layers.cloud, { stripCloud: false });
+      idleBodyEl.replaceChildren(bodySvg);
+      idleCloudEl.replaceChildren(cloudSvg);
+      idleFxEl.hidden = false;
+      if (petEl) petEl.style.opacity = '0';
+      const ms = layers.isPose ? 4200 : 3200;
+      idleBusyUntil = Date.now() + ms;
+      setTimeout(() => {
+        if (Date.now() < idleBusyUntil - 50) return;
+        idleFxEl.hidden = true;
+        idleBodyEl.replaceChildren();
+        idleCloudEl.replaceChildren();
+        if (petEl) petEl.style.opacity = '';
+      }, ms);
+    } catch (err) {
+      console.warn('[loaflings] idle compose', layers, err);
+    }
   }
 
   function maybeIdleFx(hp) {
@@ -557,15 +605,13 @@
       return;
     }
     quietMs += 500;
-    // short quiet gate, then respect CORE intervalMs between picks
     if (quietMs < 2500) return;
     const gap = (mood && mood.intervalMs) || 12000;
     if (Date.now() - lastIdlePickAt < gap) return;
     if (Math.random() > 0.35) return;
     quietMs = 0;
     lastIdlePickAt = Date.now();
-    const id = pickIdleAssetFromMood(mood);
-    if (id) void showIdleFx(id);
+    void showIdleCompose(pickIdleLayers(mood));
   }
 
   async function refreshHatchProgress() {
