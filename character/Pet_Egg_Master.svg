@@ -1,0 +1,17 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#FFFDFC"/>
+  <!-- guides -->
+  <line opacity="0.35" x1="600" y1="80" x2="600" y2="760" stroke="#CFC7C2" stroke-dasharray="8 8"/>
+  <line opacity="0.35" x1="320" y1="720" x2="880" y2="720" stroke="#CFC7C2" stroke-dasharray="8 8"/>
+  <!-- egg body -->
+  <ellipse cx="600" cy="470" rx="210" ry="260" fill="#FFF8F1" stroke="#4B3A32" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- soft blush hint (very subtle, optional embryo vibe) -->
+  <ellipse cx="510" cy="500" rx="36" ry="18" fill="#FFD6D6" opacity="0.55"/>
+  <ellipse cx="690" cy="500" rx="36" ry="18" fill="#FFD6D6" opacity="0.55"/>
+  <!-- floating cloud (same signature) -->
+  <circle cx="521" cy="150" r="42.5" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="596.5" cy="127.5" r="60" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="671" cy="150" r="42.5" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="600.5" cy="164.5" r="50" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="5"/>
+  <circle cx="601" cy="236" r="7" fill="#EAF4FF" stroke="#8CB7F0" stroke-width="4"/>
+</svg>

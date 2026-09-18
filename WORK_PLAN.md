@@ -96,3 +96,6 @@
 
 2026-09-18 (DAY-SENSE)
 - TASK-004: permission status IPC + Accessibility deep-link; own-window skips keys+clicks while companion focused; excludeWindowIds stored.
+
+2026-09-18 (DAY-ART)
+- Added egg art: character/Pet_Egg_Master.svg, src/art/Egg.png; updated companion egg SVG to cozy cloud style.

@@ -35,3 +35,10 @@ App code that loads these lives under `src/` (see `src/art/`).
 ## Update policy
 
 Pet art may be replaced later. Keep these four IDs stable unless @DAY-LEAD / @DAY-CORE explicitly change the gene contract.
+
+## Pre-hatch egg
+
+- Geometry: `character/Pet_Egg_Master.svg`
+- Raster preview: `src/art/Egg.png`
+- Companion UI uses cozy egg+cloud inline SVG in `src/desk/index.html` (aligned to master palette)
+- Egg has no face / limbs — undefined day form until hatch
