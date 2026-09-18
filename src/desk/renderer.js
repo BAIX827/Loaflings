@@ -25,6 +25,17 @@
   };
   const PHASE_FALLBACKS = {};
 
+  const IDLE_EXPR_IDS = [
+    'expr_normal',
+    'expr_happy',
+    'expr_sleepy',
+    'expr_surprised',
+    'expr_content',
+  ];
+  const IDLE_POSE_IDS = ['pose_sit', 'pose_stretch', 'pose_lie'];
+  const IDLE_OK_PHASES = new Set(['newborn', 'growing', 'adult']);
+
+
   /** @type {object | null} */
   let lastPayload = null;
   /** @type {string} */
@@ -451,6 +462,76 @@
       await applyPhase('cracking');
     }
   });
+
+  // —— Idle random FX (DAY-ART IDLE_MVP) ——
+  const idleFxEl = document.getElementById('idle-fx');
+  let idleBusyUntil = 0;
+  let lastActivityClicks = 0;
+  let lastActivityKeys = 0;
+  let quietMs = 0;
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  async function showIdleFx(id) {
+    if (!idleFxEl || !IDLE_OK_PHASES.has(phase)) {
+      if (idleFxEl) idleFxEl.hidden = true;
+      return;
+    }
+    try {
+      const res = await fetch(`../../character/idle/${id}.svg`);
+      if (!res.ok) throw new Error(String(res.status));
+      const svgText = await res.text();
+      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+      const svg = doc.documentElement;
+      if (svg.querySelector('parsererror')) throw new Error('parse');
+      const firstRect = svg.querySelector('rect');
+      if (firstRect) firstRect.setAttribute('fill', 'none');
+      idleFxEl.replaceChildren(document.importNode(svg, true));
+      idleFxEl.hidden = false;
+      // hide base pet briefly so pose/expr reads cleanly
+      if (petEl) petEl.style.opacity = id.startsWith('pose_') ? '0' : '0.35';
+      idleBusyUntil = Date.now() + (id.startsWith('pose_') ? 4200 : 2800);
+      setTimeout(() => {
+        if (Date.now() < idleBusyUntil - 50) return;
+        idleFxEl.hidden = true;
+        idleFxEl.replaceChildren();
+        if (petEl) petEl.style.opacity = '';
+      }, id.startsWith('pose_') ? 4200 : 2800);
+    } catch (err) {
+      console.warn('[loaflings] idle fx', id, err);
+    }
+  }
+
+  function maybeIdleFx(hp) {
+    if (!IDLE_OK_PHASES.has(phase)) {
+      if (idleFxEl) {
+        idleFxEl.hidden = true;
+        if (petEl) petEl.style.opacity = '';
+      }
+      return;
+    }
+    if (Date.now() < idleBusyUntil) return;
+    const clicks = hp?.clicks || 0;
+    const keys = hp?.keystrokes || 0;
+    const delta = clicks - lastActivityClicks + (keys - lastActivityKeys);
+    if (delta > 0) {
+      quietMs = 0;
+      lastActivityClicks = clicks;
+      lastActivityKeys = keys;
+      return;
+    }
+    quietMs += 500;
+    // ~2.5s quiet → eligible; random chance each tick
+    if (quietMs < 2500) return;
+    if (Math.random() > 0.22) return;
+    quietMs = 0;
+    const usePose = Math.random() < 0.4;
+    const id = usePose ? pick(IDLE_POSE_IDS) : pick(IDLE_EXPR_IDS.filter((x) => x !== 'expr_normal'));
+    void showIdleFx(id);
+  }
+
   async function refreshHatchProgress() {
     if (!api?.getHatchProgress) return;
     try {
@@ -461,6 +542,8 @@
         clicks: hp.clicks,
         nextAt: hp.progress.nextStageAt,
       });
+      // pass keystrokes if present on payload
+      maybeIdleFx({ clicks: hp.clicks, keystrokes: hp.keystrokes || 0 });
     } catch {
       // ignore
     }

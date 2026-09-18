@@ -26,6 +26,11 @@
 ## Log
 
 2026-09-18 (DAY-DESK)
+- Idle random expr/pose from character/idle (ART IDLE_MVP): quiet ~2.5s on newborn/growing/adult; less when typing/clicking.
+
+
+
+2026-09-18 (DAY-DESK)
 - Clean split: window.js / ipc.js / settleBridge.js; docs/DESK_REFERENCES.md (BongoCat-mac notes). Settings can reopen guide.
 
 

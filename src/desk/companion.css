@@ -315,3 +315,30 @@ body {
   color: #4b3a32;
 }
 .guide .guide-steps li { margin: 6px 0; }
+
+
+/* —— Idle expression / pose FX —— */
+.idle-fx {
+  position: absolute;
+  inset: 36px 12px 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.idle-fx svg {
+  width: min(100%, 220px);
+  height: auto;
+  max-height: 100%;
+  animation: idle-pop 0.35s ease-out;
+}
+@keyframes idle-pop {
+  from { transform: scale(0.92); opacity: 0.4; }
+  to { transform: scale(1); opacity: 1; }
+}
+.stage[data-phase='egg'] .idle-fx,
+.stage[data-phase='cracking'] .idle-fx,
+.stage[data-phase='hatching'] .idle-fx {
+  display: none !important;
+}
