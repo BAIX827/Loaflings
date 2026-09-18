@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="./companion.css" />
   </head>
   <body>
-    <div id="stage" class="stage" aria-label="Loaflings companion" data-phase="egg">
+    <div id="stage" class="stage" aria-label="Loaflings companion" data-phase="egg" data-chrome="1" data-hud="1">
       <div id="egg" class="egg" role="img" aria-label="Today’s egg" hidden>
         <div id="egg-art" class="egg-art" aria-hidden="true"></div>
         <p class="egg-caption" hidden aria-hidden="true"></p>
@@ -22,38 +22,32 @@
         <div id="idle-fx-cloud" class="idle-fx-layer idle-fx-cloud"></div>
       </div>
 
+      <div id="view-banner" class="view-banner" hidden aria-live="polite"></div>
+
       <div id="hud" class="hud" aria-live="polite">
         <span id="hud-hits">0</span>
-        <span class="hud-label" data-i18n="hud.hits">hits</span>
+        <span class="hud-label" data-i18n="hud.hits">活跃</span>
         <span id="hud-phase" class="hud-phase">egg</span>
       </div>
       <button type="button" id="btn-chrome-peek" class="chrome-peek" title="Show controls" hidden aria-label="Show controls">⚙</button>
       <div id="chrome" class="chrome" role="toolbar" aria-label="Companion controls">
-        <button type="button" id="btn-reveal" class="chip" title="Day reveal — hatch today’s egg">
-          Day
-        </button>
-        <button type="button" id="btn-collect" class="chip" title="Save hatched Loafling to collection">
-          Save
-        </button>
-        <button type="button" id="btn-settings" class="chip chip-quiet" title="Settings">
-          Settings
-        </button>
-        <button type="button" id="btn-quit" class="chip chip-quiet" title="Quit Loaflings">
-          Quit
-        </button>
-        <span id="collection-badge" class="badge" title="Local collection size">0</span>
+        <button type="button" id="btn-reveal" class="chip" data-i18n="btn.day" title="Day">今日</button>
+        <button type="button" id="btn-collect" class="chip" data-i18n="btn.save" title="Save">收藏</button>
+        <button type="button" id="btn-pack" class="chip" data-i18n="btn.pack" title="Pack / calendar">背包</button>
+        <button type="button" id="btn-settings" class="chip chip-quiet" data-i18n="btn.settings" title="Settings">设置</button>
+        <button type="button" id="btn-quit" class="chip chip-quiet" data-i18n="btn.quit" title="Quit">退出</button>
+        <span id="collection-badge" class="badge" title="Collection">0</span>
       </div>
 
-      <div id="reveal" class="reveal" hidden>
+      <!-- debug reveal strip removed from UX; keep node hidden forever -->
+      <div id="reveal" class="reveal" hidden aria-hidden="true">
         <p id="reveal-line" class="reveal-line"></p>
       </div>
 
       <aside id="panel" class="panel" hidden aria-label="Hatch reveal">
         <header class="panel-head">
-          <strong id="panel-title">Day hatch</strong>
-          <button type="button" id="btn-close-panel" class="chip chip-quiet" title="Close">
-            ✕
-          </button>
+          <strong id="panel-title" data-i18n="panel.title">今日孵化</strong>
+          <button type="button" id="btn-close-panel" class="chip chip-quiet" title="Close">✕</button>
         </header>
         <dl class="panel-grid">
           <dt>Name</dt><dd id="f-name">—</dd>
@@ -67,49 +61,71 @@
         <p id="panel-note" class="panel-note"></p>
       </aside>
 
+      <aside id="bag" class="panel bag" hidden aria-label="Pack">
+        <header class="panel-head">
+          <strong data-i18n="bag.title">背包 · 日历</strong>
+          <button type="button" id="btn-close-bag" class="chip chip-quiet" title="Close">✕</button>
+        </header>
+        <div class="bag-tabs">
+          <button type="button" id="bag-tab-cal" class="chip" data-i18n="bag.cal">日历</button>
+          <button type="button" id="bag-tab-list" class="chip chip-quiet" data-i18n="bag.list">收藏</button>
+        </div>
+        <div id="bag-cal" class="bag-cal"></div>
+        <div id="bag-list" class="bag-list" hidden></div>
+        <p id="bag-hint" class="panel-note"></p>
+        <button type="button" id="bag-back-today" class="chip" style="margin-top:8px" data-i18n="bag.today">回到今天</button>
+      </aside>
+
       <aside id="guide" class="panel guide" hidden aria-label="Welcome">
         <header class="panel-head">
-          <strong>嗨～我是摸鱼灵蛋</strong>
+          <strong data-i18n="guide.title">嗨～我是摸鱼灵蛋</strong>
           <button type="button" id="btn-close-guide" class="chip chip-quiet" title="Close">✕</button>
         </header>
-        <ol class="guide-steps">
-          <li><strong>打字</strong>和<strong>鼠标点击</strong>都会让我长大（窗在前台也算）。</li>
-          <li>顶上的数字会<strong>实时</strong>跳动；打字+点击合计推进六态（门槛见 Settings/引导外文档）。</li>
-          <li>档位：蛋 → 裂开 → 破壳 → 初生 → 长大 → 成体（越往后越沉）。</li>
-          <li>点 <strong>Day</strong> 看今天结算，<strong>Save</strong> 收进收藏；一天一只哦。</li>
-          <li><strong>Settings</strong> 可调透明/大小/锁定，还能隐藏按键与计数；<strong>Quit</strong> 退出。</li>
+        <ol class="guide-steps" id="guide-steps">
+          <li>打字和点击合计成 <strong>活跃 hits</strong>，推进六态长大。</li>
+          <li>点 <strong>收藏</strong> 把今天的摸鱼灵存进背包；一天一只。</li>
+          <li><strong>背包</strong>里有日历：孵化后可切换看昨天/哪天的样子。</li>
+          <li><strong>设置</strong>可改语言、藏按键、透明度。</li>
         </ol>
-        <button type="button" id="btn-guide-ok" class="chip" style="margin-top:8px">知道啦 ✿</button>
+        <button type="button" id="btn-guide-ok" class="chip" style="margin-top:8px" data-i18n="guide.ok">知道啦 ✿</button>
       </aside>
+
       <aside id="settings" class="panel settings" hidden aria-label="Settings">
         <header class="panel-head">
-          <strong>Settings</strong>
+          <strong data-i18n="settings.title">设置</strong>
           <button type="button" id="btn-close-settings" class="chip chip-quiet" title="Close">✕</button>
         </header>
         <label class="settings-row">
-          <span>Opacity</span>
+          <span data-i18n="settings.lang">语言</span>
+          <select id="set-locale">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label class="settings-row">
+          <span data-i18n="settings.opacity">透明度</span>
           <input id="set-opacity" type="range" min="0.25" max="1" step="0.05" />
         </label>
         <label class="settings-row">
-          <span>Size</span>
+          <span data-i18n="settings.size">大小</span>
           <input id="set-scale" type="range" min="0.6" max="1.6" step="0.05" />
         </label>
         <label class="settings-row settings-check">
           <input id="set-lock" type="checkbox" />
-          <span>Lock position</span>
+          <span data-i18n="settings.lock">锁定位置</span>
         </label>
         <label class="settings-row settings-check">
           <input id="set-show-chrome" type="checkbox" />
-          <span>Show buttons</span>
+          <span data-i18n="settings.showChrome">显示按键</span>
         </label>
         <label class="settings-row settings-check">
           <input id="set-show-hud" type="checkbox" />
-          <span data-i18n="settings.showHud">Show activity</span>
+          <span data-i18n="settings.showHud">显示活跃数</span>
         </label>
-        <p class="panel-note">Buttons hidden时点右上角 ⚙ 可再打开。Locked: window stays put.</p>
-        <button type="button" id="btn-show-guide" class="chip" style="margin-top:8px">新手引导</button>
+        <p class="panel-note" data-i18n="settings.note">隐藏按键后点右上角 ⚙ 可再打开。</p>
+        <button type="button" id="btn-show-guide" class="chip" style="margin-top:8px" data-i18n="settings.guide">新手引导</button>
       </aside>
-      <p id="status" class="status" hidden></p>
+      <p id="status" class="status" hidden aria-hidden="true"></p>
     </div>
     <script src="./renderer.js"></script>
   </body>

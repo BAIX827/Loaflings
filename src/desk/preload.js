@@ -9,12 +9,14 @@ const {
   CHARACTER_ASSETS,
   HATCH_PHASE_ASSETS,
 } = require('./mvpParts');
+const { STRINGS, t: i18nT } = require('./i18n');
 
 contextBridge.exposeInMainWorld('loaflings', {
   product: {
     name: 'Loaflings',
     nameZh: '摸鱼灵',
   },
+  i18n: { STRINGS, t: i18nT },
   parts: {
     fields: MVP_PART_FIELDS,
     base: MVP_BASE_PARTS,

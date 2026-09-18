@@ -405,3 +405,96 @@ body {
 .stage[data-hud='0'] .hud {
   display: none !important;
 }
+
+
+/* Never show debug hatch summary strip or status toast */
+.reveal,
+#reveal,
+.status,
+#status {
+  display: none !important;
+}
+
+.view-banner {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  max-width: 90%;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: rgba(75, 58, 50, 0.9);
+  background: rgba(255, 253, 252, 0.9);
+  box-shadow: 0 1px 4px rgba(75, 58, 50, 0.12);
+  -webkit-app-region: no-drag;
+  white-space: nowrap;
+}
+
+.bag-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.bag-cal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.bag-cal .dow {
+  font-size: 9px;
+  text-align: center;
+  opacity: 0.55;
+}
+.bag-day {
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  min-height: 28px;
+  font-size: 10px;
+  background: rgba(75, 58, 50, 0.06);
+  color: rgba(75, 58, 50, 0.85);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+.bag-day.has {
+  background: rgba(140, 183, 240, 0.45);
+  font-weight: 600;
+}
+.bag-day.active {
+  outline: 2px solid rgba(75, 58, 50, 0.35);
+}
+.bag-day:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.bag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow: auto;
+}
+.bag-item {
+  appearance: none;
+  border: none;
+  text-align: left;
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 11px;
+  background: rgba(75, 58, 50, 0.06);
+  color: rgba(75, 58, 50, 0.9);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+.bag-item.active {
+  background: rgba(140, 183, 240, 0.35);
+}
+.settings select {
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(75, 58, 50, 0.15);
+  padding: 2px 6px;
+  background: #fff;
+}

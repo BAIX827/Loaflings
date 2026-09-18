@@ -7,14 +7,14 @@ const path = require('path');
 const { app } = require('electron');
 
 const DEFAULTS = Object.freeze({
-  version: 2,
+  version: 3,
   opacity: 1,
   scale: 1,
   lockPosition: false,
-  /** Show Day/Save/Settings/Quit chips */
   showChrome: true,
-  /** Show clicks/keys/phase HUD */
   showHud: true,
+  /** @type {'zh'|'en'} */
+  locale: 'zh',
   /** @type {{ x: number, y: number } | null} */
   position: null,
 });
@@ -29,12 +29,13 @@ function clamp(n, lo, hi) {
 
 function normalize(raw) {
   const s = { ...DEFAULTS, ...(raw && typeof raw === 'object' ? raw : {}) };
-  s.version = 2;
+  s.version = 3;
   s.opacity = clamp(Number(s.opacity) || 1, 0.25, 1);
   s.scale = clamp(Number(s.scale) || 1, 0.6, 1.6);
   s.lockPosition = Boolean(s.lockPosition);
   s.showChrome = s.showChrome !== false;
   s.showHud = s.showHud !== false;
+  s.locale = s.locale === 'en' ? 'en' : 'zh';
   if (
     s.position &&
     typeof s.position.x === 'number' &&

@@ -25,6 +25,11 @@
 
 ## Log
 
+2026-09-19 (DAY-DESK)
+- Kill reveal/status strip; ZH/EN locale; Pack calendar to view past hatches; single /Applications QA install; HUD hits.
+
+
+
 2026-09-18 (DAY-DESK)
 - Follow LEAD hatch thresholds (cumulative activityHits); rebuild QA app. Docs/guide synced.
 

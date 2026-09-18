@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rebuild Loaflings.app and install for click-to-open QA (Applications + Desktop).
+# Rebuild Loaflings.app and install ONE copy to /Applications (QA).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -10,12 +10,11 @@ if [[ ! -d "$APP_SRC" ]]; then
   exit 1
 fi
 xattr -cr "$APP_SRC" 2>/dev/null || true
+# Remove Desktop duplicate — only Applications
+rm -rf "$HOME/Desktop/Loaflings.app"
 rm -rf "/Applications/Loaflings.app"
 cp -R "$APP_SRC" "/Applications/Loaflings.app"
 xattr -cr "/Applications/Loaflings.app" 2>/dev/null || true
-rm -rf "$HOME/Desktop/Loaflings.app"
-cp -R "$APP_SRC" "$HOME/Desktop/Loaflings.app"
-xattr -cr "$HOME/Desktop/Loaflings.app" 2>/dev/null || true
-echo "Installed: /Applications/Loaflings.app and ~/Desktop/Loaflings.app"
-echo "Open once, then right-click Dock icon → Options → Keep in Dock."
-echo "Accessibility: enable Loaflings (not Electron) after each replace."
+echo "Installed: /Applications/Loaflings.app (only)"
+echo "Dock: open once → Options → Keep in Dock."
+echo "Accessibility: enable Loaflings after each replace."

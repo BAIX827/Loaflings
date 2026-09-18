@@ -14,6 +14,10 @@
   const panelTitle = document.getElementById('panel-title');
   const badgeEl = document.getElementById('collection-badge');
   const api = window.loaflings;
+  let locale = 'zh';
+  /** @type {object|null} collection entry when browsing pack */
+  let viewingEntry = null;
+  let collectionItems = [];
 
   /** Basenames under character/png (primary) then character/svg (archive). */
   const PHASE_FILES = {
@@ -108,13 +112,12 @@
   let lastVisualPhase = '';
 
   function setStatus(msg) {
-    if (!msg) {
+    // UX: never show bottom status / debug toast (老大)
+    if (msg) console.warn('[loaflings]', msg);
+    if (statusEl) {
       statusEl.hidden = true;
       statusEl.textContent = '';
-      return;
     }
-    statusEl.hidden = false;
-    statusEl.textContent = msg;
   }
 
   function displayName(result) {
@@ -192,8 +195,9 @@
     const hudP = document.getElementById('hud-phase');
     const clicks = typeof opts.clicks === 'number' ? opts.clicks : null;
     const keys = typeof opts.keystrokes === 'number' ? opts.keystrokes : null;
-    if (hudH && (clicks != null || keys != null)) {
-      hudH.textContent = String((clicks || 0) + (keys || 0));
+    const inputs = typeof opts.inputs === 'number' ? opts.inputs : null;
+    if (hudH && (inputs != null || clicks != null || keys != null)) {
+      hudH.textContent = String(inputs != null ? inputs : (clicks || 0) + (keys || 0));
     }
     if (hudP) hudP.textContent = visual;
   }
@@ -224,17 +228,9 @@
       .filter(Boolean)
       .join(' · ');
 
-    if (panelTitle) panelTitle.textContent = 'Day hatch';
-    revealEl.hidden = false;
-    revealLine.textContent = [
-      'Hatched',
-      result.kind === 'loafling' ? 'Loafling' : null,
-      displayName(result),
-      `${g.body}/${g.cloud}/${g.face}/${g.tail}`,
-      note,
-    ]
-      .filter(Boolean)
-      .join(' · ');
+    // Never surface the old debug reveal strip under the pet
+    if (revealEl) revealEl.hidden = true;
+    if (revealLine) revealLine.textContent = '';
   }
 
   function setPanelOpen(open) {
@@ -421,6 +417,186 @@
   });
 
 
+
+  // —— i18n ——
+  function tr(key) {
+    try {
+      return api?.i18n?.t?.(locale, key) || key;
+    } catch {
+      return key;
+    }
+  }
+  function applyLocale() {
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (key) el.textContent = tr(key);
+    });
+    document.documentElement.lang = locale === 'en' ? 'en' : 'zh-CN';
+    const banner = document.getElementById('view-banner');
+    if (banner && viewingEntry) {
+      banner.hidden = false;
+      banner.textContent = `${tr('bag.viewing')} ${viewingEntry.date} · ${viewingEntry.name || ''}`;
+    }
+  }
+
+  // —— Pack / calendar (collection) ——
+  const bagEl = document.getElementById('bag');
+  const bagCal = document.getElementById('bag-cal');
+  const bagList = document.getElementById('bag-list');
+  const viewBanner = document.getElementById('view-banner');
+
+  function setBagOpen(open) {
+    if (bagEl) bagEl.hidden = !open;
+  }
+
+  async function loadCollectionItems() {
+    if (!api?.getCollection) return [];
+    try {
+      const col = await api.getCollection();
+      if (!col?.ok) return [];
+      collectionItems = Array.isArray(col.items) ? col.items : [];
+      return collectionItems;
+    } catch {
+      return [];
+    }
+  }
+
+  function itemsByDate() {
+    const map = new Map();
+    for (const it of collectionItems) {
+      if (it?.date) map.set(it.date, it);
+    }
+    return map;
+  }
+
+  function renderBagCalendar() {
+    if (!bagCal) return;
+    const byDate = itemsByDate();
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    const first = new Date(y, m, 1);
+    const startPad = first.getDay(); // 0 Sun
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const dow = locale === 'en'
+      ? ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+      : ['日', '一', '二', '三', '四', '五', '六'];
+    bagCal.replaceChildren();
+    for (const d of dow) {
+      const el = document.createElement('div');
+      el.className = 'dow';
+      el.textContent = d;
+      bagCal.appendChild(el);
+    }
+    for (let i = 0; i < startPad; i += 1) {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'bag-day';
+      el.disabled = true;
+      bagCal.appendChild(el);
+    }
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const entry = byDate.get(dateStr);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bag-day' + (entry ? ' has' : '') + (viewingEntry?.date === dateStr ? ' active' : '');
+      btn.textContent = String(day);
+      btn.title = entry ? `${dateStr} · ${entry.name}` : dateStr;
+      if (entry) {
+        btn.addEventListener('click', () => void viewCollectionEntry(entry));
+      } else {
+        btn.disabled = true;
+      }
+      bagCal.appendChild(btn);
+    }
+  }
+
+  function renderBagList() {
+    if (!bagList) return;
+    bagList.replaceChildren();
+    if (!collectionItems.length) {
+      const p = document.createElement('p');
+      p.className = 'panel-note';
+      p.textContent = tr('bag.empty');
+      bagList.appendChild(p);
+      return;
+    }
+    for (const it of collectionItems) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bag-item' + (viewingEntry?.id === it.id ? ' active' : '');
+      btn.textContent = `${it.date} · ${it.name || it.personality || 'Loafling'}`;
+      btn.addEventListener('click', () => void viewCollectionEntry(it));
+      bagList.appendChild(btn);
+    }
+  }
+
+  async function viewCollectionEntry(entry) {
+    viewingEntry = entry;
+    if (stageEl) stageEl.dataset.viewing = '1';
+    if (viewBanner) {
+      viewBanner.hidden = false;
+      viewBanner.textContent = `${tr('bag.viewing')} ${entry.date} · ${entry.name || ''}`;
+    }
+    // Until ART ships per-gene looks, show adult base + panel stats
+    await applyPhase('adult');
+    fillPanel({
+      ok: true,
+      source: 'collection',
+      result: {
+        date: entry.date,
+        kind: entry.kind || 'loafling',
+        personality: entry.personality,
+        rarity: entry.rarity,
+        genes: entry.genes,
+        traits: entry.traits,
+        events: entry.events,
+      },
+    });
+    setPanelOpen(false);
+    setBagOpen(false);
+    renderBagCalendar();
+    renderBagList();
+  }
+
+  async function clearViewing() {
+    viewingEntry = null;
+    if (stageEl) stageEl.dataset.viewing = '0';
+    if (viewBanner) {
+      viewBanner.hidden = true;
+      viewBanner.textContent = '';
+    }
+    await syncFromMain();
+    await refreshHatchProgress();
+  }
+
+  document.getElementById('btn-pack')?.addEventListener('click', async () => {
+    setSettingsOpen(false);
+    setPanelOpen(false);
+    await loadCollectionItems();
+    renderBagCalendar();
+    renderBagList();
+    setBagOpen(true);
+  });
+  document.getElementById('btn-close-bag')?.addEventListener('click', () => setBagOpen(false));
+  document.getElementById('bag-back-today')?.addEventListener('click', async () => {
+    setBagOpen(false);
+    await clearViewing();
+  });
+  document.getElementById('bag-tab-cal')?.addEventListener('click', () => {
+    if (bagCal) bagCal.hidden = false;
+    if (bagList) bagList.hidden = true;
+    document.getElementById('bag-tab-cal')?.classList.remove('chip-quiet');
+    document.getElementById('bag-tab-list')?.classList.add('chip-quiet');
+  });
+  document.getElementById('bag-tab-list')?.addEventListener('click', () => {
+    if (bagCal) bagCal.hidden = true;
+    if (bagList) bagList.hidden = false;
+    document.getElementById('bag-tab-list')?.classList.remove('chip-quiet');
+    document.getElementById('bag-tab-cal')?.classList.add('chip-quiet');
+  });
+
   // —— Settings ——
   const settingsEl = document.getElementById('settings');
   const opacityEl = document.getElementById('set-opacity');
@@ -428,6 +604,7 @@
   const lockEl = document.getElementById('set-lock');
   const showChromeEl = document.getElementById('set-show-chrome');
   const showHudEl = document.getElementById('set-show-hud');
+  const localeEl = document.getElementById('set-locale');
   const chromePeekEl = document.getElementById('btn-chrome-peek');
 
   function setSettingsOpen(open) {
@@ -455,7 +632,10 @@
       if (lockEl) lockEl.checked = Boolean(s.lockPosition);
       if (showChromeEl) showChromeEl.checked = s.showChrome !== false;
       if (showHudEl) showHudEl.checked = s.showHud !== false;
+      locale = s.locale === 'en' ? 'en' : 'zh';
+      if (localeEl) localeEl.value = locale;
       applyChromePrefs(s);
+      applyLocale();
     } catch {
       // ignore
     }
@@ -496,6 +676,11 @@
       showHud,
     });
   });
+  localeEl?.addEventListener('change', async () => {
+    locale = localeEl.value === 'en' ? 'en' : 'zh';
+    await api?.setSettings?.({ locale });
+    applyLocale();
+  });
 
   document.getElementById('btn-quit')?.addEventListener('click', () => {
     api?.quitApp?.();
@@ -511,8 +696,8 @@
     if (payload?.ok) {
       await applyPhase('adult');
       setPanelOpen(true);
-      setStatus(`Saved · collection ${payload.count ?? '?'}`);
-      setTimeout(() => setStatus(''), 2200);
+      await loadCollectionItems();
+      await refreshBadge();
     }
   });
 
@@ -688,12 +873,33 @@
 
   async function refreshHatchProgress() {
     if (!api?.getHatchProgress) return;
+    if (viewingEntry) {
+      // Still refresh hits number, keep past look
+      try {
+        const hp = await api.getHatchProgress();
+        if (hp?.ok) {
+          const hudH = document.getElementById('hud-hits');
+          if (hudH) {
+            const hits =
+              typeof hp.inputs === 'number'
+                ? hp.inputs
+                : (hp.clicks || 0) + (hp.keystrokes || 0);
+            hudH.textContent = String(hits);
+          }
+        }
+      } catch {
+        // ignore
+      }
+      return;
+    }
     try {
       const hp = await api.getHatchProgress();
       if (!hp?.ok || !hp.progress) return;
       const visual = hp.alreadySaved ? 'adult' : hp.progress.phase;
       await applyPhase(visual, {
         clicks: hp.clicks,
+        keystrokes: hp.keystrokes || 0,
+        inputs: hp.progress?.inputs ?? hp.inputs,
         nextAt: hp.progress.nextStageAt,
       });
       // pass keystrokes if present on payload
@@ -767,15 +973,11 @@
 // DAY-SENSE: quiet when healthy; surface Accessibility hint if hooks idle-only
 (async function sensePermissionHint() {
   const api = window.loaflings;
-  const statusEl = document.getElementById('status');
-  if (!api?.getSenseStatus || !statusEl) return;
+  if (!api?.getSenseStatus) return;
   try {
     const s = await api.getSenseStatus();
     if (s?.permissionHint && s.backend !== 'uiohook-napi') {
-      statusEl.hidden = false;
-      statusEl.textContent = `Sense (${s.backend || 'off'}): tap to open Accessibility`;
-      statusEl.style.cursor = 'pointer';
-      statusEl.onclick = () => api.openAccessibilitySettings?.();
+      console.info('[loaflings] Accessibility needed for live sense', s.backend);
     }
   } catch (err) {
     console.warn('[loaflings] sense status', err);
