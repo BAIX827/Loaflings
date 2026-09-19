@@ -48,6 +48,22 @@
     return { url: svg, kind: 'svg' };
   }
 
+
+  function stylePngBase(styleOrRarity) {
+    const s = String(styleOrRarity || '');
+    if (s.includes('epic') || s === 'epic') return 'style_epic';
+    if (s.includes('rare') || s === 'rare') return 'style_rare';
+    if (s.includes('common') || s === 'common') return 'style_common';
+    return null;
+  }
+
+  function currentStyleKey() {
+    if (viewingEntry?.style) return viewingEntry.style;
+    if (viewingEntry?.rarity) return viewingEntry.rarity;
+    const st = lastPayload?.result?.style || lastPayload?.result?.rarity;
+    return st || null;
+  }
+
   async function resolveIdleUrl(id) {
     const png = `../../character/png/idle/${id}.png`;
     const svg = `../../character/svg/idle/${id}.svg`;
@@ -308,10 +324,20 @@
 
   async function loadPetArt(cacheKey) {
     const key = cacheKey || 'adult';
-    if (petLoaded && lastVisualPhase === key) return true;
-    const base = PHASE_FILES[key] || PHASE_FILES.adult;
+    const styleKey = currentStyleKey();
+    const cacheToken = `${key}:${styleKey || 'default'}`;
+    if (petLoaded && lastVisualPhase === cacheToken) return true;
+    const styleBase = stylePngBase(styleKey);
     try {
-      const art = await resolveArtUrl(base);
+      let art;
+      if (styleBase) {
+        // Prefer quality look PNGs from ART (character/png/style_*.png)
+        const styled = await resolveArtUrl(styleBase);
+        if (styled.kind === 'png') art = styled;
+        else art = await resolveArtUrl(PHASE_FILES[key] || PHASE_FILES.adult);
+      } else {
+        art = await resolveArtUrl(PHASE_FILES[key] || PHASE_FILES.adult);
+      }
       if (art.kind === 'png') {
         mountRaster(petEl, art.url);
       } else {
@@ -328,7 +354,7 @@
         }
       }
       petLoaded = true;
-      lastVisualPhase = key;
+      lastVisualPhase = cacheToken;
       return true;
     } catch (err) {
       setStatus(`Could not load pet art: ${err.message || err}`);
@@ -384,6 +410,7 @@
       }
     }
 
+    petLoaded = false;
     await applyPhase('adult');
     if (openPanel) setPanelOpen(true);
     setStatus(save ? `Hatched & saved · collection ${payload.count ?? '?'}` : 'Hatched');
@@ -572,7 +599,7 @@
       viewBanner.hidden = false;
       viewBanner.textContent = `${tr('bag.viewing')} ${entry.date} · ${entry.name || ''}`;
     }
-    // Until ART ships per-gene looks, show adult base + panel stats
+    petLoaded = false;
     await applyPhase('adult');
     fillPanel({
       ok: true,
