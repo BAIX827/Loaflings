@@ -25,6 +25,11 @@
 
 ## Log
 
+2026-09-19 (DAY-DESK)
+- PNG-only pet display (six hatch stages + style_*); SVG archive unused by shell.
+
+
+
 2026-09-19 (DAY-CORE)
 - Locked 3 qualities: common 70% / rare 25% / epic 5% (+ energy nudge); DaylingResult.style; retired uncommon.
 

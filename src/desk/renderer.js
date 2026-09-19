@@ -1,5 +1,5 @@
 /**
- * Renderer: egg by day → hatch to Pet_Base_Master.svg + Day reveal + collection.
+ * Renderer: egg by day → hatch PNG stages + Day reveal + collection (PNG-only display).
  * Part IDs from window.loaflings.parts (← src/art/parts.ts).
  * Settlement from CORE via IPC — no gene formulas in DESK.
  */
@@ -19,7 +19,7 @@
   let viewingEntry = null;
   let collectionItems = [];
 
-  /** Basenames under character/png (primary) then character/svg (archive). */
+  /** PNG-only display (LEAD/ART). SVG archive stays under character/svg/ unused by shell. */
   const PHASE_FILES = {
     egg: 'Pet_Egg_Master',
     cracking: 'Pet_Egg_Cracking',
@@ -29,23 +29,17 @@
     adult: 'Pet_Base_Master',
   };
 
-  async function resolveArtUrl(relBaseNoExt) {
-    const png = `../../character/png/${relBaseNoExt}.png`;
-    const svg = `../../character/svg/${relBaseNoExt}.svg`;
-    try {
-      const res = await fetch(png, { method: 'HEAD' });
-      if (res.ok) return { url: png, kind: 'png' };
-    } catch {
-      // fall through
-    }
-    // Some Electron builds dislike HEAD — try GET lightly via img probe fallback later
+  async function resolvePngUrl(relBaseNoExt, { idle = false } = {}) {
+    const png = idle
+      ? `../../character/png/idle/${relBaseNoExt}.png`
+      : `../../character/png/${relBaseNoExt}.png`;
     try {
       const res = await fetch(png);
-      if (res.ok) return { url: png, kind: 'png' };
+      if (res.ok) return png;
     } catch {
       // ignore
     }
-    return { url: svg, kind: 'svg' };
+    return null;
   }
 
 
@@ -65,15 +59,7 @@
   }
 
   async function resolveIdleUrl(id) {
-    const png = `../../character/png/idle/${id}.png`;
-    const svg = `../../character/svg/idle/${id}.svg`;
-    try {
-      const res = await fetch(png);
-      if (res.ok) return { url: png, kind: 'png' };
-    } catch {
-      // ignore
-    }
-    return { url: svg, kind: 'svg' };
+    return resolvePngUrl(id, { idle: true });
   }
 
   function mountRaster(mount, url) {
@@ -84,20 +70,9 @@
     mount.replaceChildren(img);
   }
 
-  async function mountSvgText(mount, svgText, { stripGuides = true } = {}) {
-    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-    const svg = doc.documentElement;
-    if (svg.querySelector('parsererror')) throw new Error('SVG parse error');
-    const firstRect = svg.querySelector('rect');
-    if (firstRect) firstRect.setAttribute('fill', 'none');
-    if (stripGuides) {
-      svg.querySelectorAll('line').forEach((line) => {
-        const opacity = line.getAttribute('opacity');
-        if (opacity && Number(opacity) < 1) line.remove();
-      });
-    }
-    mount.replaceChildren(document.importNode(svg, true));
-    return svg;
+  // mountSvgText retired from display path — SVG archive not shown
+  async function mountSvgText() {
+    throw new Error('SVG display disabled — use character/png');
   }
 
   const IDLE_EXPR_IDS = [
@@ -305,14 +280,9 @@
     }
     const base = PHASE_FILES[visual] || PHASE_FILES.egg;
     try {
-      const art = await resolveArtUrl(base);
-      if (art.kind === 'png') {
-        mountRaster(mount, art.url);
-      } else {
-        const res = await fetch(art.url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        await mountSvgText(mount, await res.text());
-      }
+      const url = await resolvePngUrl(base);
+      if (!url) throw new Error(`missing PNG ${base}`);
+      mountRaster(mount, url);
       phaseArtLoaded[visual] = true;
       lastVisualPhase = visual;
       return true;
@@ -329,30 +299,12 @@
     if (petLoaded && lastVisualPhase === cacheToken) return true;
     const styleBase = stylePngBase(styleKey);
     try {
-      let art;
-      if (styleBase) {
-        // Prefer quality look PNGs from ART (character/png/style_*.png)
-        const styled = await resolveArtUrl(styleBase);
-        if (styled.kind === 'png') art = styled;
-        else art = await resolveArtUrl(PHASE_FILES[key] || PHASE_FILES.adult);
-      } else {
-        art = await resolveArtUrl(PHASE_FILES[key] || PHASE_FILES.adult);
-      }
-      if (art.kind === 'png') {
-        mountRaster(petEl, art.url);
-      } else {
-        const res = await fetch(art.url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const svg = await mountSvgText(petEl, await res.text());
-        svg.querySelectorAll('g[opacity]').forEach((g) => {
-          const opacity = Number(g.getAttribute('opacity'));
-          if (opacity > 0 && opacity < 1) g.remove();
-        });
-        if (api?.parts?.fields) {
-          svg.setAttribute('data-mvp-parts', api.parts.fields.join(','));
-          svg.setAttribute('data-mvp-base', JSON.stringify(api.parts.base));
-        }
-      }
+      let url = null;
+      if (styleBase) url = await resolvePngUrl(styleBase);
+      if (!url) url = await resolvePngUrl(PHASE_FILES[key] || PHASE_FILES.adult);
+      if (!url) url = await resolvePngUrl('Pet_Adult');
+      if (!url) throw new Error(`missing PNG for ${key}`);
+      mountRaster(petEl, url);
       petLoaded = true;
       lastVisualPhase = cacheToken;
       return true;
@@ -835,24 +787,13 @@
   }
 
   async function loadIdleAsset(id, { stripCloud = false } = {}) {
-    const art = await resolveIdleUrl(id);
-    if (art.kind === 'png') {
-      const img = document.createElement('img');
-      img.alt = '';
-      img.draggable = false;
-      img.src = art.url;
-      return img;
-    }
-    const res = await fetch(art.url);
-    if (!res.ok) throw new Error(`${id} ${res.status}`);
-    const svgText = await res.text();
-    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-    const svg = doc.documentElement;
-    if (svg.querySelector('parsererror')) throw new Error(`parse ${id}`);
-    const firstRect = svg.querySelector('rect');
-    if (firstRect) firstRect.setAttribute('fill', 'none');
-    if (stripCloud) stripBakedCloud(svg);
-    return document.importNode(svg, true);
+    const url = await resolveIdleUrl(id);
+    if (!url) throw new Error(`idle PNG missing ${id}`);
+    const img = document.createElement('img');
+    img.alt = '';
+    img.draggable = false;
+    img.src = url;
+    return img;
   }
 
   function pickIdleLayers(mood) {
