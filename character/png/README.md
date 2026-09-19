@@ -1,22 +1,24 @@
-# Character PNG (primary)
+# character/png — runtime pet art
 
-DAY-DESK loads **PNG first** from here, then falls back to `character/svg/`.
+**Use these for the companion.** SVG in `../svg/` is archive only (do not delete; do not display).
 
-Expected hatch stages (same basenames):
+## Hatch stages (activityHits)
 
-- `Pet_Egg_Master.png`
-- `Pet_Egg_Cracking.png`
-- `Pet_Hatching.png`
-- `Pet_Newborn.png`
-- `Pet_Growing.png`
-- `Pet_Base_Master.png` (adult)
+| File | Phase |
+|---|---|
+| `Pet_Egg_Master.png` | egg |
+| `Pet_Egg_Cracking.png` | cracking |
+| `Pet_Hatching.png` | hatching |
+| `Pet_Newborn.png` | newborn |
+| `Pet_Growing.png` | growing |
+| `Pet_Adult.png` / `Pet_Base_Master.png` | adult |
 
-Idle (optional): `idle/expr_*.png`, `pose_*.png`, `cloud_*.png`
+## Quality adults (post-hatch style)
 
-## Quality adult styles (DAY-ART)
+| File | Quality |
+|---|---|
+| `style_common.png` | common |
+| `style_rare.png` | rare |
+| `style_epic.png` | epic |
 
-- `style_common.png` — 普通
-- `style_rare.png` — 稀有
-- `style_epic.png` — 史诗
-
-See `../QUALITY_STYLES.md`.
+Tight crop (~≤8% pad) for click-through.
