@@ -1006,6 +1006,152 @@
     });
   }
 
+
+  // —— Click-through: only opaque pet / UI captures the mouse ——
+  const ALPHA_HIT = 12;
+  /** @type {Map<string, HTMLCanvasElement>} */
+  const artAlphaCache = new Map();
+  let ignoreMouse = true;
+  let lastIgnoreSent = true;
+
+  function setIgnore(next) {
+    if (next === lastIgnoreSent) return;
+    lastIgnoreSent = next;
+    api?.setIgnoreMouse?.(next);
+  }
+
+  function cacheKeyForEl(el) {
+    if (!el) return '';
+    if (el.tagName === 'IMG') return el.currentSrc || el.src || '';
+    if (el.tagName === 'svg' || el.closest?.('svg')) {
+      const svg = el.tagName === 'svg' ? el : el.closest('svg');
+      return `svg:${svg?.outerHTML?.length || 0}:${svg?.getAttribute('viewBox') || ''}`;
+    }
+    return '';
+  }
+
+  function ensureImgCanvas(img) {
+    const key = img.currentSrc || img.src;
+    if (!key) return null;
+    let c = artAlphaCache.get(key);
+    if (c) return c;
+    if (!img.complete || !img.naturalWidth) return null;
+    c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0);
+    artAlphaCache.set(key, c);
+    return c;
+  }
+
+  function ensureSvgCanvas(svg) {
+    const key = cacheKeyForEl(svg);
+    let c = artAlphaCache.get(key);
+    if (c) return c;
+    const vb = svg.viewBox?.baseVal;
+    const w = Math.max(1, Math.round(vb?.width || svg.clientWidth || 200));
+    const h = Math.max(1, Math.round(vb?.height || svg.clientHeight || 150));
+    c = document.createElement('canvas');
+    c.width = Math.min(w, 512);
+    c.height = Math.min(h, 512);
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    const xml = new XMLSerializer().serializeToString(svg);
+    const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`;
+    const img = new Image();
+    img.src = url;
+    // sync path often fails; mark pending — sample as hit until ready
+    artAlphaCache.set(key, c);
+    img.onload = () => {
+      try {
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+      } catch {
+        // ignore
+      }
+    };
+    return c;
+  }
+
+  function alphaAtArt(artRoot, clientX, clientY) {
+    const img = artRoot.querySelector?.('img');
+    if (img) {
+      const canvas = ensureImgCanvas(img);
+      if (!canvas) return true; // not ready — treat as solid so we can interact
+      const rect = img.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return false;
+      const x = Math.floor(((clientX - rect.left) / rect.width) * canvas.width);
+      const y = Math.floor(((clientY - rect.top) / rect.height) * canvas.height);
+      if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) return false;
+      try {
+        const a = canvas.getContext('2d').getImageData(x, y, 1, 1).data[3];
+        return a > ALPHA_HIT;
+      } catch {
+        return true;
+      }
+    }
+    const svg = artRoot.querySelector?.('svg') || (artRoot.tagName === 'svg' ? artRoot : null);
+    if (svg) {
+      const canvas = ensureSvgCanvas(svg);
+      if (!canvas) return true;
+      const rect = svg.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return false;
+      const x = Math.floor(((clientX - rect.left) / rect.width) * canvas.width);
+      const y = Math.floor(((clientY - rect.top) / rect.height) * canvas.height);
+      if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) return false;
+      try {
+        const a = canvas.getContext('2d').getImageData(x, y, 1, 1).data[3];
+        // before onload canvas is empty → alpha 0; keep hit until painted once
+        if (a === 0 && !svg.dataset.alphaReady) return true;
+        if (a > ALPHA_HIT) svg.dataset.alphaReady = '1';
+        return a > ALPHA_HIT;
+      } catch {
+        return true;
+      }
+    }
+    return true;
+  }
+
+  function shouldCapture(clientX, clientY) {
+    // Any open overlay must stay clickable
+    if (panelEl && !panelEl.hidden) return true;
+    if (document.getElementById('settings') && !document.getElementById('settings').hidden) return true;
+    if (document.getElementById('bag') && !document.getElementById('bag').hidden) return true;
+    if (document.getElementById('guide') && !document.getElementById('guide').hidden) return true;
+    const stack = document.elementsFromPoint(clientX, clientY);
+    for (const el of stack) {
+      if (!(el instanceof Element)) continue;
+      if (el.closest?.('.chrome, .chrome-peek, .hud, .panel, .view-banner, button, input, select, label')) {
+        return true;
+      }
+      const art = el.closest?.('.pet, .egg, .idle-fx, .egg-art');
+      if (art) return alphaAtArt(art, clientX, clientY);
+    }
+    return false;
+  }
+
+  let moveRaf = 0;
+  window.addEventListener(
+    'mousemove',
+    (e) => {
+      if (moveRaf) return;
+      moveRaf = requestAnimationFrame(() => {
+        moveRaf = 0;
+        const hit = shouldCapture(e.clientX, e.clientY);
+        ignoreMouse = !hit;
+        setIgnore(ignoreMouse);
+      });
+    },
+    true,
+  );
+  window.addEventListener('dragstart', () => setIgnore(false), true);
+
+  // default: through
+  setIgnore(true);
+
+
   setInterval(refreshHatchProgress, 500);
 
 })();

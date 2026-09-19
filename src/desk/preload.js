@@ -88,4 +88,8 @@ contextBridge.exposeInMainWorld('loaflings', {
   setSettings(partial) {
     return ipcRenderer.invoke('loaflings:set-settings', partial || {});
   },
+  /** @param {boolean} ignore true = click-through (forward moves) */
+  setIgnoreMouse(ignore) {
+    ipcRenderer.send('loaflings:set-ignore-mouse', Boolean(ignore));
+  },
 });

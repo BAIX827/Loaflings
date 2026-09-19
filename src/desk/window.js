@@ -9,8 +9,8 @@ const { loadSettings, saveSettings } = require('./settings');
 
 const ROOT = path.join(__dirname, '../..');
 const ICON_PATH = path.join(ROOT, 'src/art/AppIcon.png');
-const BASE_W = 280;
-const BASE_H = 340;
+const BASE_W = 260;
+const BASE_H = 300;
 
 /** @type {BrowserWindow | null} */
 let companion = null;
@@ -45,8 +45,8 @@ function createCompanionWindow() {
   }
 
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize;
-  const winW = 340;
-  const winH = 380;
+  const winW = 300;
+  const winH = 320;
 
   companion = new BrowserWindow({
     width: winW,
@@ -73,6 +73,8 @@ function createCompanionWindow() {
   });
 
   companion.setAlwaysOnTop(true, 'floating');
+  // Pass clicks through empty/transparent areas (renderer toggles per pixel).
+  companion.setIgnoreMouseEvents(true, { forward: true });
   if (process.platform === 'darwin') {
     companion.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   }

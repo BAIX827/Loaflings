@@ -26,6 +26,13 @@ const {
 const { getCompanion, applyWindowSettings } = require('./window');
 
 function registerIpc() {
+  ipcMain.on('loaflings:set-ignore-mouse', (_e, ignore) => {
+    const win = getCompanion();
+    if (!win || win.isDestroyed()) return;
+    if (ignore) win.setIgnoreMouseEvents(true, { forward: true });
+    else win.setIgnoreMouseEvents(false);
+  });
+
   ipcMain.handle('loaflings:get-sense-status', () => {
     try {
       return getSenseStatus();
