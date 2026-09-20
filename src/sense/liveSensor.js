@@ -8,10 +8,9 @@
 'use strict';
 
 const { EventEmitter } = require('events');
-const fs = require('fs');
-const path = require('path');
 const { emptyProfile, assertProfileShape } = require('./profile.cjs');
 const { createInputHook } = require('./inputHook.cjs');
+const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
 
 const IDLE_THRESHOLD_SEC = 60;
 
@@ -35,6 +34,7 @@ class LiveSensor extends EventEmitter {
    * @param {string} [opts.seedKey]
    * @param {import('electron').PowerMonitor} [opts.powerMonitor]
    * @param {number} [opts.scaleFactor]
+   * @param {boolean} [opts.enableInputHook]
    */
   constructor(opts) {
     super();
@@ -42,6 +42,7 @@ class LiveSensor extends EventEmitter {
     this.seedKey = opts.seedKey || 'local';
     this.powerMonitor = opts.powerMonitor || null;
     this.scaleFactor = opts.scaleFactor || 2;
+    this.enableInputHook = opts.enableInputHook !== false;
     this.profile = this.#loadOrCreate();
     this.lastMouse = null;
     this.lastPersistAt = 0;
@@ -66,18 +67,12 @@ class LiveSensor extends EventEmitter {
 
   #loadOrCreate() {
     const date = todayLocal();
-    try {
-      if (fs.existsSync(this.persistPath)) {
-        const raw = JSON.parse(fs.readFileSync(this.persistPath, 'utf8'));
-        if (raw && raw.date === date) {
-          if (!Array.isArray(raw.activeHours) || raw.activeHours.length !== 24) {
-            raw.activeHours = Array.from({ length: 24 }, () => 0);
-          }
-          return raw;
-        }
+    const raw = readJsonFile(this.persistPath, null);
+    if (raw && raw.date === date) {
+      if (!Array.isArray(raw.activeHours) || raw.activeHours.length !== 24) {
+        raw.activeHours = Array.from({ length: 24 }, () => 0);
       }
-    } catch {
-      // fall through
+      return raw;
     }
     return emptyProfile(date, this.seedKey);
   }
@@ -85,8 +80,7 @@ class LiveSensor extends EventEmitter {
   #writePersist() {
     try {
       assertProfileShape(this.profile);
-      fs.mkdirSync(path.dirname(this.persistPath), { recursive: true });
-      fs.writeFileSync(this.persistPath, JSON.stringify(this.profile, null, 2));
+      writeJsonAtomic(this.persistPath, this.profile);
     } catch (err) {
       console.error('[sense] persist failed', err);
     }
@@ -241,6 +235,17 @@ class LiveSensor extends EventEmitter {
     }
     this.running = true;
     this.tickTimer = setInterval(() => this.#tickIdle(), 5000);
+
+    if (!this.enableInputHook) {
+      this._backend = 'idle-only';
+      return {
+        ok: true,
+        backend: 'idle-only',
+        warning: 'Accessibility permission has not been granted.',
+        permissionHint:
+          'System Settings → Privacy & Security → Accessibility — enable Loaflings',
+      };
+    }
 
     const started = this.hook.start();
     this._backend = started.backend;

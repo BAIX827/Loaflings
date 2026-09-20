@@ -2,7 +2,7 @@
  * DAY-SENSE live bridge for DESK main process.
  */
 const path = require('path');
-const { app, screen, shell } = require('electron');
+const { app, powerMonitor, screen, shell, systemPreferences } = require('electron');
 const { LiveSensor } = require('../../sense/liveSensor.js');
 const { assertProfileShape } = require('../../sense/profile.cjs');
 const { hatchDay, getApiSource } = require('./coreDayCycle');
@@ -27,11 +27,14 @@ async function startLiveSense(_shouldIgnoreClick) {
     return { ok: true, already: true, path: persistPath(), ...(lastStartInfo || {}), coreApi: getApiSource() };
   }
   const display = screen.getPrimaryDisplay();
+  const hasAccessibilityPermission =
+    process.platform !== 'darwin' || systemPreferences.isTrustedAccessibilityClient(false);
   sensor = new LiveSensor({
     persistPath: persistPath(),
     seedKey: 'mac-demo',
-    powerMonitor: require('electron').powerMonitor,
+    powerMonitor,
     scaleFactor: display.scaleFactor || 2,
+    enableInputHook: hasAccessibilityPermission,
   });
   lastStartInfo = await sensor.start();
   sensor.removeAllListeners('counts');

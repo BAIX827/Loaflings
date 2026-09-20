@@ -32,7 +32,7 @@ Do not treat every asset as equally authoritative.
 
 ## Geometry Master
 
-- `Pet_Base_Master.svg`
+- `svg/Pet_Base_Master.svg`
 
 This is the **canonical geometry master** for the Base Loafling front view.
 
@@ -682,7 +682,7 @@ Good:
 
 Canonical geometry master:
 
-`Pet_Base_Master.svg`
+`svg/Pet_Base_Master.svg`
 
 Implementation reference:
 
@@ -775,7 +775,7 @@ the specific task:
 > Follow `LOAFLING_CHARACTER_SPEC.md` and the canonical Loafling character
 > assets for visual identity.
 >
-> For the Base Loafling front view, use `Pet_Base_Master.svg` as the geometry
+> For the Base Loafling front view, use `svg/Pet_Base_Master.svg` as the geometry
 > authority. Use canonical PNG references for visual feeling and
 > `loafling-standard-base.css` only for implementation values.
 >
@@ -798,7 +798,7 @@ When instructions conflict, use:
 
 1. Current explicit user instruction
 2. `LOAFLING_CHARACTER_SPEC.md`
-3. `Pet_Base_Master.svg` for canonical front-view geometry
+3. `svg/Pet_Base_Master.svg` for canonical front-view geometry
 4. Canonical PNG references for visual appearance and art direction
 5. `loafling-standard-base.css` for implementation values
 6. Relevant additional reference material

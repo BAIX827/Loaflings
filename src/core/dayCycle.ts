@@ -2,7 +2,7 @@
  * One egg per local day → behaviour grows it → settle locks one Loafling.
  * Next calendar day always starts a new egg (never merges days).
  *
- * Visual stages: see hatchProgress.ts (process.png, 1000 clicks each).
+ * Visual stages: see hatchProgress.ts (cumulative clicks + keystrokes).
  * Idle presentation: see idleMood.ts (does not affect settle).
  */
 
@@ -52,7 +52,7 @@ export function phaseFromProfile(
   alreadyHatched: boolean,
 ): DayPhase {
   if (alreadyHatched) return 'hatched';
-  const progress = hatchProgressFromClicks(profile.clicks);
+  const progress = hatchProgressFromProfile(profile, false);
   if (progress.stage >= 5) return 'hatched';
   if (progress.stage >= 1) return 'growing';
   const active =

@@ -5,6 +5,8 @@ LEAD lock 2026-09-18 (Game Art Director table). Old “1000 per stage” retired
 
 **Display:** use `character/png/*.png` only for the pet. SVG under `character/svg/` stays in repo for archive / future edit — DESK must not fall back to SVG for the companion window.
 
+The runtime PNG sequence uses one reference-aligned watercolor family and transparent backgrounds so every phase can sit directly on the desktop without a rectangular art panel.
+
 **activityHits** = keystrokes + clicks (either counts).
 
 | Phase | Cumulative activityHits | Asset (PNG only) |

@@ -11,5 +11,7 @@ Aligned with CORE `style_common` / `style_rare` / `style_epic` (普通 / 稀有 
 Rules:
 - Warm brown outlines for all tiers (no chrome plating).
 - Face: two dots + short dash mouth (style guide).
+- All three tiers share the canonical low, soft dough silhouette, tiny front paws, side tail and a small cloud with a visible air gap.
+- Rarity changes palette and only mildly changes proportions; it does not redesign the Loafling species.
 - Egg / cracking / hatching stay shell-first; full style body from newborn/adult settle.
 - Desk loads PNG from `character/png/` by `style_*`.

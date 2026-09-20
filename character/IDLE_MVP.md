@@ -9,7 +9,7 @@ While the companion is idle (not busy typing bursts), randomly play a short expr
 
 ## MVP pool (v1)
 
-### Expressions (`character/svg/idle/ (archive) / character/png/idle/ (primary) expr_*.svg`)
+### Expressions (editable archive: `character/svg/idle/expr_*.svg`)
 | id | look |
 |---|---|
 | `expr_normal` | default face + blue cloud |
@@ -18,7 +18,7 @@ While the companion is idle (not busy typing bursts), randomly play a short expr
 | `expr_surprised` | big round eyes |
 | `expr_content` | soft smile |
 
-### Poses (`character/svg/idle/ (archive) / character/png/idle/ (primary) pose_*.svg`)
+### Poses (editable archive: `character/svg/idle/pose_*.svg`)
 | id | look |
 |---|---|
 | `pose_sit` | sitting |
@@ -32,12 +32,13 @@ Adult base geometry still follows `Pet_Base_Master.svg` / cozy style.
 - Prefer when SENSE reports idle / low activity
 - Random pick from MVP pool, short duration, then back to `expr_normal` / adult idle
 - Do not invent gene fields for these — idle FX only
+- Runtime expects optional raster counterparts under `character/png/idle/`. Until that reference-aligned PNG pool ships, DESK keeps the static adult art plus a subtle CSS breathing motion.
 
 ## Later
 
 Remaining expressions, cloud states, and actions from the sheet.
 
-### Cloud moods (`character/svg/idle/ (archive) / character/png/idle/ (primary) cloud_*.svg`)
+### Cloud moods (editable archive: `character/svg/idle/cloud_*.svg`)
 | id | look |
 |---|---|
 | `cloud_normal` | default blue cloud |

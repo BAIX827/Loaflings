@@ -1,6 +1,6 @@
 # Loaflings MVP — Part IDs
 
-Canonical source: `Pet_Base_Master.svg` + `loafling-standard-base.css` + `LOAFLING_CHARACTER_SPEC_UPDATED.md`.
+Canonical source: `svg/Pet_Base_Master.svg` + `loafling-standard-base.css` + `LOAFLING_CHARACTER_SPEC_UPDATED.md`.
 
 Raster in `reference/` is visual feeling only; do not override this geometry.
 
@@ -26,7 +26,8 @@ Guides (`.Guide_*`, `.Geometry_Guide`) are authoring-only; exclude from runtime 
 
 ## Asset paths
 
-- Geometry master: `character/Pet_Base_Master.svg`
+- Geometry master: `character/svg/Pet_Base_Master.svg`
+- Runtime base: `character/png/Pet_Base_Master.png`
 - Implementation values: `character/loafling-standard-base.css`
 - Design rules: `character/LOAFLING_CHARACTER_SPEC_UPDATED.md`
 
@@ -38,15 +39,18 @@ Pet art may be replaced later. Keep these four IDs stable unless @DAY-LEAD / @DA
 
 ## Pre-hatch egg
 
-- Geometry: `character/Pet_Egg_Master.svg`
+- Editable geometry: `character/svg/Pet_Egg_Master.svg`
+- Runtime art: `character/png/Pet_Egg_Master.png`
 - Raster preview: `src/art/Egg.png`
-- Companion UI uses cozy egg+cloud inline SVG in `src/desk/index.html` (aligned to master palette)
 - Egg has no face / limbs — undefined day form until hatch
 
 ## Hatch phases (daytime look)
 
 See `HATCH_PHASES.md`.
 
-- `egg` → `Pet_Egg_Master.svg`
-- `cracking` → `Pet_Egg_Cracking.svg`
-- `hatched` → `Pet_Base_Master.svg`
+- `egg` → `png/Pet_Egg_Master.png`
+- `cracking` → `png/Pet_Egg_Cracking.png`
+- `hatching` → `png/Pet_Hatching.png`
+- `newborn` → `png/Pet_Newborn.png`
+- `growing` → `png/Pet_Growing.png`
+- `adult` → `png/Pet_Base_Master.png`

@@ -18,7 +18,7 @@ Mac app icon currently uses a square crop of this image: `src/art/AppIcon.png`
 
 When generating or revising Loafling art, match this style first.
 Do not revert to earlier generated “ugly” icon style.
-Canonical geometry for compose remains `character/Pet_Base_Master.svg`; this file governs *feeling* and marketing/icon look.
+Canonical geometry remains `character/svg/Pet_Base_Master.svg`; this file governs *feeling* and marketing/icon look.
 
 
 ## Runtime format (2026-09-19)

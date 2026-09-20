@@ -10,11 +10,12 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 async function build(entry, outfile) {
   await esbuild.build({
-    entryPoints: [path.join(root, entry)],
+    absWorkingDir: root,
+    entryPoints: [`./${entry}`],
     bundle: true,
     platform: 'node',
     format: 'cjs',
-    outfile: path.join(root, outfile),
+    outfile,
     logLevel: 'info',
   });
 }

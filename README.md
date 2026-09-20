@@ -12,9 +12,10 @@ npm install
 npm start
 ```
 
-- Companion starts as an **egg**; **Day** hatches to `character/Pet_Base_Master.svg`; **Save** → `userData/collection.json` (see `src/desk/`)
+- Companion starts as an **egg**; **Day** reveals today’s settled Loafling; **Save** → `userData/collection.json` (see `src/desk/`)
 - Live counters need macOS **Accessibility** (and Input Monitoring if prompted) for Electron / Loaflings
 - Fixture-only settle check: `npm run settle:demo`
+- Full non-UI verification: `npm run verify`
 
 ### Packaged `.app` (Mac)
 
@@ -34,7 +35,7 @@ Repo: https://github.com/BAIX827/Loaflings
 computer behaviour (DAY-SENSE)
         → DailyActivityProfile (count-only JSON)
         → energy + genes + settle (DAY-CORE)
-        → SVG parts (DAY-ART / figma bro)
+        → runtime PNG style (modular gene-part visuals are the next art milestone)
         → companion + collection (DAY-DESK)
 ```
 
@@ -55,7 +56,8 @@ Loaflings/
 ├── WORK_PLAN.md              ← current tasks + log
 ├── package.json              ← Electron demo scripts
 ├── character/                ← canonical pet art (authority)
-│   ├── Pet_Base_Master.svg
+│   ├── png/                  ← runtime hatch + quality artwork
+│   ├── svg/                  ← editable geometry/archive
 │   ├── loafling-standard-base.css
 │   ├── LOAFLING_CHARACTER_SPEC_UPDATED.md
 │   ├── PARTS_MVP.md          ← body / cloud / face / tail
@@ -108,6 +110,8 @@ Loaflings/
 ## MVP gene parts
 
 `body` / `cloud` / `face` / `tail` (not `sprout`). See `docs/GENE_CONTRACT_MVP.md` and `character/PARTS_MVP.md`.
+
+The current MVP emits stable base IDs for those four fields. Behaviour already drives energy, personality, traits and rarity; visual part swapping begins when the modular art pool lands.
 
 ## Docs priority
 

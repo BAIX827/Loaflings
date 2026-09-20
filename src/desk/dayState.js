@@ -3,9 +3,9 @@
  * Persists alreadyHatched; live phase comes from CORE phaseFromProfile.
  * @see docs/DAY_CYCLE_MVP.md
  */
-const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
+const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
 const {
   shouldStartNewEgg,
   localToday,
@@ -37,20 +37,11 @@ function emptyDayState(date = localToday()) {
  */
 function writeDayState(state) {
   const fp = dayStatePath();
-  fs.mkdirSync(path.dirname(fp), { recursive: true });
-  fs.writeFileSync(
-    fp,
-    JSON.stringify(
-      {
-        date: state.date,
-        phase: state.phase,
-        hatchedAt: state.hatchedAt,
-      },
-      null,
-      2,
-    ),
-    'utf8',
-  );
+  writeJsonAtomic(fp, {
+    date: state.date,
+    phase: state.phase,
+    hatchedAt: state.hatchedAt,
+  });
 }
 
 /**
@@ -61,29 +52,23 @@ function ensureDayState() {
   const today = localToday();
   const fp = dayStatePath();
   let prevDate = null;
-  try {
-    if (fs.existsSync(fp)) {
-      const raw = JSON.parse(fs.readFileSync(fp, 'utf8'));
-      prevDate = raw?.date || null;
-      if (raw && !shouldStartNewEgg(raw.date, today)) {
-        const phase =
-          raw.phase === 'hatched'
-            ? 'hatched'
-            : raw.phase === 'growing'
-              ? 'growing'
-              : 'egg';
-        return {
-          date: today,
-          phase,
-          hatchedAt: raw.hatchedAt || null,
-          path: fp,
-          newEgg: false,
-          alreadyHatched: phase === 'hatched',
-        };
-      }
-    }
-  } catch {
-    // fall through
+  const raw = readJsonFile(fp, null);
+  prevDate = raw?.date || null;
+  if (raw && !shouldStartNewEgg(raw.date, today)) {
+    const phase =
+      raw.phase === 'hatched'
+        ? 'hatched'
+        : raw.phase === 'growing'
+          ? 'growing'
+          : 'egg';
+    return {
+      date: today,
+      phase,
+      hatchedAt: raw.hatchedAt || null,
+      path: fp,
+      newEgg: false,
+      alreadyHatched: phase === 'hatched',
+    };
   }
   const fresh = emptyDayState(today);
   writeDayState(fresh);

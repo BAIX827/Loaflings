@@ -28,7 +28,7 @@ First launch (unsigned): right-click → **Open**, or allow in Privacy & Securit
 | Config | `electron-builder.yml` |
 | Scripts | `npm run pack` / `npm run dist` / `npm run dist:dir` |
 | Icon | `src/art/AppIcon.png` → `.icns` at pack time |
-| Packaged entry | `src/desk/boot.js` (tsx then `main.js`) |
+| Packaged entry | `src/desk/boot.js` → `main.js`; precompiled runtime CJS |
 | Output | `dist/` (gitignored) |
 | Sign/notarize | TODO — `identity: null` for local MVP |
 

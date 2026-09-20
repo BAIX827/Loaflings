@@ -36,7 +36,7 @@ const EXPR_TO_CLOUD = Object.freeze({
 });
 
 function idleAssetPath(id) {
-  return `../../character/idle/${id}.svg`;
+  return `../../character/svg/idle/${id}.svg`;
 }
 
 function exprAssetId(shortId) {

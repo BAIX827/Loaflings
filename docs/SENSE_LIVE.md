@@ -17,6 +17,7 @@ No typed text, no window titles, no screenshots.
 ## Permissions
 
 macOS: grant Accessibility (System Settings → Privacy & Security) to Electron / Terminal / Loaflings as prompted.
+Until permission is granted, Loaflings starts in `idle-only` mode: the companion remains usable and idle time can still update, but global key/click/mouse counters stay disabled.
 
 ## IPC
 

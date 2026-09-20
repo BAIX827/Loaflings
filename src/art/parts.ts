@@ -24,20 +24,21 @@ export const MVP_ASSEMBLY_ORDER: MvpPartField[] = [
 
 /** Paths relative to repo root. */
 export const CHARACTER_ASSETS = {
-  masterSvg: 'character/Pet_Base_Master.svg',
+  masterSvg: 'character/svg/Pet_Base_Master.svg',
+  runtimePng: 'character/png/Pet_Base_Master.png',
   css: 'character/loafling-standard-base.css',
   spec: 'character/LOAFLING_CHARACTER_SPEC_UPDATED.md',
   partsDoc: 'character/PARTS_MVP.md',
 } as const;
 
-/** Daytime hatch look — CORE 6 phases (1000 clicks each) */
+/** Runtime daytime hatch look — PNG only; thresholds live in CORE. */
 export const HATCH_PHASE_ASSETS = {
-  egg: 'character/Pet_Egg_Master.svg',
-  cracking: 'character/Pet_Egg_Cracking.svg',
-  hatching: 'character/Pet_Hatching.svg',
-  newborn: 'character/Pet_Newborn.svg',
-  growing: 'character/Pet_Growing.svg',
-  adult: 'character/Pet_Base_Master.svg',
+  egg: 'character/png/Pet_Egg_Master.png',
+  cracking: 'character/png/Pet_Egg_Cracking.png',
+  hatching: 'character/png/Pet_Hatching.png',
+  newborn: 'character/png/Pet_Newborn.png',
+  growing: 'character/png/Pet_Growing.png',
+  adult: 'character/png/Pet_Base_Master.png',
 } as const;
 
 export type HatchPhaseVisual = keyof typeof HATCH_PHASE_ASSETS;
@@ -45,24 +46,24 @@ export type HatchPhaseVisual = keyof typeof HATCH_PHASE_ASSETS;
 /** Idle MVP pool — random play by DESK; see character/IDLE_MVP.md */
 export const IDLE_MVP_ASSETS = {
   expressions: [
-    'character/idle/expr_normal.svg',
-    'character/idle/expr_happy.svg',
-    'character/idle/expr_sleepy.svg',
-    'character/idle/expr_surprised.svg',
-    'character/idle/expr_content.svg',
+    'character/svg/idle/expr_normal.svg',
+    'character/svg/idle/expr_happy.svg',
+    'character/svg/idle/expr_sleepy.svg',
+    'character/svg/idle/expr_surprised.svg',
+    'character/svg/idle/expr_content.svg',
   ],
   poses: [
-    'character/idle/pose_sit.svg',
-    'character/idle/pose_stretch.svg',
-    'character/idle/pose_lie.svg',
+    'character/svg/idle/pose_sit.svg',
+    'character/svg/idle/pose_stretch.svg',
+    'character/svg/idle/pose_lie.svg',
   ],
 } as const;
 
 export const IDLE_CLOUD_ASSETS = [
-  'character/idle/cloud_normal.svg',
-  'character/idle/cloud_happy.svg',
-  'character/idle/cloud_excited.svg',
-  'character/idle/cloud_sleepy.svg',
-  'character/idle/cloud_angry.svg',
-  'character/idle/cloud_sad.svg',
+  'character/svg/idle/cloud_normal.svg',
+  'character/svg/idle/cloud_happy.svg',
+  'character/svg/idle/cloud_excited.svg',
+  'character/svg/idle/cloud_sleepy.svg',
+  'character/svg/idle/cloud_angry.svg',
+  'character/svg/idle/cloud_sad.svg',
 ] as const;

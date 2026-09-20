@@ -2,9 +2,9 @@
  * Companion window prefs.
  * Persisted under Electron userData/desk-settings.json.
  */
-const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
+const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
 
 const DEFAULTS = Object.freeze({
   version: 3,
@@ -49,18 +49,12 @@ function normalize(raw) {
 }
 
 function loadSettings() {
-  try {
-    const raw = JSON.parse(fs.readFileSync(settingsPath(), 'utf8'));
-    return normalize(raw);
-  } catch {
-    return normalize({});
-  }
+  return normalize(readJsonFile(settingsPath(), {}));
 }
 
 function saveSettings(partial) {
   const next = normalize({ ...loadSettings(), ...partial });
-  fs.mkdirSync(path.dirname(settingsPath()), { recursive: true });
-  fs.writeFileSync(settingsPath(), JSON.stringify(next, null, 2));
+  writeJsonAtomic(settingsPath(), next);
   return next;
 }
 

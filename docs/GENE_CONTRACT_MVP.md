@@ -1,7 +1,7 @@
 # Loaflings MVP — Gene Contract (DAY-CORE)
 
 Status: draft v1 · locked part IDs with DAY-ART / DAY-LEAD  
-Canonical art: `character/Pet_Base_Master.svg` + `character/PARTS_MVP.md`
+Canonical geometry: `character/svg/Pet_Base_Master.svg`; runtime art: `character/png/`; contract: `character/PARTS_MVP.md`
 
 ## Daily form
 
@@ -13,7 +13,7 @@ One egg per local day → `hatchDay` / `settleDay` → one Loafling. See `docs/D
 DAY-SENSE DailyActivityProfile (count-only JSON)
         → DAY-CORE energy + genes + settle
         → CreatureGenes { body, cloud, face, tail }
-        → DAY-ART / figma bro SVG parts (same ids)
+        → DAY-ART runtime PNG style (modular same-id part pool next)
         → DAY-DESK companion compose
 ```
 

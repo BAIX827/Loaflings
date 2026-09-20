@@ -9,6 +9,7 @@ const {
 } = require('./hooks/senseLive');
 const { ensureDayState, markGrowing } = require('./dayState');
 const { phaseFromProfile, getApiSource } = require('./hooks/coreDayCycle');
+const { slimResult } = require('./resultView');
 
 let demoBundle = null;
 
@@ -52,20 +53,6 @@ function resolveSettleBundle() {
     };
   }
 }
-
-function slimResult(result) {
-  return {
-    date: result.date,
-    kind: result.kind || 'loafling',
-    energy: result.energy,
-    genes: result.genes,
-    personality: result.personality,
-    rarity: result.rarity,
-    traits: result.traits,
-    events: result.events,
-  };
-}
-
 
 /**
  * Align desk day-state + SENSE profile to the local calendar day.

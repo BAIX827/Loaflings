@@ -8,6 +8,8 @@ const {
   MVP_ASSEMBLY_ORDER,
   CHARACTER_ASSETS,
   HATCH_PHASE_ASSETS,
+  HATCH_PHASE_FILES,
+  QUALITY_STYLE_FILES,
 } = require('./mvpParts');
 const { STRINGS, t: i18nT, labelId } = require('./i18n');
 
@@ -23,6 +25,8 @@ contextBridge.exposeInMainWorld('loaflings', {
     order: MVP_ASSEMBLY_ORDER,
     assets: CHARACTER_ASSETS,
     hatch: HATCH_PHASE_ASSETS,
+    hatchFiles: HATCH_PHASE_FILES,
+    qualityFiles: QUALITY_STYLE_FILES,
   },
   /**
    * Loads src/sense/fixtures/demo-day.json → assertProfileShape → settleDay().

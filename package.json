@@ -8,9 +8,11 @@
     "start": "npm run compile:runtime && electron .",
     "desk": "npm run compile:runtime && electron .",
     "demo": "npm run compile:runtime && electron .",
+    "test": "npm run compile:runtime && node --test tests/*.test.cjs",
+    "verify": "npm test && npm run settle:demo",
     "settle:demo": "npm run compile:runtime && node src/desk/runDemoSettle.js",
-    "postinstall": "electron-builder install-app-deps || true",
-    "rebuild:sense": "npm rebuild uiohook-napi --runtime=electron --target=33.2.1 --disturl=https://electronjs.org/headers",
+    "postinstall": "node scripts/install-app-deps.mjs",
+    "rebuild:sense": "npm rebuild uiohook-napi --runtime=electron --target=44.4.3 --disturl=https://electronjs.org/headers",
     "pack": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
     "dist": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir,dmg --publish never",
     "dist:dir": "npm run compile:runtime && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --publish never",
@@ -21,10 +23,10 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "electron": "^33.2.1",
-    "electron-builder": "^25.1.8",
-    "tsx": "^4.19.2",
-    "esbuild": "^0.25.0"
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3",
+    "esbuild": "0.25.0",
+    "tsx": "^4.19.2"
   },
   "dependencies": {
     "uiohook-napi": "^1.5.5"

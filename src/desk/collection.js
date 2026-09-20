@@ -2,9 +2,9 @@
  * Local daily Loafling collection — JSON under Electron userData.
  * Desk only stores settleDay() output; no gene/sense formulas here.
  */
-const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
+const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
 
 const FILE_NAME = 'collection.json';
 
@@ -24,20 +24,13 @@ function emptyCollection() {
  */
 function loadCollection() {
   const fp = collectionPath();
-  try {
-    if (!fs.existsSync(fp)) {
-      return { ...emptyCollection(), path: fp };
-    }
-    const raw = JSON.parse(fs.readFileSync(fp, 'utf8'));
-    const items = Array.isArray(raw?.items) ? raw.items : [];
-    return {
-      version: typeof raw?.version === 'number' ? raw.version : 1,
-      items,
-      path: fp,
-    };
-  } catch {
-    return { ...emptyCollection(), path: fp };
-  }
+  const raw = readJsonFile(fp, emptyCollection);
+  const items = Array.isArray(raw?.items) ? raw.items : [];
+  return {
+    version: typeof raw?.version === 'number' ? raw.version : 1,
+    items,
+    path: fp,
+  };
 }
 
 /**
@@ -88,12 +81,7 @@ function saveToCollection(result, meta = {}) {
   }
   // Newest first for UI
   col.items.sort((a, b) => String(b.date).localeCompare(String(a.date)));
-  fs.mkdirSync(path.dirname(fp), { recursive: true });
-  fs.writeFileSync(
-    fp,
-    JSON.stringify({ version: col.version, items: col.items }, null, 2),
-    'utf8',
-  );
+  writeJsonAtomic(fp, { version: col.version, items: col.items });
   return { entry, count: col.items.length, path: fp };
 }
 

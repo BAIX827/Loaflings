@@ -3,6 +3,7 @@
 ## Current
 - [ ] Soft polish / optional next
   - [ ] figma bro: modular part SVG split from Pet_Base_Master
+  - [ ] Reference-aligned optional idle PNG expression / pose pool
   - [ ] Optional: Developer ID sign + notarize
   - [ ] Optional short interactions (feed / dig / evolution choice)
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
@@ -12,6 +13,9 @@
 - [ ] Gene-driven part swap when modular SVG pool lands
 
 ## Done
+- [x] 2026-09-21 reference-aligned six-stage and rarity art redraw
+- [x] 2026-09-21 hatch/reveal flow, asset catalog, storage, install and test hardening
+- [x] 2026-09-21 Electron 44 / electron-builder 26 dependency refresh (0 audit findings)
 - [x] TASK-001 Project setup
 - [x] TASK-002 Basic desktop window
 - [x] TASK-004 Permissions status + tighter own-window skip (`bcb3cc6`)
@@ -24,6 +28,18 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-21 (CODE / DESK / SENSE)
+- Fixed hatch progress to use combined clicks + keystrokes, kept reveal state separate from visual growth, and preserved rarity `style` across the renderer bridge.
+- Centralized hatch/quality asset catalogs, removed dead SVG display helpers, and made missing optional idle PNGs fall back once without repeated load failures.
+- Centralized JSON persistence behind atomic same-directory writes for day state, settings, collection and live profile.
+- Added a macOS Accessibility preflight: without permission Loaflings remains usable in idle-only mode instead of starting the native global hook.
+- Refreshed Electron/electron-builder, made postinstall cross-platform, and added reproducible runtime compile/test/verify commands.
+- Verified clean install, 8 automated tests, demo settlement, JavaScript syntax, transparent RGBA assets, and npm audit with 0 findings. macOS packaging remains a target-Mac task.
+
+2026-09-21 (ART)
+- Redrew the complete runtime hatch family from canonical references: egg → cracking → hatching → newborn → growing → adult now share one coherent watercolor style on transparent backgrounds.
+- Redrew common / rare / epic adults around the same soft dough silhouette, minimal face, tiny paws and clearly floating cloud. `Pet_Adult.png` and `Pet_Base_Master.png` use the new common/base anchor.
 
 2026-09-19 (DAY-DESK)
 - PNG-only pet display (six hatch stages + style_*); SVG archive unused by shell.

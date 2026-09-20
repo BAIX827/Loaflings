@@ -335,7 +335,7 @@ function markGrowing(egg) {
 }
 function phaseFromProfile(profile, alreadyHatched) {
   if (alreadyHatched) return "hatched";
-  const progress = hatchProgressFromClicks(profile.clicks);
+  const progress = hatchProgressFromProfile(profile, false);
   if (progress.stage >= 5) return "hatched";
   if (progress.stage >= 1) return "growing";
   const active = profile.keystrokes + profile.clicks + profile.mouseTravel + profile.activeSec > 0;

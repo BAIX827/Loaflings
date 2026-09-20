@@ -44,6 +44,12 @@ body {
   object-fit: contain;
   overflow: hidden;
   filter: drop-shadow(0 6px 10px rgba(75, 58, 50, 0.18));
+  animation: pet-breathe 4.8s ease-in-out infinite;
+}
+
+@keyframes pet-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(1px) scale(1.012, 0.992); }
 }
 
 .chrome {

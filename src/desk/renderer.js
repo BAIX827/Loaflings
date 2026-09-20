@@ -15,12 +15,14 @@
   const badgeEl = document.getElementById('collection-badge');
   const api = window.loaflings;
   let locale = 'zh';
+  /** Persisted reveal state for today; visual growth alone does not mean settled. */
+  let dayHatched = false;
   /** @type {object|null} collection entry when browsing pack */
   let viewingEntry = null;
   let collectionItems = [];
 
   /** PNG-only display (LEAD/ART). SVG archive stays under character/svg/ unused by shell. */
-  const PHASE_FILES = {
+  const PHASE_FILES = api?.parts?.hatchFiles || {
     egg: 'Pet_Egg_Master',
     cracking: 'Pet_Egg_Cracking',
     hatching: 'Pet_Hatching',
@@ -45,9 +47,10 @@
 
   function stylePngBase(styleOrRarity) {
     const s = String(styleOrRarity || '');
-    if (s.includes('epic') || s === 'epic') return 'style_epic';
-    if (s.includes('rare') || s === 'rare') return 'style_rare';
-    if (s.includes('common') || s === 'common') return 'style_common';
+    const qualityFiles = api?.parts?.qualityFiles || {};
+    if (s.includes('epic') || s === 'epic') return qualityFiles.epic || 'style_epic';
+    if (s.includes('rare') || s === 'rare') return qualityFiles.rare || 'style_rare';
+    if (s.includes('common') || s === 'common') return qualityFiles.common || 'style_common';
     return null;
   }
 
@@ -68,11 +71,6 @@
     img.draggable = false;
     img.src = url;
     mount.replaceChildren(img);
-  }
-
-  // mountSvgText retired from display path — SVG archive not shown
-  async function mountSvgText() {
-    throw new Error('SVG display disabled — use character/png');
   }
 
   const IDLE_EXPR_IDS = [
@@ -362,6 +360,8 @@
       }
     }
 
+    dayHatched = true;
+
     petLoaded = false;
     await applyPhase('adult');
     if (openPanel) setPanelOpen(true);
@@ -383,11 +383,13 @@
       }
       if (day.newEgg) {
         lastPayload = null;
+        dayHatched = false;
         await applyPhase('egg', { caption: 'New day · fresh egg' });
         setStatus('New day — a fresh egg');
         setTimeout(() => setStatus(''), 2400);
         return;
       }
+      dayHatched = Boolean(day.alreadyHatched || day.phase === 'hatched');
       if (day.phase === 'hatched') {
         const okSvg = await loadPetArt();
         if (okSvg) await applyPhase('adult');
@@ -410,7 +412,7 @@
   await syncFromMain();
 
   document.getElementById('btn-reveal')?.addEventListener('click', async () => {
-    if (phase === 'egg') {
+    if (!dayHatched) {
       await hatch({ save: false, openPanel: true });
       return;
     }
@@ -707,13 +709,10 @@
   });
 
   document.getElementById('btn-collect')?.addEventListener('click', async () => {
-    if (phase === 'egg') {
-      await hatch({ save: true, openPanel: true });
-      return;
-    }
     setStatus('');
     const payload = await loadSettle(true);
     if (payload?.ok) {
+      dayHatched = true;
       await applyPhase('adult');
       setPanelOpen(true);
       await loadCollectionItems();
@@ -728,10 +727,12 @@
   api?.onDayState?.(async (day) => {
     if (day?.newEgg || day?.phase === 'egg') {
       lastPayload = null;
+      dayHatched = false;
       await applyPhase('egg', { caption: 'New day · fresh egg' });
       setStatus('New day — a fresh egg');
       setTimeout(() => setStatus(''), 2400);
     } else if (day?.phase === 'hatched') {
+      dayHatched = true;
       const okSvg = await loadPetArt();
       if (okSvg) await applyPhase('adult');
     } else if (day?.phase === 'growing') {
@@ -749,6 +750,7 @@
   let quietMs = 0;
   let lastIdlePickAt = 0;
   let lastIdleMood = null;
+  let idleAssetsAvailable = null;
 
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -767,28 +769,16 @@
     return keys[keys.length - 1];
   }
 
-  /** Strip baked thought-cloud (y < 300) so cloud_* layer owns mood. */
-  function stripBakedCloud(svg) {
-    svg.querySelectorAll('circle').forEach((el) => {
-      const cy = Number(el.getAttribute('cy'));
-      if (Number.isFinite(cy) && cy < 300) el.remove();
-    });
-    // sparkles / zZ / lightning often sit with the baked cloud
-    svg.querySelectorAll('path, text').forEach((el) => {
-      const d = el.getAttribute('d') || '';
-      const fill = (el.getAttribute('fill') || '').toUpperCase();
-      const stroke = (el.getAttribute('stroke') || '').toUpperCase();
-      if (stroke === '#F5C84C' || fill === '#F5C84C') el.remove();
-      if (/z/i.test(el.textContent || '')) el.remove();
-      // tiny upper sparkle paths (rough: only M points with y < 200)
-      const ys = [...d.matchAll(/([\d.]+)\s+([\d.]+)/g)].map((m) => Number(m[2]));
-      if (ys.length && ys.every((y) => y < 220)) el.remove();
-    });
-  }
-
-  async function loadIdleAsset(id, { stripCloud = false } = {}) {
+  async function loadIdleAsset(id) {
+    if (idleAssetsAvailable === false) {
+      throw new Error('idle PNG pool unavailable');
+    }
     const url = await resolveIdleUrl(id);
-    if (!url) throw new Error(`idle PNG missing ${id}`);
+    if (!url) {
+      idleAssetsAvailable = false;
+      throw new Error(`idle PNG missing ${id}`);
+    }
+    idleAssetsAvailable = true;
     const img = document.createElement('img');
     img.alt = '';
     img.draggable = false;
@@ -828,10 +818,10 @@
       return;
     }
     try {
-      const bodySvg = await loadIdleAsset(layers.body, { stripCloud: true });
-      const cloudSvg = await loadIdleAsset(layers.cloud, { stripCloud: false });
-      idleBodyEl.replaceChildren(bodySvg);
-      idleCloudEl.replaceChildren(cloudSvg);
+      const bodyImg = await loadIdleAsset(layers.body);
+      const cloudImg = await loadIdleAsset(layers.cloud);
+      idleBodyEl.replaceChildren(bodyImg);
+      idleCloudEl.replaceChildren(cloudImg);
       idleFxEl.hidden = false;
       if (petEl) petEl.style.opacity = '0';
       const ms = layers.isPose ? 4200 : 3200;
@@ -849,6 +839,7 @@
   }
 
   function maybeIdleFx(hp) {
+    if (idleAssetsAvailable === false) return;
     if (!IDLE_OK_PHASES.has(phase)) {
       if (idleFxEl) {
         idleFxEl.hidden = true;

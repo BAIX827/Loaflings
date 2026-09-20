@@ -6,8 +6,8 @@ Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, framele
 
 CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js` (falls back to `settleDay` stub if dayCycle missing). `DaylingResult.kind = 'loafling'`.
 
-- Morning / unsettled: simple egg (SVG/CSS) — not full pet art
-- After hatch: `character/Pet_Base_Master.svg`
+- Morning → adult: six transparent runtime PNG stages under `character/png/`
+- After settle: rarity chooses `style_common.png`, `style_rare.png`, or `style_epic.png`
 - Icon: `src/art/AppIcon.png`
 - MVP parts: `body` / `cloud` / `face` / `tail` (mirrors `src/art/parts.ts`)
 - Demo day: `src/sense/fixtures/demo-day.json` → `assertProfileShape` → `settleDay()` (`src/core`)
@@ -30,6 +30,12 @@ Smoke settle without UI:
 
 ```bash
 npm run settle:demo
+```
+
+Compile + tests + settle smoke:
+
+```bash
+npm run verify
 ```
 
 Requires Node 18+.
@@ -78,9 +84,9 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 
 ### Notes
 
-- Packaged entry is `src/desk/boot.js` (registers `tsx` then loads `main.js`) so CORE/SENSE `.ts` still resolve inside the asar.
+- Packaged entry is `src/desk/boot.js`; CORE/SENSE TypeScript is precompiled into `src/desk/runtime/*.cjs` before launch.
 - Egg / hatch / reveal / collection / live sense behavior is unchanged vs `npm start`.
-- **Must pack on macOS** so `uiohook-napi` + `esbuild` (tsx) get darwin binaries. Config: `electron-builder.yml`.
+- **Must pack on macOS** so `uiohook-napi` gets the correct Darwin native binary. `esbuild` is build-time only. Config: `electron-builder.yml`.
 - Linux can assemble an `.app` shell for config smoke tests, but that build is **not** Dock-ready (wrong natives).
 
 ## Layout
@@ -91,6 +97,8 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 | `dayState.js` | Persist egg/hatched phase per local date under `userData` |
 | `pipeline.js` | Loads SENSE fixture → CORE `settleDay()` |
 | `collection.js` | Persist/load local collection under `userData` |
+| `resultView.js` | Pure renderer-safe projection of CORE settle results |
+| `../shared/jsonFile.cjs` | Shared atomic JSON persistence helper |
 | `preload.js` | Exposes parts + day/settle/collection APIs |
 | `index.html` / `companion.css` | Egg + pet chrome + reveal panel |
 | `renderer.js` | Egg↔hatch UI + Day/Save |
@@ -116,7 +124,7 @@ Main may push `loaflings:day-state` when the calendar day rolls (new egg).
 
 - SENSE sensors not required for MVP — fixture is enough; live is optional
 - Day boundary: desk `ensureDayState()` + SENSE `ensureToday()` (when live is up)
-- Own-window exclusion: main sends `loaflings:window-id` / `excludeWindowIds`
 - No gene/sense formulas in DESK — those stay in `src/core` / `src/sense`
 - CORE has no separate `name` field; desk display name is `personality · rarity`
-- No new creature art — egg is a simple SVG/CSS placeholder until hatch
+- Runtime creature art is PNG-only. SVG files stay editable references and are not used as shell fallback.
+- If a future `character/png/idle/` pool is absent, the base pet keeps a subtle CSS breathing motion without repeated missing-asset work.
