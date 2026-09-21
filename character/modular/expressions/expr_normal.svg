@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Expression_Normal">
+  <ellipse cx="434" cy="550" rx="48" ry="24" fill="#FFD6D6"/>
+  <ellipse cx="770" cy="550" rx="48" ry="24" fill="#FFD6D6"/>
+  <ellipse cx="451" cy="504" rx="17" ry="25" fill="#4B3A32"/>
+  <ellipse cx="753" cy="504" rx="17" ry="25" fill="#4B3A32"/>
+  <path d="M575 533C575 533 588.5 549 602 533C602 533 614.5 548.5 627 533" stroke="#4B3A32" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

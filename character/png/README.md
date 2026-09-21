@@ -21,4 +21,27 @@
 | `style_rare.png` | rare |
 | `style_epic.png` | epic |
 
+## Character expansion review masters
+
+These are complete-character transparent PNGs for visual review. They are not
+yet independent compositing overlays.
+
+### Expressions
+
+| File | State |
+|---|---|
+| `expressions/expr_happy.png` | happy |
+| `expressions/expr_sleepy.png` | sleepy |
+| `expressions/expr_curious.png` | curious |
+
+### Accessories
+
+| File | Slot |
+|---|---|
+| `accessories/hat_knit_blue.png` | headwear |
+| `accessories/outfit_vest_sage.png` | outfit |
+
+Design direction and the remaining expansion backlog live in
+`../CHARACTER_EXPANSION_PLAN.md`.
+
 Tight crop (~≤8% pad) for click-through.

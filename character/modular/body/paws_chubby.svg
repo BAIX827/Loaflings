@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Paws_Chubby_Foreground">
+    <ellipse id="Paw_Chubby_Left" cx="401" cy="622" rx="73" ry="53" fill="#FFF8F1" stroke="#4B3A32" stroke-width="7"/>
+    <ellipse id="Paw_Chubby_Right" cx="799" cy="622" rx="73" ry="53" fill="#FFF8F1" stroke="#4B3A32" stroke-width="7"/>
+    <path id="Paw_Chubby_Details" d="M369 641C380 649 391 652 402 652M427 652C438 649 447 644 453 638M747 641C758 649 769 652 780 652M805 652C816 649 825 644 831 638" stroke="#E9B9A7" stroke-opacity="0.72" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

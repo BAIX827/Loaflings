@@ -1,0 +1,15 @@
+{
+  "id": "basic_long",
+  "kind": "basic",
+  "label": "基础 Long",
+  "description": "更扁、更长、适合慵懒性格的基础身体，仍保留统一中心线和画布。",
+  "recipe": {
+    "body": "body_long",
+    "marking": "none",
+    "expression": "expr_normal",
+    "cloudMood": "cloud_normal",
+    "headwear": "none",
+    "facewear": "none",
+    "outfit": "none"
+  }
+}

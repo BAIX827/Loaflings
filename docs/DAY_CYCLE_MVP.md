@@ -16,7 +16,7 @@ Confirmed with 老大 + `reference/process.png`:
 | 2 | `hatching` | 8000–13999 | 03 破壳而出 |
 | 3 | `newborn` | 14000–20999 | 04 初生幼体 |
 | 4 | `growing` | 21000–28999 | 05 慢慢长大 |
-| 5 | `adult` | 29000+ | 06 成体 |
+| 5 | `adult` | 29000+ | 06 成体（模块化 SVG 配方） |
 
 Thresholds: `HATCH_STAGE_THRESHOLDS` in `src/core/hatchProgress.ts` (see `character/HATCH_PHASES.md`).
 
@@ -40,6 +40,10 @@ hatchDay(profile) → one DaylingResult for profile.date
 ```
 
 Visual `adult` ≠ necessarily saved. Save still calls `hatchDay()` once per date.
+
+Adult rendering uses `DaylingResult.appearance`. Existing egg through growing
+PNG assets remain unchanged. Missing modular files fall back to the existing
+rarity/adult PNG.
 
 ## Cross-day
 

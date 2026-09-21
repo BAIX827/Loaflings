@@ -37,6 +37,27 @@ App code that loads these lives under `src/` (see `src/art/`).
 
 Pet art may be replaced later. Keep these four IDs stable unless @DAY-LEAD / @DAY-CORE explicitly change the gene contract.
 
+The editable adult runtime layer system lives in `character/modular/` and
+`CHARACTER_EXPANSION_PLAN.md`. It adds body templates, expressions, mutations
+and cosmetic slots without changing the four locked CORE gene fields.
+
+Adult runtime order is now:
+
+1. `shadow`
+2. `tail`
+3. `body`
+4. `marking`
+5. `outfit`
+6. `expression`
+7. `facewear`
+8. `pawsForeground`
+9. `headwear`
+10. `cloudMood`
+
+The old four-field order above remains the behavioural gene contract; the
+expanded order is the visual `appearance` recipe emitted by CORE and rendered
+by DAY-DESK.
+
 ## Pre-hatch egg
 
 - Editable geometry: `character/svg/Pet_Egg_Master.svg`
@@ -53,4 +74,4 @@ See `HATCH_PHASES.md`.
 - `hatching` → `png/Pet_Hatching.png`
 - `newborn` → `png/Pet_Newborn.png`
 - `growing` → `png/Pet_Growing.png`
-- `adult` → `png/Pet_Base_Master.png`
+- `adult` → `modular/manifest.json` recipe layers; `png/Pet_Base_Master.png` / rarity PNG remains fallback

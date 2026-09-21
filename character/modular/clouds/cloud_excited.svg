@@ -1,0 +1,12 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Excited">
+    <circle cx="516" cy="160" r="44" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
+    <circle cx="597" cy="136" r="62" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
+    <circle cx="676" cy="160" r="44" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
+    <circle cx="601" cy="176" r="52" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
+    <circle cx="601" cy="249" r="7" fill="#FFF3EF" stroke="#F39A78" stroke-width="4"/>
+    <path id="Spark_Left" d="M458 117V87M443 102H473" stroke="#F5C84C" stroke-width="7" stroke-linecap="round"/>
+    <path id="Spark_Right" d="M735 145V115M720 130H750" stroke="#F5C84C" stroke-width="7" stroke-linecap="round"/>
+    <circle id="Spark_Dot" cx="755" cy="88" r="6" fill="#F5C84C"/>
+  </g>
+</svg>

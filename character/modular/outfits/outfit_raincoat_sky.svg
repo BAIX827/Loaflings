@@ -1,0 +1,16 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="raincoatFill" x1="600" y1="483" x2="600" y2="674" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CDEAFF"/>
+      <stop offset="1" stop-color="#7CB9E6"/>
+    </linearGradient>
+  </defs>
+  <g id="Outfit_Raincoat_Sky">
+    <path id="Raincoat_Body" d="M350 500C390 477 436 468 482 475C511 498 550 513 600 517C650 513 689 498 718 475C764 468 810 477 850 500C880 538 889 594 870 637C831 670 764 676 708 660C664 676 536 676 492 660C436 676 369 670 330 637C311 594 320 538 350 500Z" fill="url(#raincoatFill)" stroke="#4E779A" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Raincoat_Collar" d="M477 475C505 516 545 538 600 542C655 538 695 516 723 475" stroke="#EFF9FF" stroke-width="15" stroke-linecap="round"/>
+    <path id="Raincoat_Seam" d="M600 542V669" stroke="#4E779A" stroke-width="7" stroke-linecap="round"/>
+    <circle id="Raincoat_Button_Top" cx="600" cy="576" r="8" fill="#FFF6C8" stroke="#4E779A" stroke-width="4"/>
+    <circle id="Raincoat_Button_Bottom" cx="600" cy="620" r="8" fill="#FFF6C8" stroke="#4E779A" stroke-width="4"/>
+    <path id="Raincoat_Pockets" d="M449 590C472 600 495 602 518 597M751 590C728 600 705 602 682 597" stroke="#4E779A" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

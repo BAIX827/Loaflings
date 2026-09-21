@@ -1,0 +1,13 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rainHatFill" x1="508" y1="274" x2="681" y2="407" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF3A8"/>
+      <stop offset="1" stop-color="#F4C64E"/>
+    </linearGradient>
+  </defs>
+  <g id="Headwear_Hat_Rain_Yellow">
+    <path id="Rain_Hat_Crown" d="M435 376C454 312 509 275 600 275C691 275 746 312 765 376C680 398 520 398 435 376Z" fill="url(#rainHatFill)" stroke="#A87B24" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Rain_Hat_Brim" d="M395 371C500 401 700 401 805 371C791 411 746 431 600 431C454 431 409 411 395 371Z" fill="#FFD96B" stroke="#A87B24" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Rain_Hat_Highlight" d="M494 325C524 298 558 291 590 291" stroke="#FFF8D2" stroke-width="13" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>

@@ -10,6 +10,7 @@ const {
   HATCH_PHASE_ASSETS,
   HATCH_PHASE_FILES,
   QUALITY_STYLE_FILES,
+  MODULAR_CHARACTER,
 } = require('./mvpParts');
 const { STRINGS, t: i18nT, labelId } = require('./i18n');
 
@@ -27,6 +28,7 @@ contextBridge.exposeInMainWorld('loaflings', {
     hatch: HATCH_PHASE_ASSETS,
     hatchFiles: HATCH_PHASE_FILES,
     qualityFiles: QUALITY_STYLE_FILES,
+    modular: MODULAR_CHARACTER,
   },
   /**
    * Loads src/sense/fixtures/demo-day.json → assertProfileShape → settleDay().

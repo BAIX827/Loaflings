@@ -2,17 +2,22 @@
 
 ## Current
 - [ ] Soft polish / optional next
-  - [ ] figma bro: modular part SVG split from Pet_Base_Master
-  - [ ] Reference-aligned optional idle PNG expression / pose pool
+  - [ ] Reference-aligned optional idle PNG expression / pose pool (3 expression review masters generated; poses remain)
+  - [ ] Review the 3 basic and 2 mutation SVG templates in the live desktop runtime, then approve or revise the art direction
   - [ ] Optional: Developer ID sign + notarize
   - [ ] Optional short interactions (feed / dig / evolution choice)
   - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
-- [ ] Gene-driven part swap when modular SVG pool lands
+- [ ] Optional wardrobe UI for unlocked headwear / facewear / outfits
 
 ## Done
+- [x] 2026-09-21 modular adult runtime integration: CharacterAppearance, layered SVG renderer, collection v2 migration and PNG fallback
+- [x] 2026-09-21 starter templates: Classic / Chubby / Long plus reference-inspired Patchy / Twin Cloud mutations
+- [x] 2026-09-21 modular character v2 starter library: 3 bodies, 8 faces, 9 clouds, 4 hats, 2 glasses, 3 outfits, manifest and composer
+- [x] 2026-09-21 modular character v1: split body/paws/tail, 4 faces, 4 clouds, hat, vest, manifest and previewer
+- [x] 2026-09-21 modular character expansion plan + 3 expression / 2 approved accessory review masters
 - [x] 2026-09-21 reference-aligned six-stage and rarity art redraw
 - [x] 2026-09-21 hatch/reveal flow, asset catalog, storage, install and test hardening
 - [x] 2026-09-21 Electron 44 / electron-builder 26 dependency refresh (0 audit findings)
@@ -28,6 +33,25 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-21 (MODULAR RUNTIME)
+- Added deterministic `CharacterAppearance` to CORE without changing the four locked gene fields: personality selects Classic / Chubby / Long, Rare selects Patchy and Epic selects Twin Cloud.
+- Replaced only the adult desktop look with ordered SVG layers from `character/modular/manifest.json`; egg through growing remain PNG, and missing modular assets fall back to the existing rarity/adult PNG.
+- Upgraded collection rows to v2 appearance recipes with read-time migration for old saves. Modular adults keep breathing, use expression/cloud layer swaps for idle moods, and test click-through against all visible layers.
+- Added a hidden Electron capture smoke helper that exercises the real preload, renderer, CSS and SVG files for common, rare and epic recipes.
+- Verified 18 automated tests, the settlement smoke with an emitted appearance recipe, and three real Electron captures whose DOM reached `phase=adult` with the expected ordered SVG layers.
+
+2026-09-21 (ART EXPANSION)
+- Added five focused recipe templates: three basic bodies plus two reference-inspired mutations. Patchy is a reusable marking layer; Twin Cloud is a reusable special cloud layer, so neither duplicates the full character.
+- Rendered and visually checked all five template recipes; removed a Patchy lower mark that read like an oversized mouth. Verified 40 editable SVG modules and passed all 13 automated tests.
+- Expanded the editable modular library to v2: added Chubby and Long bodies, completed the eight core expressions, added five cloud states, three hats, two facewear options and two outfits. All wearables are declared compatible with all three bodies.
+- Upgraded `character/modular/preview.html` with body and glasses controls plus focus, rainy and sleepy presets; the recipe remains independent per slot and no scarf asset was added.
+- Verified all 38 module SVGs as valid XML on the shared transparent viewBox, rendered four browser review snapshots, and passed all 12 automated tests.
+- Built `character/modular/` v1: split Classic body/tail/paws/shadow, four face-only expressions, four cloud-only moods, a headwear-only blue knit hat and an outfit-only sage vest.
+- Added a versioned manifest with anchors/layer order plus `preview.html` for independent expression, cloud, hat and outfit selection. Existing DESK runtime remains unchanged pending visual approval.
+- Reworked `character/CHARACTER_EXPANSION_PLAN.md` around reusable body, face, cloud, headwear, outfit and prop layers on the canonical `1200 × 900` coordinate system.
+- Kept transparent full-character review masters for happy, sleepy and curious expressions plus the approved blue knit hat and sage knit vest.
+- Removed the rejected coral scarf. Full-character images are now explicitly concept previews; production expressions/accessories must become anchored face-only or accessory-only layers.
 
 2026-09-21 (CODE / DESK / SENSE)
 - Fixed hatch progress to use combined clicks + keystrokes, kept reveal state separate from visual growth, and preserved rarity `style` across the renderer bridge.

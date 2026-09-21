@@ -45,3 +45,20 @@ test('every rarity has a transparent runtime PNG', () => {
     assert.equal(png.colorType, 6, `${baseName}.png must have RGBA alpha`);
   }
 });
+
+test('first character expansion review masters are transparent PNGs', () => {
+  const reviewMasters = [
+    'character/png/expressions/expr_happy.png',
+    'character/png/expressions/expr_sleepy.png',
+    'character/png/expressions/expr_curious.png',
+    'character/png/accessories/hat_knit_blue.png',
+    'character/png/accessories/outfit_vest_sage.png',
+  ];
+
+  for (const repoPath of reviewMasters) {
+    const png = inspectPng(repoPath);
+    assert.equal(png.width, 1594, `${repoPath} must match the adult master width`);
+    assert.ok(png.height === 986 || png.height === 987);
+    assert.equal(png.colorType, 6, `${repoPath} must have RGBA alpha`);
+  }
+});

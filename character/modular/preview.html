@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loaflings Modular Preview</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #f7f2ec; color: #4b3a32; }
+    main { width: min(1220px, calc(100% - 32px)); margin: 24px auto; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; }
+    .stage-card, .controls { border: 1px solid #e8ddd4; border-radius: 24px; background: rgba(255,255,255,.86); box-shadow: 0 18px 50px rgba(89,65,49,.10); }
+    .stage-card { padding: 18px; }
+    .stage { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 18px; background: radial-gradient(circle at 50% 38%, #fff 0 24%, transparent 58%), linear-gradient(180deg, #fffdfb, #f3eae3); }
+    .stage::after { content: ''; position: absolute; inset: auto 8% 7% 8%; height: 1px; background: linear-gradient(90deg, transparent, #dfd2c8, transparent); }
+    .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform-origin: center; }
+    .controls { padding: 22px; align-self: start; }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    p { margin: 0 0 18px; color: #7a6559; line-height: 1.5; }
+    .count { display: inline-flex; margin-bottom: 18px; padding: 6px 10px; border-radius: 999px; background: #edf5ff; color: #567aa7; font-size: 12px; font-weight: 800; }
+    .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    label { display: grid; gap: 7px; margin: 0 0 14px; font-weight: 700; font-size: 13px; }
+    label.full { grid-column: 1 / -1; }
+    select, button { width: 100%; min-height: 42px; border-radius: 12px; border: 1px solid #d9cbc1; background: #fff; color: #4b3a32; padding: 0 12px; font: inherit; }
+    button { border: 0; background: #83a8dd; color: white; font-weight: 800; cursor: pointer; }
+    button.secondary { background: #fff1e8; color: #9a654f; border: 1px solid #efd6c8; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 2px 0 16px; }
+    .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 16px; }
+    .presets button { min-height: 36px; padding: 0 8px; background: #f1edf9; color: #705f92; font-size: 12px; }
+    pre { min-height: 154px; max-height: 240px; overflow: auto; padding: 14px; border-radius: 12px; background: #312821; color: #fcefe4; font-size: 12px; line-height: 1.5; }
+    .hint { margin-top: 12px; font-size: 12px; color: #8e786b; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) { .control-grid { grid-template-columns: 1fr; } label.full { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="stage-card" aria-label="Loafling preview">
+      <div class="stage" id="stage">
+        <img data-layer="shadow" src="body/shadow.svg" alt="" />
+        <img data-layer="tail" src="body/tail_classic.svg" alt="" />
+        <img data-layer="body" src="body/body_classic.svg" alt="" />
+        <img data-layer="marking" alt="" hidden />
+        <img data-layer="outfit" alt="" hidden />
+        <img data-layer="expression" src="expressions/expr_normal.svg" alt="" />
+        <img data-layer="facewear" alt="" hidden />
+        <img data-layer="pawsForeground" src="body/paws_classic.svg" alt="" />
+        <img data-layer="headwear" alt="" hidden />
+        <img data-layer="cloudMood" src="clouds/cloud_normal.svg" alt="" />
+      </div>
+    </section>
+
+    <aside class="controls">
+      <h1>Loafling Composer</h1>
+      <p>身体、表情、云朵和穿戴都是独立图层，可以自由组合。</p>
+      <div class="count">3 基础模板 · 2 变异模板 · 全部仍可自由换装</div>
+
+      <div class="control-grid">
+        <label class="full">模板
+          <select id="template">
+            <option value="custom">自定义组合</option>
+            <optgroup label="基础模板">
+              <option value="basic_classic">基础 Classic</option>
+              <option value="basic_chubby">基础 Chubby</option>
+              <option value="basic_long">基础 Long</option>
+            </optgroup>
+            <optgroup label="Reference 变异模板">
+              <option value="mutation_patchy">变异 Patchy</option>
+              <option value="mutation_twin_cloud">变异 Twin Cloud</option>
+            </optgroup>
+          </select>
+        </label>
+
+        <label>身体
+          <select id="body">
+            <option value="body_classic">Classic</option>
+            <option value="body_chubby">Chubby</option>
+            <option value="body_long">Long</option>
+          </select>
+        </label>
+
+        <label>花纹 / 变异
+          <select id="marking">
+            <option value="none">None</option>
+            <option value="marking_patchy">Patchy</option>
+          </select>
+        </label>
+
+        <label>表情
+          <select id="expression">
+            <option value="expr_normal">Normal</option>
+            <option value="expr_happy">Happy</option>
+            <option value="expr_sleepy">Sleepy</option>
+            <option value="expr_curious">Curious</option>
+            <option value="expr_surprised">Surprised</option>
+            <option value="expr_focused">Focused</option>
+            <option value="expr_grumpy">Grumpy</option>
+            <option value="expr_excited">Excited</option>
+          </select>
+        </label>
+
+        <label>云朵
+          <select id="cloudMood">
+            <option value="cloud_normal">Normal</option>
+            <option value="cloud_happy">Happy</option>
+            <option value="cloud_sleepy">Sleepy</option>
+            <option value="cloud_curious">Curious</option>
+            <option value="cloud_focused">Focused</option>
+            <option value="cloud_excited">Excited</option>
+            <option value="cloud_rainy">Rainy</option>
+            <option value="cloud_stormy">Stormy</option>
+            <option value="cloud_dreamy">Dreamy</option>
+            <option value="cloud_twin">Twin Cloud</option>
+          </select>
+        </label>
+
+        <label>帽子
+          <select id="headwear">
+            <option value="none">None</option>
+            <option value="hat_knit_blue">Blue knit hat</option>
+            <option value="hat_nightcap_lavender">Lavender nightcap</option>
+            <option value="hat_beret_peach">Peach beret</option>
+            <option value="hat_rain_yellow">Yellow rain hat</option>
+          </select>
+        </label>
+
+        <label>眼镜
+          <select id="facewear">
+            <option value="none">None</option>
+            <option value="glasses_round_cocoa">Round cocoa</option>
+            <option value="glasses_focus_blue">Blue focus</option>
+          </select>
+        </label>
+
+        <label>衣服
+          <select id="outfit">
+            <option value="none">None</option>
+            <option value="outfit_vest_sage">Sage knit vest</option>
+            <option value="outfit_apron_peach">Peach apron</option>
+            <option value="outfit_raincoat_sky">Sky raincoat</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="presets" aria-label="Preset recipes">
+        <button type="button" data-preset="focus">工作</button>
+        <button type="button" data-preset="rainy">雨天</button>
+        <button type="button" data-preset="sleepy">困困</button>
+      </div>
+      <div class="actions">
+        <button id="randomize" type="button">随机组合</button>
+        <button id="reset" class="secondary" type="button">恢复默认</button>
+      </div>
+      <pre id="recipe" aria-label="Current recipe"></pre>
+      <div class="hint">SVG 均为 1200 × 900 透明画布，可拖进 Figma 或 Inkscape 继续编辑。</div>
+    </aside>
+  </main>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const layers = Object.fromEntries(
+      [...document.querySelectorAll('[data-layer]')].map((node) => [node.dataset.layer, node]),
+    );
+    const controls = Object.fromEntries(
+      ['body', 'marking', 'expression', 'cloudMood', 'headwear', 'facewear', 'outfit']
+        .map((id) => [id, $(`#${id}`)]),
+    );
+    const bodies = {
+      body_classic: {
+        shadow: 'body/shadow.svg', tail: 'body/tail_classic.svg',
+        body: 'body/body_classic.svg', pawsForeground: 'body/paws_classic.svg',
+      },
+      body_chubby: {
+        shadow: 'body/shadow_chubby.svg', tail: 'body/tail_chubby.svg',
+        body: 'body/body_chubby.svg', pawsForeground: 'body/paws_chubby.svg',
+      },
+      body_long: {
+        shadow: 'body/shadow_long.svg', tail: 'body/tail_long.svg',
+        body: 'body/body_long.svg', pawsForeground: 'body/paws_long.svg',
+      },
+    };
+    const cloudShift = {
+      none: 0,
+      hat_knit_blue: -4,
+      hat_nightcap_lavender: -6,
+      hat_beret_peach: -3,
+      hat_rain_yellow: -5,
+    };
+    const presets = {
+      focus: {
+        body: 'body_classic', marking: 'none', expression: 'expr_focused', cloudMood: 'cloud_focused',
+        headwear: 'none', facewear: 'glasses_focus_blue', outfit: 'outfit_vest_sage',
+      },
+      rainy: {
+        body: 'body_chubby', marking: 'none', expression: 'expr_curious', cloudMood: 'cloud_rainy',
+        headwear: 'hat_rain_yellow', facewear: 'none', outfit: 'outfit_raincoat_sky',
+      },
+      sleepy: {
+        body: 'body_long', marking: 'none', expression: 'expr_sleepy', cloudMood: 'cloud_dreamy',
+        headwear: 'hat_nightcap_lavender', facewear: 'none', outfit: 'none',
+      },
+    };
+    const templates = {
+      basic_classic: {
+        body: 'body_classic', marking: 'none', expression: 'expr_normal', cloudMood: 'cloud_normal',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      basic_chubby: {
+        body: 'body_chubby', marking: 'none', expression: 'expr_normal', cloudMood: 'cloud_normal',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      basic_long: {
+        body: 'body_long', marking: 'none', expression: 'expr_normal', cloudMood: 'cloud_normal',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      mutation_patchy: {
+        body: 'body_classic', marking: 'marking_patchy', expression: 'expr_curious', cloudMood: 'cloud_normal',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      mutation_twin_cloud: {
+        body: 'body_classic', marking: 'none', expression: 'expr_happy', cloudMood: 'cloud_twin',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+    };
+    const defaultRecipe = {
+      body: 'body_classic', marking: 'none', expression: 'expr_normal', cloudMood: 'cloud_normal',
+      headwear: 'none', facewear: 'none', outfit: 'none',
+    };
+
+    function setLayer(name, src) {
+      const layer = layers[name];
+      layer.hidden = !src;
+      if (src) layer.src = src;
+      else layer.removeAttribute('src');
+    }
+
+    function currentRecipe() {
+      return Object.fromEntries(Object.entries(controls).map(([key, control]) => [key, control.value]));
+    }
+
+    function applyRecipe(recipe) {
+      Object.entries(recipe).forEach(([key, value]) => {
+        if (controls[key]) controls[key].value = value;
+      });
+      render();
+    }
+
+    function render() {
+      const recipe = currentRecipe();
+      const body = bodies[recipe.body];
+      setLayer('shadow', body.shadow);
+      setLayer('tail', body.tail);
+      setLayer('body', body.body);
+      setLayer('pawsForeground', body.pawsForeground);
+      setLayer('marking', recipe.marking === 'none' ? null : `markings/${recipe.marking}.svg`);
+      setLayer('expression', `expressions/${recipe.expression}.svg`);
+      setLayer('cloudMood', `clouds/${recipe.cloudMood}.svg`);
+      setLayer('headwear', recipe.headwear === 'none' ? null : `headwear/${recipe.headwear}.svg`);
+      setLayer('facewear', recipe.facewear === 'none' ? null : `facewear/${recipe.facewear}.svg`);
+      setLayer('outfit', recipe.outfit === 'none' ? null : `outfits/${recipe.outfit}.svg`);
+      layers.cloudMood.style.transform = `translateY(${cloudShift[recipe.headwear]}%)`;
+      $('#recipe').textContent = JSON.stringify(recipe, null, 2);
+    }
+
+    Object.values(controls).forEach((control) => control.addEventListener('change', () => {
+      $('#template').value = 'custom';
+      render();
+    }));
+    $('#template').addEventListener('change', (event) => {
+      if (templates[event.target.value]) applyRecipe(templates[event.target.value]);
+    });
+    $('[data-preset="focus"]').addEventListener('click', () => applyRecipe(presets.focus));
+    $('[data-preset="rainy"]').addEventListener('click', () => applyRecipe(presets.rainy));
+    $('[data-preset="sleepy"]').addEventListener('click', () => applyRecipe(presets.sleepy));
+    $('#randomize').addEventListener('click', () => {
+      Object.values(controls).forEach((control) => {
+        control.selectedIndex = Math.floor(Math.random() * control.options.length);
+      });
+      render();
+    });
+    $('#reset').addEventListener('click', () => applyRecipe(defaultRecipe));
+    const query = new URLSearchParams(location.search);
+    const requestedTemplate = query.get('template');
+    const requestedPreset = query.get('preset');
+    if (templates[requestedTemplate]) {
+      $('#template').value = requestedTemplate;
+      applyRecipe(templates[requestedTemplate]);
+    } else if (presets[requestedPreset]) applyRecipe(presets[requestedPreset]);
+    else render();
+  </script>
+</body>
+</html>

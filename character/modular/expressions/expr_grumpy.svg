@@ -1,0 +1,11 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Expression_Grumpy">
+    <ellipse id="Blush_Left" cx="434" cy="553" rx="45" ry="21" fill="#F7C1BC"/>
+    <ellipse id="Blush_Right" cx="770" cy="553" rx="45" ry="21" fill="#F7C1BC"/>
+    <path id="Brow_Left" d="M424 477L474 493" stroke="#4B3A32" stroke-width="8" stroke-linecap="round"/>
+    <path id="Brow_Right" d="M730 493L780 477" stroke="#4B3A32" stroke-width="8" stroke-linecap="round"/>
+    <ellipse id="Eye_Left" cx="451" cy="514" rx="15" ry="19" fill="#4B3A32"/>
+    <ellipse id="Eye_Right" cx="753" cy="514" rx="15" ry="19" fill="#4B3A32"/>
+    <path id="Mouth" d="M580 548C592 535 612 535 624 548" stroke="#4B3A32" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

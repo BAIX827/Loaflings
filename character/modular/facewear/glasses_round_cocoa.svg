@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Facewear_Glasses_Round_Cocoa">
+    <circle id="Lens_Left" cx="451" cy="505" r="42" fill="#FFF8F1" fill-opacity="0.16" stroke="#76564A" stroke-width="8"/>
+    <circle id="Lens_Right" cx="753" cy="505" r="42" fill="#FFF8F1" fill-opacity="0.16" stroke="#76564A" stroke-width="8"/>
+    <path id="Bridge" d="M493 505C534 490 670 490 711 505" stroke="#76564A" stroke-width="8" stroke-linecap="round"/>
+    <path id="Arms" d="M409 501L382 494M795 501L822 494" stroke="#76564A" stroke-width="8" stroke-linecap="round"/>
+    <path id="Lens_Glint" d="M429 485L443 476M731 485L745 476" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>

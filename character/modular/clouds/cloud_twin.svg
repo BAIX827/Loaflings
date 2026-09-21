@@ -1,0 +1,18 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Twin_Mutation">
+    <g id="Cloud_Twin_Blue">
+      <circle cx="454" cy="159" r="31" fill="#EAF4FF" stroke="#77A6E8" stroke-width="5"/>
+      <circle cx="507" cy="143" r="44" fill="#EAF4FF" stroke="#77A6E8" stroke-width="5"/>
+      <circle cx="559" cy="159" r="31" fill="#EAF4FF" stroke="#77A6E8" stroke-width="5"/>
+      <ellipse cx="507" cy="170" rx="56" ry="35" fill="#EAF4FF" stroke="#77A6E8" stroke-width="5"/>
+      <circle cx="535" cy="231" r="6" fill="#EAF4FF" stroke="#77A6E8" stroke-width="4"/>
+    </g>
+    <g id="Cloud_Twin_Peach">
+      <circle cx="641" cy="159" r="31" fill="#FFF0EF" stroke="#E9929A" stroke-width="5"/>
+      <circle cx="693" cy="143" r="44" fill="#FFF0EF" stroke="#E9929A" stroke-width="5"/>
+      <circle cx="746" cy="159" r="31" fill="#FFF0EF" stroke="#E9929A" stroke-width="5"/>
+      <ellipse cx="693" cy="170" rx="56" ry="35" fill="#FFF0EF" stroke="#E9929A" stroke-width="5"/>
+      <circle cx="665" cy="231" r="6" fill="#FFF0EF" stroke="#E9929A" stroke-width="4"/>
+    </g>
+  </g>
+</svg>

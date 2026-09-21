@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Body_Long">
+    <path id="Body_Long_Fill" d="M247 596C224 563 234 514 264 478C288 449 319 434 357 429C375 391 413 368 458 369C492 340 541 330 583 345C615 329 658 333 687 354C732 345 781 357 813 389C858 392 897 416 915 454C953 464 981 492 991 528C1004 574 983 617 943 632C910 644 876 636 853 616C816 651 765 664 718 650C679 672 521 672 482 650C435 664 384 651 347 616C324 636 290 644 257 632C251 621 248 609 247 596Z" fill="#FFF8F1" stroke="#4B3A32" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="Body_Long_Highlight" d="M315 442C361 397 418 383 474 382" stroke="#FFFFFF" stroke-opacity="0.56" stroke-width="17" stroke-linecap="round"/>
+    <path id="Body_Long_Shade" d="M906 454C940 489 945 532 928 561" stroke="#F4CFC0" stroke-opacity="0.34" stroke-width="14" stroke-linecap="round"/>
+  </g>
+</svg>

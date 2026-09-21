@@ -1,0 +1,14 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nightcapFill" x1="486" y1="238" x2="710" y2="377" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EEE7FF"/>
+      <stop offset="1" stop-color="#B8A7E6"/>
+    </linearGradient>
+  </defs>
+  <g id="Headwear_Hat_Nightcap_Lavender">
+    <path id="Nightcap_Body" d="M442 361C465 300 504 262 553 242C605 221 665 225 714 248C683 261 662 286 655 319C648 348 658 373 677 391C608 402 520 393 442 361Z" fill="url(#nightcapFill)" stroke="#715EAA" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Nightcap_Brim" d="M427 351C503 376 605 381 688 359L696 395C608 420 499 414 416 386L427 351Z" fill="#D7CBF5" stroke="#715EAA" stroke-width="8" stroke-linejoin="round"/>
+    <circle id="Nightcap_Pom" cx="723" cy="253" r="34" fill="#EEE7FF" stroke="#715EAA" stroke-width="7"/>
+    <path id="Nightcap_Seams" d="M500 292C527 319 542 349 544 382M566 256C591 292 602 332 602 382" stroke="#9582C8" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>

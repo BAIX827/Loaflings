@@ -1,0 +1,10 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Happy">
+  <circle cx="516" cy="160" r="44" fill="#EEF7FF" stroke="#78A9ED" stroke-width="5"/>
+  <circle cx="596.5" cy="136" r="62" fill="#EEF7FF" stroke="#78A9ED" stroke-width="5"/>
+  <circle cx="676" cy="160" r="44" fill="#EEF7FF" stroke="#78A9ED" stroke-width="5"/>
+  <circle cx="600.5" cy="176" r="52" fill="#EEF7FF" stroke="#78A9ED" stroke-width="5"/>
+  <circle cx="601" cy="249" r="7" fill="#EEF7FF" stroke="#78A9ED" stroke-width="4"/>
+  <path d="M466 113V89M454 101H478M731 136V112M719 124H743" stroke="#F5C84C" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

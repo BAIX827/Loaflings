@@ -13,8 +13,9 @@ One egg per local day → `hatchDay` / `settleDay` → one Loafling. See `docs/D
 DAY-SENSE DailyActivityProfile (count-only JSON)
         → DAY-CORE energy + genes + settle
         → CreatureGenes { body, cloud, face, tail }
-        → DAY-ART runtime PNG style (modular same-id part pool next)
-        → DAY-DESK companion compose
+        → CharacterAppearance recipe
+        → DAY-ART modular SVG pool
+        → DAY-DESK layered adult compose
 ```
 
 ## Gene fields (MVP)
@@ -28,7 +29,35 @@ DAY-SENSE DailyActivityProfile (count-only JSON)
 
 Deprecated: `sprout`.
 
-Post-MVP (do not implement yet): `palette`, `accessory`, `ears`, mutations.
+The four genes remain locked. `appearance` is a separate visual projection and
+does not add cosmetics or mutations to `CreatureGenes`.
+
+## Adult appearance recipe
+
+`DaylingResult.appearance` contains:
+
+```json
+{
+  "body": "body_chubby",
+  "marking": "marking_patchy",
+  "expression": "expr_curious",
+  "cloudMood": "cloud_curious",
+  "headwear": "none",
+  "facewear": "none",
+  "outfit": "none"
+}
+```
+
+First mapping:
+
+- Builder → Classic + Focused
+- Explorer → Chubby + Curious
+- Dreamer → Long + Sleepy/Dreamy
+- Rare → Patchy marking
+- Epic → Twin Cloud
+
+Wearables remain `none` at settlement so later user customization does not
+become a behavioural gene.
 
 ## Deterministic vs seeded
 
@@ -49,7 +78,7 @@ See `src/core/settle.ts`:
 - `kind`: `loafling`
 - `energy`: `{ work, explore, dream }`
 - `genes`: `{ body, cloud, face, tail }`
-- `personality`, `rarity` (`common`/`rare`/`epic`), `style`, `traits[]`, `events[]`
+- `personality`, `rarity` (`common`/`rare`/`epic`), `style`, `appearance`, `traits[]`, `events[]`
 
 ## Sense input expectations
 
@@ -66,7 +95,9 @@ No content text. Align field names with DAY-SENSE schema when that lands.
 | `epic` | 史诗 | 5 | `style_epic` — distinct silhouette accents |
 
 Seeded at settle (`date|seedKey|rarity`). High energy slightly shifts weight toward rare/epic.
-`DaylingResult.rarity` + `DaylingResult.style` — presentation genes stay `body/cloud/face/tail` until ART ships variant PNGs.
+`DaylingResult.rarity` + `DaylingResult.style` remain compatible with the old
+PNG fallback. `appearance` drives the modular adult renderer while presentation
+genes stay `body/cloud/face/tail`.
 `uncommon` retired (do not emit).
 
 ## Owners

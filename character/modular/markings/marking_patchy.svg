@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Marking_Patchy">
+    <path id="Patch_Top_Left" d="M381 410C393 374 426 349 465 343C489 339 510 346 522 362C531 374 528 393 514 402C491 417 476 438 469 462C437 466 406 452 389 432C381 423 378 416 381 410Z" fill="#B99378" fill-opacity="0.76"/>
+    <path id="Patch_Right" d="M786 447C816 443 845 456 865 479C883 500 890 528 882 553C873 581 848 598 817 597C794 596 774 586 762 570C774 548 780 522 778 495C776 476 778 458 786 447Z" fill="#A97D63" fill-opacity="0.72"/>
+    <path id="Patch_Highlight" d="M402 389C419 369 443 361 463 361" stroke="#E5CCBC" stroke-width="12" stroke-linecap="round" stroke-opacity="0.65"/>
+  </g>
+</svg>

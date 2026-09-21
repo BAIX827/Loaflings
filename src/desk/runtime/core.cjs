@@ -20,6 +20,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   CLICKS_PER_HATCH_STAGE: () => CLICKS_PER_HATCH_STAGE,
+  DEFAULT_APPEARANCE: () => DEFAULT_APPEARANCE,
   ENERGY_WEIGHTS: () => ENERGY_WEIGHTS,
   GENE_FIELDS: () => GENE_FIELDS,
   HATCH_STAGE_COUNT: () => HATCH_STAGE_COUNT,
@@ -47,6 +48,7 @@ __export(index_exports, {
   phaseFromProfile: () => phaseFromProfile,
   pickWeighted: () => pickWeighted,
   pickWeightedKey: () => pickWeightedKey,
+  resolveAppearance: () => resolveAppearance,
   resolveGenes: () => resolveGenes,
   resolvePersonality: () => resolvePersonality,
   resolveRarity: () => resolveRarity,
@@ -195,6 +197,44 @@ function styleForRarity(rarity) {
   return STYLE_BY_RARITY[rarity];
 }
 
+// src/core/appearance.ts
+var DEFAULT_APPEARANCE = {
+  body: "body_classic",
+  marking: "none",
+  expression: "expr_normal",
+  cloudMood: "cloud_normal",
+  headwear: "none",
+  facewear: "none",
+  outfit: "none"
+};
+function resolveAppearance(energy, personality, rarity) {
+  let body = "body_classic";
+  let expression = "expr_happy";
+  let cloudMood = "cloud_happy";
+  if (personality === "builder") {
+    body = "body_classic";
+    expression = "expr_focused";
+    cloudMood = "cloud_focused";
+  } else if (personality === "explorer") {
+    body = "body_chubby";
+    expression = "expr_curious";
+    cloudMood = "cloud_curious";
+  } else if (personality === "dreamer") {
+    body = "body_long";
+    expression = "expr_sleepy";
+    cloudMood = energy.dream > 35 ? "cloud_dreamy" : "cloud_sleepy";
+  }
+  return {
+    body,
+    marking: rarity === "rare" ? "marking_patchy" : "none",
+    expression,
+    cloudMood: rarity === "epic" ? "cloud_twin" : cloudMood,
+    headwear: "none",
+    facewear: "none",
+    outfit: "none"
+  };
+}
+
 // src/core/settle.ts
 function settleDay(profile) {
   const energy = computeEnergy(profile);
@@ -205,6 +245,7 @@ function settleDay(profile) {
   const personality = resolvePersonality(energy);
   const rarity = resolveRarity(energy, rarityRng);
   const style = styleForRarity(rarity);
+  const appearance = resolveAppearance(energy, personality, rarity);
   const traits = buildTraits(energy, personality);
   const events = rollIdleEvents(profile, energy, eventRng);
   return {
@@ -215,6 +256,7 @@ function settleDay(profile) {
     personality,
     rarity,
     style,
+    appearance,
     traits,
     events
   };
@@ -414,6 +456,7 @@ function pickWeightedKey(weights, rng = Math.random) {
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CLICKS_PER_HATCH_STAGE,
+  DEFAULT_APPEARANCE,
   ENERGY_WEIGHTS,
   GENE_FIELDS,
   HATCH_STAGE_COUNT,
@@ -441,6 +484,7 @@ function pickWeightedKey(weights, rng = Math.random) {
   phaseFromProfile,
   pickWeighted,
   pickWeightedKey,
+  resolveAppearance,
   resolveGenes,
   resolvePersonality,
   resolveRarity,

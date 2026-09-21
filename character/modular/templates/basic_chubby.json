@@ -1,0 +1,15 @@
+{
+  "id": "basic_chubby",
+  "kind": "basic",
+  "label": "基础 Chubby",
+  "description": "更圆、更软、更有重量感的基础身体，但仍使用相同表情和穿戴锚点。",
+  "recipe": {
+    "body": "body_chubby",
+    "marking": "none",
+    "expression": "expr_normal",
+    "cloudMood": "cloud_normal",
+    "headwear": "none",
+    "facewear": "none",
+    "outfit": "none"
+  }
+}

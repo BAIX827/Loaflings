@@ -3,6 +3,7 @@
  */
 
 import { computeEnergy, type EnergyPool } from './energy';
+import { resolveAppearance, type CharacterAppearance } from './appearance';
 import {
   resolveGenes,
   resolvePersonality,
@@ -38,6 +39,7 @@ export interface DaylingResult {
   personality: Personality;
   rarity: Rarity;
   style: StyleId;
+  appearance: CharacterAppearance;
   traits: string[];
   events: IdleEvent[];
 }
@@ -52,6 +54,7 @@ export function settleDay(profile: DailyActivityProfile): DaylingResult {
   const personality = resolvePersonality(energy);
   const rarity = resolveRarity(energy, rarityRng);
   const style = styleForRarity(rarity);
+  const appearance = resolveAppearance(energy, personality, rarity);
   const traits = buildTraits(energy, personality);
   const events = rollIdleEvents(profile, energy, eventRng);
 
@@ -63,6 +66,7 @@ export function settleDay(profile: DailyActivityProfile): DaylingResult {
     personality,
     rarity,
     style,
+    appearance,
     traits,
     events,
   };

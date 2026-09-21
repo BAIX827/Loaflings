@@ -1,0 +1,11 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Dreamy">
+    <circle cx="521" cy="160" r="42.5" fill="#E9E1FF" stroke="#9A86D6" stroke-width="5"/>
+    <circle cx="596.5" cy="137.5" r="60" fill="#E9E1FF" stroke="#9A86D6" stroke-width="5"/>
+    <circle cx="671" cy="160" r="42.5" fill="#E9E1FF" stroke="#9A86D6" stroke-width="5"/>
+    <circle cx="600.5" cy="174.5" r="50" fill="#E9E1FF" stroke="#9A86D6" stroke-width="5"/>
+    <circle cx="601" cy="246" r="7" fill="#E9E1FF" stroke="#9A86D6" stroke-width="4"/>
+    <path id="Moon" d="M630 107C604 111 591 135 600 156C609 177 636 185 656 169C638 168 624 156 621 141C618 128 622 117 630 107Z" fill="#FFE79A" stroke="#D9AD48" stroke-width="4"/>
+    <path id="Dream_Star" d="M684 94L690 108L704 114L690 120L684 134L678 120L664 114L678 108L684 94Z" fill="#FFF2B8" stroke="#D9AD48" stroke-width="3"/>
+  </g>
+</svg>

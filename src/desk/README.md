@@ -6,13 +6,13 @@ Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, framele
 
 CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js` (falls back to `settleDay` stub if dayCycle missing). `DaylingResult.kind = 'loafling'`.
 
-- Morning → adult: six transparent runtime PNG stages under `character/png/`
-- After settle: rarity chooses `style_common.png`, `style_rare.png`, or `style_epic.png`
+- Egg → growing: five transparent runtime PNG stages under `character/png/`
+- Adult: layered SVG recipe from `character/modular/`; rarity PNGs remain a safe fallback
 - Icon: `src/art/AppIcon.png`
 - MVP parts: `body` / `cloud` / `face` / `tail` (mirrors `src/art/parts.ts`)
 - Demo day: `src/sense/fixtures/demo-day.json` → `assertProfileShape` → `settleDay()` (`src/core`)
 - Live day (optional): `senseLive` / `getLiveSettle()` when Accessibility + uiohook are available; `ensureToday()` rolls profile date
-- Local collection: Electron `userData/collection.json` (one upsert per `date:seedKey`)
+- Local collection: Electron `userData/collection.json` v2 (one upsert per `date:seedKey`, including `appearance`)
 - Day phase: Electron `userData/day-state.json` (`egg` | `hatched` per local date)
 
 ## Run (macOS)
@@ -97,6 +97,7 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 | `dayState.js` | Persist egg/hatched phase per local date under `userData` |
 | `pipeline.js` | Loads SENSE fixture → CORE `settleDay()` |
 | `collection.js` | Persist/load local collection under `userData` |
+| `characterRecipe.js` | Validate recipes, migrate old collection rows and resolve ordered SVG layers |
 | `resultView.js` | Pure renderer-safe projection of CORE settle results |
 | `../shared/jsonFile.cjs` | Shared atomic JSON persistence helper |
 | `preload.js` | Exposes parts + day/settle/collection APIs |
@@ -126,5 +127,6 @@ Main may push `loaflings:day-state` when the calendar day rolls (new egg).
 - Day boundary: desk `ensureDayState()` + SENSE `ensureToday()` (when live is up)
 - No gene/sense formulas in DESK — those stay in `src/core` / `src/sense`
 - CORE has no separate `name` field; desk display name is `personality · rarity`
-- Runtime creature art is PNG-only. SVG files stay editable references and are not used as shell fallback.
-- If a future `character/png/idle/` pool is absent, the base pet keeps a subtle CSS breathing motion without repeated missing-asset work.
+- Runtime growth art remains PNG. Adult Loaflings compose body, mutation, expression, paws and cloud from `character/modular/manifest.json`.
+- If a modular adult asset is missing or invalid, the renderer falls back to the existing rarity/adult PNG instead of showing a broken pet.
+- Modular adults use expression/cloud layer swaps for idle moods; newborn/growing phases retain the optional legacy idle PNG pool.

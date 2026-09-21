@@ -1,0 +1,15 @@
+{
+  "id": "basic_classic",
+  "kind": "basic",
+  "label": "基础 Classic",
+  "description": "最标准的 Loafling，适合作为全部表情、服装和配饰的基准。",
+  "recipe": {
+    "body": "body_classic",
+    "marking": "none",
+    "expression": "expr_normal",
+    "cloudMood": "cloud_normal",
+    "headwear": "none",
+    "facewear": "none",
+    "outfit": "none"
+  }
+}

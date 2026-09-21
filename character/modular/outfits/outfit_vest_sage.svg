@@ -1,0 +1,15 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vestFill" x1="600" y1="500" x2="600" y2="674" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B8C6A4"/>
+      <stop offset="1" stop-color="#8EA077"/>
+    </linearGradient>
+  </defs>
+  <g id="Outfit_Vest_Sage">
+  <path d="M315 512C345 486 378 474 413 472C451 545 507 582 600 588C693 582 749 545 787 472C822 474 855 486 885 512C902 540 907 577 895 611C878 635 849 649 819 646C790 671 738 679 696 663C656 677 544 677 504 663C462 679 410 671 381 646C351 649 322 635 305 611C293 577 298 540 315 512Z" fill="url(#vestFill)" stroke="#4F6045" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M408 470C448 550 510 592 600 598C690 592 752 550 792 470" stroke="#D8E1CC" stroke-width="14" stroke-linecap="round"/>
+  <path d="M391 650C477 670 721 670 809 650" stroke="#708160" stroke-width="7" stroke-linecap="round" opacity="0.72"/>
+  <path d="M349 520C370 548 377 584 367 618M393 495C420 541 429 596 414 647M451 542C469 578 474 617 465 657M749 542C731 578 726 617 735 657M807 495C780 541 771 596 786 647M851 520C830 548 823 584 833 618" stroke="#738563" stroke-width="5" stroke-linecap="round" opacity="0.42"/>
+  <path d="M493 588C506 610 511 636 506 661M707 588C694 610 689 636 694 661M550 602C558 622 560 644 557 668M650 602C642 622 640 644 643 668" stroke="#738563" stroke-width="5" stroke-linecap="round" opacity="0.34"/>
+  </g>
+</svg>

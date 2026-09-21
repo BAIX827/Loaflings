@@ -15,6 +15,7 @@ console.log(
       energy: result.energy,
       personality: result.personality,
       rarity: result.rarity,
+      appearance: result.appearance,
       events: result.events,
     },
     null,

@@ -1,0 +1,13 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="beretFill" x1="475" y1="292" x2="700" y2="388" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD8CB"/>
+      <stop offset="1" stop-color="#EFA58E"/>
+    </linearGradient>
+  </defs>
+  <g id="Headwear_Hat_Beret_Peach">
+    <path id="Beret_Stem" d="M591 294C590 277 601 266 618 264" stroke="#9B5D52" stroke-width="10" stroke-linecap="round"/>
+    <path id="Beret_Body" d="M456 358C465 311 507 282 568 279C637 275 700 305 727 351C680 377 619 389 554 386C516 384 482 375 456 358Z" fill="url(#beretFill)" stroke="#9B5D52" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Beret_Band" d="M463 354C526 377 646 378 719 347L727 379C652 409 531 409 452 382L463 354Z" fill="#F3B7A4" stroke="#9B5D52" stroke-width="8" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -5,6 +5,7 @@
 const path = require('path');
 const { app } = require('electron');
 const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
+const { recipeFromResult } = require('./characterRecipe');
 
 const FILE_NAME = 'collection.json';
 
@@ -16,7 +17,7 @@ function collectionPath() {
  * @returns {{ version: number, items: object[] }}
  */
 function emptyCollection() {
-  return { version: 1, items: [] };
+  return { version: 2, items: [] };
 }
 
 /**
@@ -25,9 +26,11 @@ function emptyCollection() {
 function loadCollection() {
   const fp = collectionPath();
   const raw = readJsonFile(fp, emptyCollection);
-  const items = Array.isArray(raw?.items) ? raw.items : [];
+  const items = Array.isArray(raw?.items)
+    ? raw.items.map((item) => ({ ...item, appearance: recipeFromResult(item) }))
+    : [];
   return {
-    version: typeof raw?.version === 'number' ? raw.version : 1,
+    version: Math.max(2, typeof raw?.version === 'number' ? raw.version : 1),
     items,
     path: fp,
   };
@@ -57,6 +60,7 @@ function entryFromSettle(result, meta = {}) {
     personality,
     rarity,
     style: result?.style || null,
+    appearance: recipeFromResult(result),
     genes: result?.genes || {},
     traits: Array.isArray(result?.traits) ? result.traits : [],
     events: Array.isArray(result?.events) ? result.events : [],

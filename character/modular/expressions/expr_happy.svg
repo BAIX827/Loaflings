@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Expression_Happy">
+  <ellipse cx="434" cy="550" rx="48" ry="24" fill="#FFCDC8"/>
+  <ellipse cx="770" cy="550" rx="48" ry="24" fill="#FFCDC8"/>
+  <path d="M430 510C440 490 462 490 472 510" stroke="#4B3A32" stroke-width="8" stroke-linecap="round"/>
+  <path d="M732 510C742 490 764 490 774 510" stroke="#4B3A32" stroke-width="8" stroke-linecap="round"/>
+  <path d="M565 532C579 556 621 556 639 532" stroke="#4B3A32" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

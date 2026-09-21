@@ -1,0 +1,14 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="apronFill" x1="600" y1="493" x2="600" y2="673" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE4D8"/>
+      <stop offset="1" stop-color="#F2B9A4"/>
+    </linearGradient>
+  </defs>
+  <g id="Outfit_Apron_Peach">
+    <path id="Apron_Neck" d="M505 465C526 505 558 524 600 525C642 524 674 505 695 465" stroke="#A86B5B" stroke-width="11" stroke-linecap="round"/>
+    <path id="Apron_Body" d="M495 493C528 512 564 522 600 523C636 522 672 512 705 493L750 664C673 681 527 681 450 664L495 493Z" fill="url(#apronFill)" stroke="#A86B5B" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Apron_Pocket" d="M540 590C575 602 625 602 660 590V646C626 657 574 657 540 646V590Z" fill="#FFF1EA" stroke="#C88773" stroke-width="6" stroke-linejoin="round"/>
+    <path id="Apron_Ties" d="M486 528L421 557M714 528L779 557" stroke="#A86B5B" stroke-width="9" stroke-linecap="round"/>
+  </g>
+</svg>

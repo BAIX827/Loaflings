@@ -1,0 +1,17 @@
+{
+  "id": "mutation_patchy",
+  "kind": "mutation",
+  "label": "变异 Patchy",
+  "rarityHint": "rare",
+  "inspiration": "reference/loaflings-character-design-bible.png",
+  "description": "在标准身体上增加柔和、不规则的暖棕斑块；身体、表情和穿戴系统保持不变。",
+  "recipe": {
+    "body": "body_classic",
+    "marking": "marking_patchy",
+    "expression": "expr_curious",
+    "cloudMood": "cloud_normal",
+    "headwear": "none",
+    "facewear": "none",
+    "outfit": "none"
+  }
+}

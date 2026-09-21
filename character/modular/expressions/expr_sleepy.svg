@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Expression_Sleepy">
+  <ellipse cx="434" cy="550" rx="46" ry="22" fill="#FFD6D6" fill-opacity="0.82"/>
+  <ellipse cx="770" cy="550" rx="46" ry="22" fill="#FFD6D6" fill-opacity="0.82"/>
+  <path d="M431 507H471" stroke="#4B3A32" stroke-width="8" stroke-linecap="round"/>
+  <path d="M733 507H773" stroke="#4B3A32" stroke-width="8" stroke-linecap="round"/>
+  <path d="M579 539C590 530 599 546 610 537C618 530 624 536 629 540" stroke="#4B3A32" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

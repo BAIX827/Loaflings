@@ -1,5 +1,5 @@
 /**
- * Renderer: egg by day → hatch PNG stages + Day reveal + collection (PNG-only display).
+ * Renderer: PNG hatch stages → modular SVG adult + Day reveal + collection.
  * Part IDs from window.loaflings.parts (← src/art/parts.ts).
  * Settlement from CORE via IPC — no gene formulas in DESK.
  */
@@ -21,7 +21,7 @@
   let viewingEntry = null;
   let collectionItems = [];
 
-  /** PNG-only display (LEAD/ART). SVG archive stays under character/svg/ unused by shell. */
+  /** Hatch growth stays raster; adult Loaflings use the modular SVG library. */
   const PHASE_FILES = api?.parts?.hatchFiles || {
     egg: 'Pet_Egg_Master',
     cracking: 'Pet_Egg_Cracking',
@@ -30,6 +30,9 @@
     growing: 'Pet_Growing',
     adult: 'Pet_Base_Master',
   };
+  const MODULAR = api?.parts?.modular || null;
+  const MODULAR_MANIFEST = MODULAR?.manifest || null;
+  const MODULAR_ROOT = MODULAR?.assetRoot || '../../character/modular';
 
   async function resolvePngUrl(relBaseNoExt, { idle = false } = {}) {
     const png = idle
@@ -70,7 +73,132 @@
     img.alt = '';
     img.draggable = false;
     img.src = url;
+    if (mount === petEl) mount.classList.remove('modular');
     mount.replaceChildren(img);
+  }
+
+  function modularAssetUrl(src) {
+    return `${MODULAR_ROOT}/${src}`;
+  }
+
+  function validChoice(group, value, fallback) {
+    return typeof value === 'string' && Object.hasOwn(group || {}, value) ? value : fallback;
+  }
+
+  function normalizeRecipe(candidate) {
+    if (!MODULAR_MANIFEST) return null;
+    const input = candidate && typeof candidate === 'object' ? candidate : {};
+    const base = MODULAR_MANIFEST.defaultRecipe;
+    const body = validChoice(MODULAR_MANIFEST.bodies, input.body, base.body);
+    const recipe = {
+      body,
+      marking: validChoice(MODULAR_MANIFEST.markings, input.marking, base.marking),
+      expression: validChoice(MODULAR_MANIFEST.expressions, input.expression, base.expression),
+      cloudMood: validChoice(MODULAR_MANIFEST.cloudMoods, input.cloudMood, base.cloudMood),
+      headwear: validChoice(MODULAR_MANIFEST.headwear, input.headwear, base.headwear),
+      facewear: validChoice(MODULAR_MANIFEST.facewear, input.facewear, base.facewear),
+      outfit: validChoice(MODULAR_MANIFEST.outfits, input.outfit, base.outfit),
+    };
+    for (const [slot, group] of [
+      ['marking', 'markings'],
+      ['headwear', 'headwear'],
+      ['facewear', 'facewear'],
+      ['outfit', 'outfits'],
+    ]) {
+      const entry = MODULAR_MANIFEST[group]?.[recipe[slot]];
+      if (entry?.compatibleBodies && !entry.compatibleBodies.includes(body)) recipe[slot] = 'none';
+    }
+    return recipe;
+  }
+
+  function currentAppearanceRecipe() {
+    const source = viewingEntry?.appearance || lastPayload?.result?.appearance;
+    return normalizeRecipe(source);
+  }
+
+  function recipeToken(recipe) {
+    return recipe
+      ? ['body', 'marking', 'expression', 'cloudMood', 'headwear', 'facewear', 'outfit']
+        .map((field) => recipe[field])
+        .join('|')
+      : 'none';
+  }
+
+  function entrySource(group, id) {
+    const entry = MODULAR_MANIFEST?.[group]?.[id];
+    return entry && typeof entry.src === 'string' ? entry.src : null;
+  }
+
+  function layerTransform(slot, body, recipe) {
+    let transform = null;
+    if (slot === 'expression' || slot === 'facewear') transform = body.faceTransform;
+    if (slot === 'headwear') transform = body.headwearTransform;
+    if (slot === 'cloudMood') {
+      const base = body.cloudTransform || {};
+      const offset = MODULAR_MANIFEST.headwear?.[recipe.headwear]?.cloudOffset || {};
+      transform = {
+        x: (base.x || 0) + (offset.x || 0),
+        y: (base.y || 0) + (offset.y || 0),
+        scaleX: base.scaleX || base.scale || 1,
+        scaleY: base.scaleY || base.scale || 1,
+        rotation: base.rotation || 0,
+      };
+    }
+    if (!transform) return '';
+    const x = Number(transform.x) || 0;
+    const y = Number(transform.y) || 0;
+    const sx = Number(transform.scaleX || transform.scale) || 1;
+    const sy = Number(transform.scaleY || transform.scale) || 1;
+    const rotation = Number(transform.rotation) || 0;
+    return `translate(${x / 12}%, ${y / 9}%) rotate(${rotation}deg) scale(${sx}, ${sy})`;
+  }
+
+  function waitForImage(img) {
+    return new Promise((resolve, reject) => {
+      img.addEventListener('load', () => resolve(img), { once: true });
+      img.addEventListener('error', () => reject(new Error(`missing modular asset ${img.src}`)), { once: true });
+      if (img.complete && img.naturalWidth) resolve(img);
+    });
+  }
+
+  async function mountModular(candidate) {
+    if (!MODULAR_MANIFEST) throw new Error('modular manifest unavailable');
+    const recipe = normalizeRecipe(candidate);
+    const body = MODULAR_MANIFEST.bodies[recipe.body];
+    const sources = {
+      shadow: body.shadow,
+      tail: body.tail,
+      body: body.body,
+      marking: entrySource('markings', recipe.marking),
+      outfit: entrySource('outfits', recipe.outfit),
+      expression: entrySource('expressions', recipe.expression),
+      facewear: entrySource('facewear', recipe.facewear),
+      pawsForeground: body.pawsForeground,
+      headwear: entrySource('headwear', recipe.headwear),
+      cloudMood: entrySource('cloudMoods', recipe.cloudMood),
+    };
+    const wrapper = document.createElement('div');
+    wrapper.className = 'modular-character';
+    wrapper.dataset.recipe = recipeToken(recipe);
+    const pending = [];
+    for (const slot of MODULAR_MANIFEST.drawOrder) {
+      const src = sources[slot];
+      if (!src) continue;
+      const img = document.createElement('img');
+      img.className = 'character-layer';
+      img.dataset.layer = slot;
+      img.alt = '';
+      img.draggable = false;
+      const transform = layerTransform(slot, body, recipe);
+      if (transform) img.style.transform = transform;
+      img.src = modularAssetUrl(src);
+      pending.push(waitForImage(img));
+      wrapper.appendChild(img);
+    }
+    await Promise.all(pending);
+    petEl.classList.add('modular');
+    petEl.replaceChildren(wrapper);
+    return recipe;
   }
 
   const IDLE_EXPR_IDS = [
@@ -205,8 +333,7 @@
     if (EGGISH.has(visual)) {
       await loadPhaseArt(visual);
     } else {
-      // newborn/growing/adult share pet mount; reload when path differs
-      petLoaded = false;
+      // newborn/growing use raster; adult resolves to one stable modular recipe.
       await loadPetArt(visual);
     }
 
@@ -292,6 +419,19 @@
 
   async function loadPetArt(cacheKey) {
     const key = cacheKey || 'adult';
+    if (key === 'adult' && MODULAR_MANIFEST) {
+      const recipe = currentAppearanceRecipe() || normalizeRecipe(null);
+      const cacheToken = `adult:modular:${recipeToken(recipe)}`;
+      if (petLoaded && lastVisualPhase === cacheToken) return true;
+      try {
+        await mountModular(recipe);
+        petLoaded = true;
+        lastVisualPhase = cacheToken;
+        return true;
+      } catch (err) {
+        console.warn('[loaflings] modular adult unavailable, using PNG fallback', err);
+      }
+    }
     const styleKey = currentStyleKey();
     const cacheToken = `${key}:${styleKey || 'default'}`;
     if (petLoaded && lastVisualPhase === cacheToken) return true;
@@ -349,9 +489,6 @@
     const payload = await loadSettle(save);
     if (!payload?.ok) return null;
 
-    const okSvg = await loadPetArt();
-    if (!okSvg) return payload;
-
     if (api?.markDayHatched && !save) {
       try {
         await api.markDayHatched();
@@ -391,11 +528,9 @@
       }
       dayHatched = Boolean(day.alreadyHatched || day.phase === 'hatched');
       if (day.phase === 'hatched') {
-        const okSvg = await loadPetArt();
-        if (okSvg) await applyPhase('adult');
-        else applyPhase('egg');
-        // Soft line if we already hatched today — settle without auto-save
+        // Resolve today's saved recipe before mounting the adult layers.
         if (!lastPayload) await loadSettle(false);
+        await applyPhase('adult');
       } else if (day.phase === 'growing') {
         await applyPhase('cracking');
       } else {
@@ -564,6 +699,8 @@
         personality: entry.personality,
         rarity: entry.rarity,
         style: entry.style,
+        appearance: entry.appearance,
+        energy: entry.energy,
         genes: entry.genes,
         traits: entry.traits,
         events: entry.events,
@@ -733,8 +870,9 @@
       setTimeout(() => setStatus(''), 2400);
     } else if (day?.phase === 'hatched') {
       dayHatched = true;
-      const okSvg = await loadPetArt();
-      if (okSvg) await applyPhase('adult');
+      if (!lastPayload) await loadSettle(false);
+      petLoaded = false;
+      await applyPhase('adult');
     } else if (day?.phase === 'growing') {
       await applyPhase('cracking');
     }
@@ -812,9 +950,43 @@
     };
   }
 
+  function showModularIdle(layers) {
+    const wrapper = petEl?.querySelector('.modular-character');
+    if (!wrapper || phase !== 'adult') return false;
+    const expressionLayer = wrapper.querySelector('[data-layer="expression"]');
+    const cloudLayer = wrapper.querySelector('[data-layer="cloudMood"]');
+    const expressionId = layers.exprShort === 'content'
+      ? 'expr_happy'
+      : `expr_${layers.exprShort}`;
+    const expressionEntry = MODULAR_MANIFEST?.expressions?.[expressionId];
+    const baseRecipe = currentAppearanceRecipe();
+    const keepTwinMutation = baseRecipe?.cloudMood === 'cloud_twin';
+    const cloudId = keepTwinMutation ? 'cloud_twin' : layers.cloud;
+    const cloudEntry = MODULAR_MANIFEST?.cloudMoods?.[cloudId];
+    if (!expressionLayer || !expressionEntry?.src) return false;
+
+    const previousExpression = expressionLayer.getAttribute('src');
+    const previousCloud = cloudLayer?.getAttribute('src') || null;
+    expressionLayer.src = modularAssetUrl(expressionEntry.src);
+    if (cloudLayer && cloudEntry?.src) cloudLayer.src = modularAssetUrl(cloudEntry.src);
+    const ms = layers.isPose ? 4200 : 3200;
+    idleBusyUntil = Date.now() + ms;
+    setTimeout(() => {
+      if (Date.now() < idleBusyUntil - 50 || !wrapper.isConnected) return;
+      if (previousExpression) expressionLayer.src = previousExpression;
+      if (cloudLayer && previousCloud) cloudLayer.src = previousCloud;
+    }, ms);
+    return true;
+  }
+
   async function showIdleCompose(layers) {
     if (!idleFxEl || !idleBodyEl || !idleCloudEl || !IDLE_OK_PHASES.has(phase)) {
       if (idleFxEl) idleFxEl.hidden = true;
+      return;
+    }
+    if (petEl?.classList.contains('modular') && showModularIdle(layers)) {
+      if (idleFxEl) idleFxEl.hidden = true;
+      petEl.style.opacity = '';
       return;
     }
     try {
@@ -896,6 +1068,7 @@
       const hp = await api.getHatchProgress();
       if (!hp?.ok || !hp.progress) return;
       const visual = hp.alreadySaved ? 'adult' : hp.progress.phase;
+      if (visual === 'adult' && !lastPayload) await loadSettle(false);
       await applyPhase(visual, {
         clicks: hp.clicks,
         keystrokes: hp.keystrokes || 0,
@@ -1035,21 +1208,27 @@
   }
 
   function alphaAtArt(artRoot, clientX, clientY) {
-    const img = artRoot.querySelector?.('img');
-    if (img) {
-      const canvas = ensureImgCanvas(img);
-      if (!canvas) return true; // not ready — treat as solid so we can interact
-      const rect = img.getBoundingClientRect();
-      if (rect.width < 1 || rect.height < 1) return false;
-      const x = Math.floor(((clientX - rect.left) / rect.width) * canvas.width);
-      const y = Math.floor(((clientY - rect.top) / rect.height) * canvas.height);
-      if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) return false;
-      try {
-        const a = canvas.getContext('2d').getImageData(x, y, 1, 1).data[3];
-        return a > ALPHA_HIT;
-      } catch {
-        return true;
+    const images = [...(artRoot.querySelectorAll?.('img') || [])];
+    if (images.length) {
+      // Modular adults have many transparent images. Capture the pointer when
+      // any visible layer is opaque, not only when the first (shadow) layer is.
+      for (let i = images.length - 1; i >= 0; i -= 1) {
+        const img = images[i];
+        const canvas = ensureImgCanvas(img);
+        if (!canvas) return true; // not ready — treat as solid so we can interact
+        const rect = img.getBoundingClientRect();
+        if (rect.width < 1 || rect.height < 1) continue;
+        const x = Math.floor(((clientX - rect.left) / rect.width) * canvas.width);
+        const y = Math.floor(((clientY - rect.top) / rect.height) * canvas.height);
+        if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) continue;
+        try {
+          const a = canvas.getContext('2d').getImageData(x, y, 1, 1).data[3];
+          if (a > ALPHA_HIT) return true;
+        } catch {
+          return true;
+        }
       }
+      return false;
     }
     const svg = artRoot.querySelector?.('svg') || (artRoot.tagName === 'svg' ? artRoot : null);
     if (svg) {

@@ -1,0 +1,17 @@
+{
+  "id": "mutation_twin_cloud",
+  "kind": "mutation",
+  "label": "变异 Twin Cloud",
+  "rarityHint": "epic",
+  "inspiration": "reference/loaflings-visual-style-guide.png",
+  "description": "一蓝一粉两朵小云同时漂浮；身体仍是标准 Loafling，双云作为稀有身份特征。",
+  "recipe": {
+    "body": "body_classic",
+    "marking": "none",
+    "expression": "expr_happy",
+    "cloudMood": "cloud_twin",
+    "headwear": "none",
+    "facewear": "none",
+    "outfit": "none"
+  }
+}

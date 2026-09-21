@@ -9,6 +9,11 @@ While the companion is idle (not busy typing bursts), randomly play a short expr
 
 ## MVP pool (v1)
 
+> Migration note: the current `svg/idle/expr_*.svg` files are baked
+> full-character previews, not reusable face-only layers. Future expression
+> production follows `CHARACTER_EXPANSION_PLAN.md`: face and cloud assets use
+> the shared `1200 × 900` canvas and compose over any compatible body.
+
 ### Expressions (editable archive: `character/svg/idle/expr_*.svg`)
 | id | look |
 |---|---|

@@ -1,0 +1,160 @@
+{
+  "version": 3,
+  "canvas": { "width": 1200, "height": 900, "viewBox": "0 0 1200 900" },
+  "drawOrder": [
+    "shadow", "tail", "body", "marking", "outfit", "expression", "facewear",
+    "pawsForeground", "headwear", "cloudMood"
+  ],
+  "anchors": {
+    "bodyCenter": { "x": 600, "y": 500 },
+    "baseline": { "x": 600, "y": 675 },
+    "faceCenter": { "x": 600, "y": 530 },
+    "pawLeft": { "x": 421, "y": 619 },
+    "pawRight": { "x": 779, "y": 619 },
+    "tail": { "x": 885, "y": 585 },
+    "headwear": { "x": 600, "y": 315 },
+    "cloudCenter": { "x": 600, "y": 155 }
+  },
+  "bodies": {
+    "body_classic": {
+      "label": "Classic",
+      "shadow": "body/shadow.svg",
+      "tail": "body/tail_classic.svg",
+      "body": "body/body_classic.svg",
+      "pawsForeground": "body/paws_classic.svg",
+      "faceTransform": { "x": 0, "y": 0, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": 0, "scale": 1 },
+      "cloudTransform": { "x": 0, "y": 0, "scale": 1 }
+    },
+    "body_chubby": {
+      "label": "Chubby",
+      "shadow": "body/shadow_chubby.svg",
+      "tail": "body/tail_chubby.svg",
+      "body": "body/body_chubby.svg",
+      "pawsForeground": "body/paws_chubby.svg",
+      "faceTransform": { "x": 0, "y": 3, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": 0, "scale": 1.03 },
+      "cloudTransform": { "x": 0, "y": 0, "scale": 1 }
+    },
+    "body_long": {
+      "label": "Long",
+      "shadow": "body/shadow_long.svg",
+      "tail": "body/tail_long.svg",
+      "body": "body/body_long.svg",
+      "pawsForeground": "body/paws_long.svg",
+      "faceTransform": { "x": 0, "y": 5, "scaleX": 1.06, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": 8, "scale": 1 },
+      "cloudTransform": { "x": 0, "y": 0, "scale": 1 }
+    }
+  },
+  "markings": {
+    "none": null,
+    "marking_patchy": {
+      "label": "Patchy",
+      "src": "markings/marking_patchy.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "recolorable": true,
+      "tags": ["mutation", "patches", "rare"]
+    }
+  },
+  "expressions": {
+    "expr_normal": { "label": "Normal", "src": "expressions/expr_normal.svg" },
+    "expr_happy": { "label": "Happy", "src": "expressions/expr_happy.svg" },
+    "expr_sleepy": { "label": "Sleepy", "src": "expressions/expr_sleepy.svg" },
+    "expr_curious": { "label": "Curious", "src": "expressions/expr_curious.svg" },
+    "expr_surprised": { "label": "Surprised", "src": "expressions/expr_surprised.svg" },
+    "expr_focused": { "label": "Focused", "src": "expressions/expr_focused.svg" },
+    "expr_grumpy": { "label": "Grumpy", "src": "expressions/expr_grumpy.svg" },
+    "expr_excited": { "label": "Excited", "src": "expressions/expr_excited.svg" }
+  },
+  "cloudMoods": {
+    "cloud_normal": { "label": "Normal", "src": "clouds/cloud_normal.svg" },
+    "cloud_happy": { "label": "Happy", "src": "clouds/cloud_happy.svg" },
+    "cloud_sleepy": { "label": "Sleepy", "src": "clouds/cloud_sleepy.svg" },
+    "cloud_curious": { "label": "Curious", "src": "clouds/cloud_curious.svg" },
+    "cloud_focused": { "label": "Focused", "src": "clouds/cloud_focused.svg" },
+    "cloud_excited": { "label": "Excited", "src": "clouds/cloud_excited.svg" },
+    "cloud_rainy": { "label": "Rainy", "src": "clouds/cloud_rainy.svg" },
+    "cloud_stormy": { "label": "Stormy", "src": "clouds/cloud_stormy.svg" },
+    "cloud_dreamy": { "label": "Dreamy", "src": "clouds/cloud_dreamy.svg" },
+    "cloud_twin": { "label": "Twin Cloud", "src": "clouds/cloud_twin.svg", "tags": ["mutation", "twin", "epic"] }
+  },
+  "headwear": {
+    "none": null,
+    "hat_knit_blue": {
+      "label": "Blue knit hat", "src": "headwear/hat_knit_blue.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "cloudOffset": { "x": 0, "y": -36 }, "recolorable": true,
+      "tags": ["cozy", "winter", "common"]
+    },
+    "hat_nightcap_lavender": {
+      "label": "Lavender nightcap", "src": "headwear/hat_nightcap_lavender.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "cloudOffset": { "x": 0, "y": -55 }, "recolorable": true,
+      "tags": ["sleepy", "night", "uncommon"]
+    },
+    "hat_beret_peach": {
+      "label": "Peach beret", "src": "headwear/hat_beret_peach.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "cloudOffset": { "x": 0, "y": -28 }, "recolorable": true,
+      "tags": ["creative", "cozy", "common"]
+    },
+    "hat_rain_yellow": {
+      "label": "Yellow rain hat", "src": "headwear/hat_rain_yellow.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "cloudOffset": { "x": 0, "y": -48 }, "recolorable": true,
+      "tags": ["rainy", "outdoor", "uncommon"]
+    }
+  },
+  "facewear": {
+    "none": null,
+    "glasses_round_cocoa": {
+      "label": "Round cocoa glasses", "src": "facewear/glasses_round_cocoa.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "recolorable": true, "tags": ["reading", "cozy", "common"]
+    },
+    "glasses_focus_blue": {
+      "label": "Blue focus glasses", "src": "facewear/glasses_focus_blue.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "recolorable": true, "tags": ["focus", "work", "uncommon"]
+    }
+  },
+  "outfits": {
+    "none": null,
+    "outfit_vest_sage": {
+      "label": "Sage knit vest", "src": "outfits/outfit_vest_sage.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "recolorable": true, "tags": ["cozy", "focus", "common"]
+    },
+    "outfit_apron_peach": {
+      "label": "Peach apron", "src": "outfits/outfit_apron_peach.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "recolorable": true, "tags": ["home", "making", "common"]
+    },
+    "outfit_raincoat_sky": {
+      "label": "Sky raincoat", "src": "outfits/outfit_raincoat_sky.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "recolorable": true, "tags": ["rainy", "outdoor", "uncommon"]
+    }
+  },
+  "templates": {
+    "basic": [
+      "templates/basic_classic.json",
+      "templates/basic_chubby.json",
+      "templates/basic_long.json"
+    ],
+    "mutations": [
+      "templates/mutation_patchy.json",
+      "templates/mutation_twin_cloud.json"
+    ]
+  },
+  "defaultRecipe": {
+    "body": "body_classic",
+    "marking": "none",
+    "expression": "expr_normal",
+    "cloudMood": "cloud_normal",
+    "headwear": "none",
+    "facewear": "none",
+    "outfit": "none"
+  }
+}

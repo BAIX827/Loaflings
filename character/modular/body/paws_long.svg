@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Paws_Long_Foreground">
+    <ellipse id="Paw_Long_Left" cx="382" cy="616" rx="69" ry="50" fill="#FFF8F1" stroke="#4B3A32" stroke-width="7"/>
+    <ellipse id="Paw_Long_Right" cx="818" cy="616" rx="69" ry="50" fill="#FFF8F1" stroke="#4B3A32" stroke-width="7"/>
+    <path id="Paw_Long_Details" d="M352 636C362 643 372 646 382 646M405 646C416 643 424 639 430 633M770 636C780 643 790 646 800 646M823 646C834 643 842 639 848 633" stroke="#E9B9A7" stroke-opacity="0.72" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

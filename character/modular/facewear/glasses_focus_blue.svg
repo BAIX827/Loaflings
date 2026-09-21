@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Facewear_Glasses_Focus_Blue">
+    <path id="Frame_Left" d="M400 480C420 468 469 468 494 481L487 526C466 542 424 542 405 525L400 480Z" fill="#DDEEFF" fill-opacity="0.28" stroke="#557EAF" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Frame_Right" d="M710 481C735 468 784 468 804 480L799 525C780 542 738 542 717 526L710 481Z" fill="#DDEEFF" fill-opacity="0.28" stroke="#557EAF" stroke-width="8" stroke-linejoin="round"/>
+    <path id="Bridge" d="M494 489C548 476 656 476 710 489" stroke="#557EAF" stroke-width="8" stroke-linecap="round"/>
+    <path id="Arms" d="M401 487L376 480M803 487L828 480" stroke="#557EAF" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

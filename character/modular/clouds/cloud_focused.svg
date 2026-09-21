@@ -1,0 +1,11 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Focused">
+    <ellipse id="Cloud_Base" cx="600" cy="163" rx="115" ry="58" fill="#E4F2FF" stroke="#73A7E9" stroke-width="5"/>
+    <circle id="Cloud_Lobe_Left" cx="535" cy="151" r="42" fill="#E4F2FF" stroke="#73A7E9" stroke-width="5"/>
+    <circle id="Cloud_Lobe_Center" cx="600" cy="131" r="57" fill="#E4F2FF" stroke="#73A7E9" stroke-width="5"/>
+    <circle id="Cloud_Lobe_Right" cx="667" cy="151" r="42" fill="#E4F2FF" stroke="#73A7E9" stroke-width="5"/>
+    <circle id="Thought_Dot" cx="601" cy="246" r="7" fill="#E4F2FF" stroke="#73A7E9" stroke-width="4"/>
+    <path id="Focus_Line_Left" d="M480 112L461 98" stroke="#73A7E9" stroke-width="6" stroke-linecap="round"/>
+    <path id="Focus_Line_Right" d="M720 112L739 98" stroke="#73A7E9" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

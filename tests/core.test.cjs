@@ -65,9 +65,33 @@ test('settlement is deterministic and emits a supported style', () => {
   assert.ok(['common', 'rare', 'epic'].includes(first.rarity));
   assert.equal(first.style, `style_${first.rarity}`);
   assert.deepEqual(Object.keys(first.genes).sort(), ['body', 'cloud', 'face', 'tail']);
+  assert.deepEqual(Object.keys(first.appearance).sort(), [
+    'body',
+    'cloudMood',
+    'expression',
+    'facewear',
+    'headwear',
+    'marking',
+    'outfit',
+  ]);
 });
 
 test('renderer projection keeps the style field', () => {
   const result = core.settleDay(profile());
   assert.equal(slimResult(result).style, result.style);
+  assert.deepEqual(slimResult(result).appearance, result.appearance);
+});
+
+test('appearance maps personality and rarity without changing gene fields', () => {
+  const energy = { work: 10, explore: 10, dream: 50 };
+  const rareDreamer = core.resolveAppearance(energy, 'dreamer', 'rare');
+  assert.equal(rareDreamer.body, 'body_long');
+  assert.equal(rareDreamer.expression, 'expr_sleepy');
+  assert.equal(rareDreamer.cloudMood, 'cloud_dreamy');
+  assert.equal(rareDreamer.marking, 'marking_patchy');
+
+  const epicExplorer = core.resolveAppearance(energy, 'explorer', 'epic');
+  assert.equal(epicExplorer.body, 'body_chubby');
+  assert.equal(epicExplorer.cloudMood, 'cloud_twin');
+  assert.equal(epicExplorer.marking, 'none');
 });

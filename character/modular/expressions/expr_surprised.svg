@@ -1,0 +1,10 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Expression_Surprised">
+    <ellipse id="Blush_Left" cx="434" cy="552" rx="46" ry="22" fill="#FFD6D6"/>
+    <ellipse id="Blush_Right" cx="770" cy="552" rx="46" ry="22" fill="#FFD6D6"/>
+    <ellipse id="Eye_Left" cx="451" cy="500" rx="19" ry="28" fill="#4B3A32"/>
+    <ellipse id="Eye_Right" cx="753" cy="500" rx="19" ry="28" fill="#4B3A32"/>
+    <circle id="Mouth" cx="602" cy="541" r="13" fill="#4B3A32"/>
+    <path id="Surprise_Marks" d="M401 473L390 458M803 473L814 458" stroke="#F39A78" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

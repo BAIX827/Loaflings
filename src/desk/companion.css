@@ -47,6 +47,28 @@ body {
   animation: pet-breathe 4.8s ease-in-out infinite;
 }
 
+.pet.modular > .modular-character {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 6px 10px rgba(75, 58, 50, 0.18));
+  animation: pet-breathe 4.8s ease-in-out infinite;
+}
+
+.pet.modular img.character-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  overflow: visible;
+  filter: none;
+  animation: none;
+  pointer-events: none;
+  transform-origin: center;
+}
+
 @keyframes pet-breathe {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(1px) scale(1.012, 0.992); }

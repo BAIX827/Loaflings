@@ -37,6 +37,10 @@ const QUALITY_STYLE_FILES = Object.freeze({
   rare: 'style_rare',
   epic: 'style_epic',
 });
+const MODULAR_CHARACTER = Object.freeze({
+  assetRoot: '../../character/modular',
+  manifest: require('../../character/modular/manifest.json'),
+});
 module.exports = {
   MVP_PART_FIELDS,
   MVP_BASE_PARTS,
@@ -45,4 +49,5 @@ module.exports = {
   HATCH_PHASE_ASSETS,
   HATCH_PHASE_FILES,
   QUALITY_STYLE_FILES,
+  MODULAR_CHARACTER,
 };
