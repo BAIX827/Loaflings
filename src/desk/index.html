@@ -39,7 +39,7 @@
         <button type="button" id="btn-quit" class="chip chip-quiet" data-i18n="btn.quit" title="Quit">退出</button>
         <span id="collection-badge" class="badge" title="Collection">0</span>
       </div>
-      <p id="collect-gate" class="collect-gate" aria-live="polite">还差 29,000 活跃可收藏</p>
+      <p id="collect-gate" class="collect-gate" aria-live="polite">还差 20,000 活跃可收藏</p>
 
       <!-- debug reveal strip removed from UX; keep node hidden forever -->
       <div id="reveal" class="reveal" hidden aria-hidden="true">
@@ -120,7 +120,7 @@
         <div class="progress-total">
           <strong id="progress-inputs">0</strong>
           <span>/</span>
-          <span id="progress-target">29,000</span>
+          <span id="progress-target">20,000</span>
         </div>
         <div class="progress-timeline">
           <div class="progress-track" aria-hidden="true">
@@ -129,7 +129,7 @@
           <div id="progress-milestones" class="progress-milestones" role="list"></div>
         </div>
         <p id="progress-next" class="progress-next"></p>
-        <p id="progress-remaining" class="progress-remaining">还差 29,000 活跃数才能成为成体并收藏。</p>
+        <p id="progress-remaining" class="progress-remaining">还差 20,000 活跃数才能成为成体并收藏。</p>
       </aside>
 
       <aside id="egg-rollover" class="panel egg-rollover" hidden aria-label="Unfinished egg choice">
@@ -177,7 +177,7 @@
         </header>
         <ol class="guide-steps" id="guide-steps">
           <li>打字和点击合计成 <strong>活跃 hits</strong>，推进六态长大。</li>
-          <li>达到 <strong>29,000 活跃</strong>才会成为成体并开放<strong>收藏</strong>；收藏后可以在日历里再看它。</li>
+          <li>默认达到 <strong>20,000 活跃</strong>才会成为成体并开放<strong>收藏</strong>；可在设置里调整，收藏后可以在日历里再看它。</li>
           <li><strong>背包</strong>里有日历、收藏、图鉴和累计统计；图鉴会自动标出已收集与未收集的类型。</li>
           <li><strong>设置</strong>可改语言、藏按键、透明度。</li>
         </ol>
@@ -204,6 +204,11 @@
           <span data-i18n="settings.size">大小</span>
           <input id="set-scale" type="range" min="0.6" max="1.6" step="0.05" />
         </label>
+        <label class="settings-row">
+          <span data-i18n="settings.hatchTarget">孵化目标</span>
+          <input id="set-hatch-target" type="number" min="1000" step="1" value="20000" />
+        </label>
+        <p class="panel-note" data-i18n="settings.hatchTargetHint">至少 1,000 活跃；六个成长阶段按比例调整，已完成的蛋不受影响。</p>
         <label class="settings-row settings-check">
           <input id="set-lock" type="checkbox" />
           <span data-i18n="settings.lock">锁定位置</span>

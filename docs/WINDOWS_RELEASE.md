@@ -26,7 +26,7 @@ Loaflings counts clicks, keystrokes, mouse travel, active/idle time and focus ch
 
 1. Start Loaflings and confirm an egg appears.
 2. Click and type in normal applications; confirm the current-egg number increases.
-3. Open **今日 / Today** before 29,000 activity hits; it should show progress and remain an egg.
+3. In this 0.1.0 preview, open **今日 / Today** before 29,000 activity hits; it should show progress and remain an egg. Current source builds use a 20,000 default with a configurable goal, but that newer rule is not in the published 0.1.0 download.
 4. Open **图鉴 / Pack** and check Collection, Catalogue and Statistics.
 5. Close and reopen Loaflings; today's progress should still be present.
 6. If testing across midnight, choose either Continue (keeps egg progress) or New Egg (resets egg progress); lifetime statistics should remain.

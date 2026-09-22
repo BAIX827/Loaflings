@@ -2,7 +2,7 @@
 
 Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, frameless, transparent window.
 
-**Day loop:** a local day starts with an **egg**. Before 29,000 activity hits, **Day** shows read-only growth progress and **Save** stays disabled with the exact remaining count. At 29,000 the Loafling becomes an adult and may be saved. At the next day, a completed egg is replaced automatically; an unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
+**Day loop:** a local day starts with an **egg**. The default adult goal is 20,000 activity hits; Settings can change it to any whole number of at least 1,000. All five intermediate thresholds scale proportionally. Before the goal, **Day** shows read-only growth progress and **Save** stays disabled with the exact remaining count. At the goal the Loafling becomes an adult and may be saved. A completed egg keeps its goal if Settings change later. At the next day, a completed egg is replaced automatically; an unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
 
 CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js` (falls back to `settleDay` stub if dayCycle missing). `DaylingResult.kind = 'loafling'`.
 
@@ -45,8 +45,8 @@ Requires Node 18+.
 ### Try egg → hatch → Save
 
 1. Launch with `npm start` — companion shows **Today’s egg** (not the pet).
-2. Click **Day** below 29,000 — opens the current stage, total progress and remaining-count panel without hatching.
-3. At 29,000, the adult appears and **Save** becomes available; Save upserts into `userData/collection.json` (badge updates).
+2. Click **Day** below the current goal (20,000 by default) — opens the current stage, total progress and remaining-count panel without hatching.
+3. At the goal, the adult appears and **Save** becomes available; Save upserts into `userData/collection.json` (badge updates).
 4. After local midnight / day roll — a finished egg is replaced; an unfinished egg shows **Keep hatching / Choose a new egg**.
 5. `settle:demo` CLI path unchanged.
 

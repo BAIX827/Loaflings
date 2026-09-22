@@ -63,8 +63,8 @@ function hatchDay(profile) {
   return hatchDayFn(profile);
 }
 
-function phaseFromProfile(profile, alreadyHatched) {
-  return phaseFromProfileFn(profile, alreadyHatched);
+function phaseFromProfile(profile, alreadyHatched, target) {
+  return phaseFromProfileFn(profile, alreadyHatched, target);
 }
 
 function shouldStartNewEgg(lastDate, today) {
@@ -83,32 +83,24 @@ function getApiSource() {
   return apiSource;
 }
 
-function hatchProgressFromProfile(profile, alreadySaved) {
+function hatchProgressFromProfile(profile, alreadySaved, target) {
   const core = require('../runtime/core.cjs');
-  return core.hatchProgressFromProfile(profile, alreadySaved);
+  return core.hatchProgressFromProfile(profile, alreadySaved, target);
 }
 
-function hatchProgressFromClicks(clicks) {
+function hatchProgressFromClicks(clicks, target) {
   const core = require('../runtime/core.cjs');
-  return core.hatchProgressFromClicks(clicks);
-}
-
-function clicksPerHatchStage() {
-  const core = require('../runtime/core.cjs');
-  return core.CLICKS_PER_HATCH_STAGE;
+  return core.hatchProgressFromClicks(clicks, target);
 }
 
 function hatchTargetInputs() {
-  const core = require('../runtime/core.cjs');
-  const thresholds = core.HATCH_STAGE_THRESHOLDS;
-  return Array.isArray(thresholds) && thresholds.length
-    ? thresholds[thresholds.length - 1]
-    : 29000;
+  const { loadSettings } = require('../settings');
+  return loadSettings().hatchTarget;
 }
 
-function hatchStageThresholds() {
+function hatchStageThresholds(target) {
   const core = require('../runtime/core.cjs');
-  return [...core.HATCH_STAGE_THRESHOLDS];
+  return core.hatchStageThresholds(target);
 }
 
 function idleMoodFromProfile(profile) {
@@ -130,7 +122,6 @@ module.exports = {
   getApiSource,
   hatchProgressFromProfile,
   hatchProgressFromClicks,
-  clicksPerHatchStage,
   hatchTargetInputs,
   hatchStageThresholds,
   idleMoodFromProfile,

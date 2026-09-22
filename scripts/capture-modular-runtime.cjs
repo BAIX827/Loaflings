@@ -2,7 +2,7 @@
 
 /**
  * Visual smoke helper for the real Electron preload + renderer + CSS pipeline.
- * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--growth-timeline] [--history-hud] [--scale-layout]
+ * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--growth-timeline] [--hatch-goal] [--history-hud] [--scale-layout]
  */
 const path = require('path');
 const os = require('os');
@@ -18,6 +18,7 @@ const exerciseStats = process.argv.includes('--stats');
 const exerciseRollover = process.argv.includes('--rollover');
 const exerciseProgressGate = process.argv.includes('--progress-gate');
 const exerciseGrowthTimeline = process.argv.includes('--growth-timeline');
+const exerciseHatchGoal = process.argv.includes('--hatch-goal');
 const exerciseHistoryHud = process.argv.includes('--history-hud');
 const exerciseScaleLayout = process.argv.includes('--scale-layout');
 const root = path.join(__dirname, '..');
@@ -63,7 +64,8 @@ app.whenReady().then(async () => {
   const { loadSettings, saveSettings } = require(path.join(root, 'src', 'desk', 'settings'));
   const { applyWindowSettings } = require(path.join(root, 'src', 'desk', 'window'));
   const { buildCatalog } = require(path.join(root, 'src', 'desk', 'catalog'));
-  const stageThresholds = [...require(path.join(root, 'src', 'desk', 'runtime', 'core.cjs')).HATCH_STAGE_THRESHOLDS];
+  const core = require(path.join(root, 'src', 'desk', 'runtime', 'core.cjs'));
+  const stageThresholds = core.hatchStageThresholds();
   const collectionItems = exerciseCatalog || exerciseHistoryHud
     ? [
       {
@@ -95,7 +97,7 @@ app.whenReady().then(async () => {
         choiceRequired: true,
         pendingRollover: { fromDate: '2026-09-21', clicks: 1200, keystrokes: 3400 },
       }
-    : exerciseProgressGate || exerciseHistoryHud || exerciseGrowthTimeline
+    : exerciseProgressGate || exerciseHistoryHud || exerciseGrowthTimeline || exerciseHatchGoal
       ? { ok: true, date: result.date, phase: 'egg', alreadyHatched: false, newEgg: false }
       : {
         ok: true, date: result.date, phase: 'hatched', alreadyHatched: true, newEgg: false,
@@ -129,30 +131,45 @@ app.whenReady().then(async () => {
         dailyKeystrokes: 0,
         idleMood: null,
       }
+    : exerciseHatchGoal
+      ? {
+          ok: true,
+          alreadySaved: false,
+          canCollect: false,
+          targetInputs: loadSettings().hatchTarget,
+          stageThresholds: core.hatchStageThresholds(loadSettings().hatchTarget),
+          remainingInputs: loadSettings().hatchTarget,
+          progress: core.hatchProgressFromClicks(0, loadSettings().hatchTarget),
+          clicks: 0,
+          keystrokes: 0,
+          dailyClicks: 0,
+          dailyKeystrokes: 0,
+          idleMood: null,
+        }
     : exerciseGrowthTimeline
       ? {
           ok: true,
           alreadySaved: false,
           canCollect: false,
-          targetInputs: 29000,
+          targetInputs: 20000,
           stageThresholds,
-          remainingInputs: 12000,
-          progress: { phase: 'newborn', stage: 3, inputs: 17000, nextStageAt: 21000 },
-          clicks: 7000,
-          keystrokes: 10000,
-          dailyClicks: 7000,
-          dailyKeystrokes: 10000,
+          remainingInputs: 8000,
+          progress: { phase: 'newborn', stage: 3, inputs: 12000, nextStageAt: 14483 },
+          clicks: 5000,
+          keystrokes: 7000,
+          dailyClicks: 5000,
+          dailyKeystrokes: 7000,
           idleMood: null,
         }
-      : exerciseProgressGate || exerciseHistoryHud
+    : exerciseProgressGate || exerciseHistoryHud || exerciseHatchGoal
       ? {
           ok: true,
           alreadySaved: false,
           canCollect: false,
-          targetInputs: 29000,
+          targetInputs: 20000,
           stageThresholds,
-          remainingInputs: 29000,
-          progress: { phase: 'egg', inputs: 0, nextStageAt: 3000 },
+          remainingInputs: 20000,
+          progress: { phase: 'egg', inputs: 0, nextStageAt: 2069 },
           inputs: 0,
           clicks: 0,
           keystrokes: 0,
@@ -164,7 +181,7 @@ app.whenReady().then(async () => {
         ok: true,
         alreadySaved: true,
         canCollect: true,
-        targetInputs: 29000,
+        targetInputs: 20000,
         stageThresholds,
         remainingInputs: 0,
         progress: { phase: 'adult', inputs: 30000, nextStageAt: null },
@@ -247,7 +264,7 @@ app.whenReady().then(async () => {
   if (
     exerciseRollover
       ? (!state.rolloverOpen || state.rolloverHits !== '4600')
-      : exerciseProgressGate || exerciseHistoryHud
+      : exerciseProgressGate || exerciseHistoryHud || exerciseHatchGoal
         ? (state.mounted || state.phase !== 'egg')
         : exerciseGrowthTimeline
           ? state.phase !== 'newborn'
@@ -289,7 +306,7 @@ app.whenReady().then(async () => {
       !progressGateState.collectDisabled ||
       !progressGateState.progressOpen ||
       progressGateState.milestones.join(',') !== 'current,upcoming,upcoming,upcoming,upcoming,upcoming' ||
-      !progressGateState.remaining.includes('29,000') ||
+      !progressGateState.remaining.includes('20,000') ||
       progressGateState.phase !== 'egg'
     ) {
       throw new Error(`progress gate failed: ${JSON.stringify(progressGateState)}`);
@@ -314,16 +331,64 @@ app.whenReady().then(async () => {
     if (
       !growthTimelineState.open ||
       growthTimelineState.labels.length !== 6 ||
-      growthTimelineState.thresholds.join(',') !== '0,3,000,8,000,14,000,21,000,29,000' ||
+      growthTimelineState.thresholds.join(',') !== '0,2,069,5,517,9,655,14,483,20,000' ||
       growthTimelineState.states.join(',') !== 'complete,complete,complete,current,upcoming,upcoming' ||
-      !growthTimelineState.next.includes('4,000') ||
-      growthTimelineState.fill < 68 || growthTimelineState.fill > 69
+      !growthTimelineState.next.includes('2,483') ||
+      growthTimelineState.fill < 69 || growthTimelineState.fill > 70
     ) {
       throw new Error(`growth timeline failed: ${JSON.stringify(growthTimelineState)}`);
     }
     win.setContentSize(260, 300);
     win.setPosition(-10000, -10000);
     win.showInactive();
+  }
+  let hatchGoalState = null;
+  if (exerciseHatchGoal) {
+    hatchGoalState = await win.webContents.executeJavaScript(`(async () => {
+      const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      document.getElementById('btn-settings')?.click();
+      await pause(250);
+      const input = document.getElementById('set-hatch-target');
+      const initial = input?.value;
+      input.value = '999';
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      await pause(350);
+      const clamped = input.value;
+      const saved = (await window.loaflings.getSettings()).settings.hatchTarget;
+      document.getElementById('btn-close-settings')?.click();
+      document.getElementById('btn-reveal')?.click();
+      await pause(250);
+      return {
+        initial, clamped, saved,
+        target: document.getElementById('progress-target')?.textContent,
+        thresholds: [...document.querySelectorAll('.progress-milestone-count')].map((node) => node.textContent),
+      };
+    })()`);
+    if (
+      hatchGoalState.initial !== '20000' ||
+      hatchGoalState.clamped !== '1000' ||
+      hatchGoalState.saved !== 1000 ||
+      hatchGoalState.target !== '1,000' ||
+      hatchGoalState.thresholds.join(',') !== '0,103,276,483,724,1,000'
+    ) {
+      throw new Error(`hatch goal setting failed: ${JSON.stringify(hatchGoalState)}`);
+    }
+    await win.loadFile(indexPath);
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    hatchGoalState.reloaded = await win.webContents.executeJavaScript(`(async () => {
+      document.getElementById('btn-settings')?.click();
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      return document.getElementById('set-hatch-target')?.value;
+    })()`);
+    if (hatchGoalState.reloaded !== '1000') {
+      throw new Error(`hatch goal did not persist: ${JSON.stringify(hatchGoalState)}`);
+    }
+    const { markHatched, reopenUnreadyEgg } = require(path.join(root, 'src', 'desk', 'dayState'));
+    markHatched(1000);
+    hatchGoalState.completedGoalRetained = reopenUnreadyEgg(null, 30000).alreadyHatched;
+    if (!hatchGoalState.completedGoalRetained) {
+      throw new Error(`completed egg was reopened after changing goal: ${JSON.stringify(hatchGoalState)}`);
+    }
   }
   let historyHudState = null;
   if (exerciseHistoryHud) {
@@ -519,7 +584,7 @@ app.whenReady().then(async () => {
   const image = await win.webContents.capturePage();
   if (exerciseCatalog) win.hide();
   require('fs').writeFileSync(outputPath, image.toPNG());
-  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, growthTimelineState, historyHudState, scaleLayoutState })}\n`);
+  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, growthTimelineState, hatchGoalState, historyHudState, scaleLayoutState })}\n`);
   win.destroy();
   app.quit();
 }).catch((err) => {

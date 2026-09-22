@@ -30,6 +30,7 @@ function emptyDayState(date = localToday(), profile = null) {
     date,
     phase: 'egg',
     hatchedAt: null,
+    hatchTarget: null,
     egg: emptyEgg(date, profile),
     pendingRollover: null,
     path: dayStatePath(),
@@ -39,12 +40,16 @@ function emptyDayState(date = localToday(), profile = null) {
 function normalizeState(raw, date) {
   const source = raw && typeof raw === 'object' ? raw : {};
   const phase = source.phase === 'hatched' ? 'hatched' : source.phase === 'growing' ? 'growing' : 'egg';
+  const egg = normalizeEgg(source.egg, source.date || date);
+  const legacyCompletedTarget = egg.clicks + egg.keystrokes >= 29000 ? 29000 : null;
   return {
     version: EGG_STATE_VERSION,
     date: typeof source.date === 'string' ? source.date : date,
     phase,
     hatchedAt: phase === 'hatched' ? source.hatchedAt || null : null,
-    egg: normalizeEgg(source.egg, source.date || date),
+    hatchTarget: phase === 'hatched' && Number.isSafeInteger(source.hatchTarget) && source.hatchTarget >= 1000
+      ? source.hatchTarget : phase === 'hatched' ? legacyCompletedTarget : null,
+    egg,
     pendingRollover:
       source.pendingRollover && typeof source.pendingRollover === 'object'
         ? {
@@ -65,6 +70,7 @@ function writeDayState(state) {
     date: state.date,
     phase: state.phase,
     hatchedAt: state.hatchedAt || null,
+    hatchTarget: state.hatchTarget || null,
     egg: normalizeEgg(state.egg, state.date),
     pendingRollover: state.pendingRollover || null,
   });
@@ -155,6 +161,8 @@ function recordEggProgress(profile) {
 function reopenUnreadyEgg(profile, targetInputs) {
   const current = ensureDayState({ currentProfile: profile });
   if (!current.alreadyHatched) return current;
+  // A completed egg keeps the goal that was in effect when it hatched.
+  if (current.hatchTarget) return current;
   const egg = freezeEgg(current.egg, profile);
   if (egg.clicks + egg.keystrokes >= targetInputs) return current;
   const state = {
@@ -186,13 +194,14 @@ function resolveRollover(action, profile) {
   return present(next);
 }
 
-function markHatched() {
+function markHatched(targetInputs) {
   const current = ensureDayState();
   if (current.choiceRequired) throw new Error('egg-rollover-choice-required');
   const state = {
     ...current,
     phase: 'hatched',
     hatchedAt: new Date().toISOString(),
+    hatchTarget: targetInputs,
     pendingRollover: null,
   };
   writeDayState(state);

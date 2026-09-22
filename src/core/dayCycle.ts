@@ -51,8 +51,9 @@ export function markGrowing(egg: DayEgg): DayEgg {
 export function phaseFromProfile(
   profile: DailyActivityProfile,
   alreadyHatched: boolean,
+  target?: number,
 ): DayPhase {
-  const progress = hatchProgressFromProfile(profile, false);
+  const progress = hatchProgressFromProfile(profile, false, target);
   if (progress.stage >= 5) return 'hatched';
   if (progress.stage >= 1) return 'growing';
   const active =

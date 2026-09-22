@@ -21,11 +21,13 @@ var index_exports = {};
 __export(index_exports, {
   CLICKS_PER_HATCH_STAGE: () => CLICKS_PER_HATCH_STAGE,
   DEFAULT_APPEARANCE: () => DEFAULT_APPEARANCE,
+  DEFAULT_HATCH_TARGET: () => DEFAULT_HATCH_TARGET,
   ENERGY_WEIGHTS: () => ENERGY_WEIGHTS,
   GENE_FIELDS: () => GENE_FIELDS,
   HATCH_STAGE_COUNT: () => HATCH_STAGE_COUNT,
   HATCH_STAGE_THRESHOLDS: () => HATCH_STAGE_THRESHOLDS,
   INPUTS_PER_HATCH_STAGE: () => INPUTS_PER_HATCH_STAGE,
+  MIN_HATCH_TARGET: () => MIN_HATCH_TARGET,
   MVP_BASE_GENES: () => MVP_BASE_GENES,
   RARITY_IDS: () => RARITY_IDS,
   RARITY_WEIGHTS: () => RARITY_WEIGHTS,
@@ -40,11 +42,13 @@ __export(index_exports, {
   hatchProgressFromClicks: () => hatchProgressFromClicks,
   hatchProgressFromClicksAndKeys: () => hatchProgressFromClicksAndKeys,
   hatchProgressFromProfile: () => hatchProgressFromProfile,
+  hatchStageThresholds: () => hatchStageThresholds,
   idleMoodFromEnergy: () => idleMoodFromEnergy,
   idleMoodFromProfile: () => idleMoodFromProfile,
   localToday: () => localToday,
   longestFocusSec: () => longestFocusSec,
   markGrowing: () => markGrowing,
+  normalizeHatchTarget: () => normalizeHatchTarget,
   phaseFromProfile: () => phaseFromProfile,
   pickWeighted: () => pickWeighted,
   pickWeightedKey: () => pickWeightedKey,
@@ -288,7 +292,7 @@ function rollIdleEvents(profile, energy, rng) {
 }
 
 // src/core/hatchProgress.ts
-var HATCH_STAGE_THRESHOLDS = Object.freeze([
+var REFERENCE_THRESHOLDS = Object.freeze([
   0,
   3e3,
   8e3,
@@ -296,8 +300,20 @@ var HATCH_STAGE_THRESHOLDS = Object.freeze([
   21e3,
   29e3
 ]);
+var DEFAULT_HATCH_TARGET = 2e4;
+var MIN_HATCH_TARGET = 1e3;
+function normalizeHatchTarget(value) {
+  const n = Number(value);
+  return value !== null && value !== void 0 && value !== "" && Number.isFinite(n) ? Math.max(MIN_HATCH_TARGET, Math.min(Number.MAX_SAFE_INTEGER, Math.floor(n))) : DEFAULT_HATCH_TARGET;
+}
+function hatchStageThresholds(target = DEFAULT_HATCH_TARGET) {
+  const goal = normalizeHatchTarget(target);
+  const referenceGoal = REFERENCE_THRESHOLDS[REFERENCE_THRESHOLDS.length - 1];
+  return REFERENCE_THRESHOLDS.map((floor) => Math.round(floor / referenceGoal * goal));
+}
+var HATCH_STAGE_THRESHOLDS = Object.freeze(hatchStageThresholds());
 var HATCH_STAGE_COUNT = 6;
-var INPUTS_PER_HATCH_STAGE = 3e3;
+var INPUTS_PER_HATCH_STAGE = HATCH_STAGE_THRESHOLDS[1];
 var CLICKS_PER_HATCH_STAGE = INPUTS_PER_HATCH_STAGE;
 var STAGE_PHASE = [
   "egg",
@@ -310,23 +326,24 @@ var STAGE_PHASE = [
 function hatchInputScore(clicks, keystrokes) {
   return Math.max(0, Math.floor(clicks || 0)) + Math.max(0, Math.floor(keystrokes || 0));
 }
-function stageFromInputs(inputs) {
+function stageFromInputs(inputs, thresholds) {
   const c = Math.max(0, Math.floor(inputs || 0));
   let stage = 0;
-  for (let i = HATCH_STAGE_THRESHOLDS.length - 1; i >= 0; i -= 1) {
-    if (c >= HATCH_STAGE_THRESHOLDS[i]) {
+  for (let i = thresholds.length - 1; i >= 0; i -= 1) {
+    if (c >= thresholds[i]) {
       stage = i;
       break;
     }
   }
   return stage;
 }
-function progressFromInputs(inputs, clicks, keystrokes) {
+function progressFromInputs(inputs, clicks, keystrokes, target) {
   const c = Math.max(0, Math.floor(inputs || 0));
-  const stage = stageFromInputs(c);
+  const thresholds = hatchStageThresholds(target);
+  const stage = stageFromInputs(c, thresholds);
   const maxStage = HATCH_STAGE_COUNT - 1;
-  const floor = HATCH_STAGE_THRESHOLDS[stage];
-  const nextStageAt = stage >= maxStage ? null : HATCH_STAGE_THRESHOLDS[stage + 1];
+  const floor = thresholds[stage];
+  const nextStageAt = stage >= maxStage ? null : thresholds[stage + 1];
   const band = nextStageAt == null ? Math.max(1, c - floor || 1) : nextStageAt - floor;
   const stageProgress = stage >= maxStage ? 1 : Math.min(1, Math.max(0, (c - floor) / band));
   return {
@@ -342,20 +359,22 @@ function progressFromInputs(inputs, clicks, keystrokes) {
     stageProgress
   };
 }
-function hatchProgressFromClicks(clicks) {
-  return progressFromInputs(clicks, clicks, 0);
+function hatchProgressFromClicks(clicks, target = DEFAULT_HATCH_TARGET) {
+  return progressFromInputs(clicks, clicks, 0, target);
 }
-function hatchProgressFromClicksAndKeys(clicks, keystrokes) {
+function hatchProgressFromClicksAndKeys(clicks, keystrokes, target = DEFAULT_HATCH_TARGET) {
   return progressFromInputs(
     hatchInputScore(clicks, keystrokes),
     clicks,
-    keystrokes
+    keystrokes,
+    target
   );
 }
-function hatchProgressFromProfile(profile, _alreadySaved) {
+function hatchProgressFromProfile(profile, _alreadySaved, target = DEFAULT_HATCH_TARGET) {
   return hatchProgressFromClicksAndKeys(
     profile.clicks,
-    profile.keystrokes
+    profile.keystrokes,
+    target
   );
 }
 
@@ -367,8 +386,8 @@ function markGrowing(egg) {
   if (egg.phase === "growing") return egg;
   return { ...egg, phase: "growing" };
 }
-function phaseFromProfile(profile, alreadyHatched) {
-  const progress = hatchProgressFromProfile(profile, false);
+function phaseFromProfile(profile, alreadyHatched, target) {
+  const progress = hatchProgressFromProfile(profile, false, target);
   if (progress.stage >= 5) return "hatched";
   if (progress.stage >= 1) return "growing";
   const active = profile.keystrokes + profile.clicks + profile.mouseTravel + profile.activeSec > 0;
@@ -448,11 +467,13 @@ function pickWeightedKey(weights, rng = Math.random) {
 0 && (module.exports = {
   CLICKS_PER_HATCH_STAGE,
   DEFAULT_APPEARANCE,
+  DEFAULT_HATCH_TARGET,
   ENERGY_WEIGHTS,
   GENE_FIELDS,
   HATCH_STAGE_COUNT,
   HATCH_STAGE_THRESHOLDS,
   INPUTS_PER_HATCH_STAGE,
+  MIN_HATCH_TARGET,
   MVP_BASE_GENES,
   RARITY_IDS,
   RARITY_WEIGHTS,
@@ -467,11 +488,13 @@ function pickWeightedKey(weights, rng = Math.random) {
   hatchProgressFromClicks,
   hatchProgressFromClicksAndKeys,
   hatchProgressFromProfile,
+  hatchStageThresholds,
   idleMoodFromEnergy,
   idleMoodFromProfile,
   localToday,
   longestFocusSec,
   markGrowing,
+  normalizeHatchTarget,
   phaseFromProfile,
   pickWeighted,
   pickWeightedKey,

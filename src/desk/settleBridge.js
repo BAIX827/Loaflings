@@ -110,7 +110,7 @@ function syncDayBoundary() {
   } else if (day.choiceRequired) {
     phase = day.egg?.clicks + day.egg?.keystrokes > 0 ? 'growing' : 'egg';
   } else if (profile) {
-    phase = phaseFromProfile(effectiveProfileForDay(profile, day), false);
+    phase = phaseFromProfile(effectiveProfileForDay(profile, day), false, hatchTargetInputs());
     if (phase === 'growing' && day.phase === 'egg') {
       try {
         markGrowing();

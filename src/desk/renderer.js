@@ -66,7 +66,7 @@
 
   function progressTotals(hp) {
     const inputs = Math.max(0, Number(hp.progress.inputs) || 0);
-    const target = Math.max(1, Number(hp.targetInputs) || 29000);
+    const target = Math.max(1, Number(hp.targetInputs) || 20000);
     const remaining = Math.max(0, Number(hp.remainingInputs ?? target - inputs) || 0);
     const canCollect = Boolean(hp.canCollect || inputs >= target);
     return { inputs, target, remaining, canCollect };
@@ -766,7 +766,7 @@
       // Keep the latest known progress.
     }
     const inputs = Number(hp?.progress?.inputs) || 0;
-    const target = Number(hp?.targetInputs) || 29000;
+    const target = Number(hp?.targetInputs) || 20000;
     if (!hp?.canCollect && inputs < target) {
       setPanelOpen(false);
       setBagOpen(false);
@@ -1249,6 +1249,7 @@
   const settingsEl = document.getElementById('settings');
   const opacityEl = document.getElementById('set-opacity');
   const scaleEl = document.getElementById('set-scale');
+  const hatchTargetEl = document.getElementById('set-hatch-target');
   const lockEl = document.getElementById('set-lock');
   const showChromeEl = document.getElementById('set-show-chrome');
   const showHudEl = document.getElementById('set-show-hud');
@@ -1286,6 +1287,7 @@
       populateWardrobeControls();
       if (opacityEl) opacityEl.value = String(s.opacity);
       if (scaleEl) scaleEl.value = String(s.scale);
+      if (hatchTargetEl) hatchTargetEl.value = String(s.hatchTarget);
       applyPetScale(s.scale);
       if (lockEl) lockEl.checked = Boolean(s.lockPosition);
       if (showChromeEl) showChromeEl.checked = s.showChrome !== false;
@@ -1322,6 +1324,13 @@
     const scale = Number(scaleEl.value);
     applyPetScale(scale);
     api?.setSettings?.({ scale });
+  });
+  hatchTargetEl?.addEventListener('change', async () => {
+    const res = await api?.setSettings?.({ hatchTarget: Number(hatchTargetEl.value) });
+    if (res?.ok && res.settings) {
+      hatchTargetEl.value = String(res.settings.hatchTarget);
+      await refreshHatchProgress();
+    }
   });
   lockEl?.addEventListener('change', () => {
     api?.setSettings?.({ lockPosition: Boolean(lockEl.checked) });

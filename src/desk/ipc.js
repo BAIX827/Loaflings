@@ -14,7 +14,6 @@ const { ensureDayState, recordEggProgress, resolveRollover, markHatched } = requ
 const { observeActivityProfile, getActivityStats } = require('./activityStats');
 const {
   hatchProgressFromProfile,
-  clicksPerHatchStage,
   hatchStageThresholds,
   idleMoodFromProfile,
 } = require('./hooks/coreDayCycle');
@@ -49,8 +48,9 @@ function currentHatchSnapshot() {
   const day = synced.day || ensureDayState();
   const profile = synced.profile || null;
   const eggProfile = progressProfile(day, profile);
-  const progress = hatchProgressFromProfile(eggProfile, false);
-  const stageThresholds = hatchStageThresholds();
+  const goal = day.alreadyHatched && day.hatchTarget ? day.hatchTarget : loadSettings().hatchTarget;
+  const progress = hatchProgressFromProfile(eggProfile, false, goal);
+  const stageThresholds = hatchStageThresholds(goal);
   const targetInputs = stageThresholds[stageThresholds.length - 1];
   return {
     synced,
@@ -127,7 +127,7 @@ function registerIpc() {
           day,
           progress,
           clicks,
-          clicksPerStage: clicksPerHatchStage(),
+          clicksPerStage: stageThresholds[1],
           keystrokes,
           dailyClicks: 0,
           dailyKeystrokes: 0,
@@ -152,7 +152,7 @@ function registerIpc() {
         day,
         progress,
         clicks: eggProfile.clicks || 0,
-        clicksPerStage: clicksPerHatchStage(),
+        clicksPerStage: stageThresholds[1],
         keystrokes: eggProfile.keystrokes || 0,
         dailyClicks: profile.clicks || 0,
         dailyKeystrokes: profile.keystrokes || 0,
@@ -310,7 +310,7 @@ function registerIpc() {
         source: bundle.source,
         seedKey: bundle.profile?.seedKey,
       });
-      const hatched = markHatched();
+      const hatched = markHatched(gate.targetInputs);
       return {
         ok: true,
         source: bundle.source,
@@ -347,7 +347,7 @@ function registerIpc() {
           targetInputs: gate.targetInputs,
         };
       }
-      const state = markHatched();
+      const state = markHatched(gate.targetInputs);
       return {
         ok: true,
         date: state.date,

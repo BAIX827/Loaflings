@@ -6,11 +6,13 @@ const path = require('path');
 const { app } = require('electron');
 const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
 const { DEFAULT_WARDROBE, normalizeWardrobe } = require('./characterRecipe');
+const { DEFAULT_HATCH_TARGET, normalizeHatchTarget } = require('./runtime/core.cjs');
 
 const DEFAULTS = Object.freeze({
   version: 4,
   opacity: 1,
   scale: 1,
+  hatchTarget: DEFAULT_HATCH_TARGET,
   lockPosition: false,
   showChrome: true,
   showHud: true,
@@ -34,6 +36,7 @@ function normalize(raw) {
   s.version = 4;
   s.opacity = clamp(Number(s.opacity) || 1, 0.25, 1);
   s.scale = clamp(Number(s.scale) || 1, 0.6, 1.6);
+  s.hatchTarget = normalizeHatchTarget(s.hatchTarget);
   s.lockPosition = Boolean(s.lockPosition);
   s.showChrome = s.showChrome !== false;
   s.showHud = s.showHud !== false;

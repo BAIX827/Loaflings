@@ -23,16 +23,16 @@ function profile(overrides = {}) {
 }
 
 test('six hatch thresholds use combined clicks and keystrokes', () => {
-  assert.deepEqual(hatchStageThresholds(), [0, 3000, 8000, 14000, 21000, 29000]);
+  assert.deepEqual(hatchStageThresholds(), [0, 2069, 5517, 9655, 14483, 20000]);
   const cases = [
     [0, 'egg'],
-    [2999, 'egg'],
-    [3000, 'cracking'],
-    [7999, 'cracking'],
-    [8000, 'hatching'],
-    [14000, 'newborn'],
-    [21000, 'growing'],
-    [29000, 'adult'],
+    [2068, 'egg'],
+    [2069, 'cracking'],
+    [5516, 'cracking'],
+    [5517, 'hatching'],
+    [9655, 'newborn'],
+    [14483, 'growing'],
+    [20000, 'adult'],
   ];
 
   for (const [hits, phase] of cases) {
@@ -45,8 +45,19 @@ test('six hatch thresholds use combined clicks and keystrokes', () => {
   }
 });
 
+test('custom hatch goals scale every stage and enforce a 1,000 minimum', () => {
+  assert.deepEqual(hatchStageThresholds(1000), [0, 103, 276, 483, 724, 1000]);
+  assert.deepEqual(hatchStageThresholds(10000), [0, 1034, 2759, 4828, 7241, 10000]);
+  assert.deepEqual(hatchStageThresholds(29000), [0, 3000, 8000, 14000, 21000, 29000]);
+  assert.equal(core.normalizeHatchTarget(999), 1000);
+  assert.equal(core.normalizeHatchTarget(''), 20000);
+  assert.equal(core.hatchProgressFromProfile(profile({ clicks: 500, keystrokes: 500 }), false, 1000).phase, 'adult');
+  assert.equal(core.hatchProgressFromProfile(profile({ clicks: 500, keystrokes: 499 }), false, 1000).phase, 'growing');
+  assert.equal(core.phaseFromProfile(profile({ keystrokes: 1000 }), false, 1000), 'hatched');
+});
+
 test('coarse day phase agrees with keyboard-only adult progress', () => {
-  const keyboardDay = profile({ keystrokes: 29000, activeSec: 1 });
+  const keyboardDay = profile({ keystrokes: 20000, activeSec: 1 });
   assert.equal(core.hatchProgressFromProfile(keyboardDay, false).phase, 'adult');
   assert.equal(core.phaseFromProfile(keyboardDay, false), 'hatched');
 });

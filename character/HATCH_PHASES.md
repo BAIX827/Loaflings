@@ -9,15 +9,15 @@ The runtime PNG sequence uses one reference-aligned watercolor family and transp
 
 **activityHits** = keystrokes + clicks (either counts).
 
-| Phase | Cumulative activityHits | Asset (PNG only) |
+| Phase | Default cumulative activityHits (goal 20,000) | Asset (PNG only) |
 |---|---|---|
-| `egg` | 0–2999 | `character/png/Pet_Egg_Master.png` |
-| `cracking` | 3000–7999 | `character/png/Pet_Egg_Cracking.png` |
-| `hatching` | 8000–13999 | `character/png/Pet_Hatching.png` |
-| `newborn` | 14000–20999 | `character/png/Pet_Newborn.png` |
-| `growing` | 21000–28999 | `character/png/Pet_Growing.png` |
-| `adult` | 29000+ | `character/png/Pet_Adult.png` (alias `Pet_Base_Master.png`) |
+| `egg` | 0–2068 | `character/png/Pet_Egg_Master.png` |
+| `cracking` | 2069–5516 | `character/png/Pet_Egg_Cracking.png` |
+| `hatching` | 5517–9654 | `character/png/Pet_Hatching.png` |
+| `newborn` | 9655–14482 | `character/png/Pet_Newborn.png` |
+| `growing` | 14483–19999 | `character/png/Pet_Growing.png` |
+| `adult` | 20000+ | `character/png/Pet_Adult.png` (alias `Pet_Base_Master.png`) |
 
-Band widths: 3k → 5k → 6k → 7k → 8k → ∞. Daytime look only; day-end Save still `hatchDay()` (one egg/day). Gene stack from `newborn` up; egg/cracking/hatching stay shell-forward.
+The player can set any whole-number goal of at least 1,000 in Settings. Stage floors scale from the original 0 / 3 / 8 / 14 / 21 / 29 proportions and round to whole hits. Daytime look only; Save still uses `hatchDay()` (one egg/day). Gene stack from `newborn` up; egg/cracking/hatching stay shell-forward.
 
 CORE: `src/core/hatchProgress.ts` (`HATCH_STAGE_THRESHOLDS`).

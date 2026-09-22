@@ -14,6 +14,7 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-23 configurable hatch goal: 20,000 default, 1,000 minimum and proportional growth stages
 - [x] 2026-09-23 scoped desktop code cleanup and unused-stub removal
 - [x] 2026-09-23 six-stage growth timeline with milestone thresholds and next-stage distance
 - [x] 2026-09-23 character-only scaling with stable functional panel layout
@@ -45,6 +46,12 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-23 (CONFIGURABLE HATCH GOAL)
+- Lowered the default adult/collection goal from 29,000 to 20,000 activity hits. Settings now persists a whole-number hatch goal, clamps values below 1,000, and refreshes the current unfinished egg immediately. The five preceding milestone floors scale from the original 0 / 3 / 8 / 14 / 21 / 29 proportions; click and keystroke counts remain cumulative as before.
+- Used the same configured goal in CORE growth, desktop phase/progress, cross-day legacy recovery, and main-process collection gates. A completed egg records its finishing goal so later settings changes cannot revoke completion; valid old 29,000-hit completions retain their original goal.
+- Updated bilingual settings copy, growth and desk documentation, plus the smoke fixture. The already-published 0.1.0 Windows release still uses 29,000; only a future package will include this change.
+- Verified runtime compilation, all 31 Node tests, demo settlement, and Electron smokes for the default gate, proportional midway timeline, 1,000 minimum, setting persistence after reload and completed-egg stability; `git diff --check` passed.
 
 2026-09-23 (DESKTOP CODE CLEANUP)
 - Audited current desktop growth, collection and integration paths. Shared the progress number normalization between the timeline and collection gate, reused one CORE threshold read within each IPC progress snapshot, and aligned phase normalization with the timeline's phase list. Kept the cross-day settlement helper because it is still used.

@@ -325,6 +325,11 @@ body {
   flex: 1;
   max-width: 140px;
 }
+.settings .settings-row input[type='number'] {
+  width: 92px;
+  min-width: 0;
+  box-sizing: border-box;
+}
 .settings-check {
   justify-content: flex-start !important;
 }
