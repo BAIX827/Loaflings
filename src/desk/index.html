@@ -28,7 +28,9 @@
         <span id="hud-hits">0</span>
         <span class="hud-label" data-i18n="hud.hits">活跃</span>
         <span id="hud-phase" class="hud-phase">egg</span>
+        <span id="hud-coins" class="hud-coins" title="金币 / Coins">🪙 0</span>
       </div>
+      <p id="coin-notice" class="coin-notice" hidden aria-live="polite"></p>
       <button type="button" id="btn-chrome-peek" class="chrome-peek" title="Show controls" hidden aria-label="Show controls">⚙</button>
       <div id="chrome" class="chrome" role="toolbar" aria-label="Companion controls">
         <button type="button" id="btn-reveal" class="chip" data-i18n="btn.day" title="Day">今日</button>
@@ -74,6 +76,7 @@
           <button type="button" id="bag-tab-list" class="chip chip-quiet" data-i18n="bag.list">收藏</button>
           <button type="button" id="bag-tab-catalog" class="chip chip-quiet" data-i18n="bag.catalog">图鉴</button>
           <button type="button" id="bag-tab-stats" class="chip chip-quiet" data-i18n="bag.stats">统计</button>
+          <button type="button" id="bag-tab-coins" class="chip chip-quiet" data-i18n="bag.coins">金币</button>
         </div>
         <div id="bag-cal" class="bag-cal"></div>
         <div id="bag-list" class="bag-list" hidden></div>
@@ -103,6 +106,21 @@
             <dt data-i18n="stats.trackedDays">记录天数</dt><dd id="stats-tracked-days">0</dd>
           </dl>
           <p class="panel-note" data-i18n="stats.note">累计统计从启用此功能后开始，只记录数量，不记录输入内容。</p>
+        </section>
+        <section id="bag-coins" class="bag-coins" hidden aria-label="Coin wallet">
+          <div class="stats-hero">
+            <span data-i18n="coins.balance">金币余额</span>
+            <strong id="coins-balance">0</strong>
+          </div>
+          <p id="coins-today" class="panel-note">今日 0 / 30</p>
+          <dl class="stats-grid">
+            <dt data-i18n="coins.collection">今日首次收藏 · +20</dt><dd id="coins-collection-state">未完成</dd>
+            <dt data-i18n="coins.active">活跃 30 分钟 · +5</dt><dd id="coins-active-state">未完成</dd>
+            <dt data-i18n="coins.focus">单次专注 25 分钟 · +5</dt><dd id="coins-focus-state">未完成</dd>
+          </dl>
+          <h3 class="coins-history-title" data-i18n="coins.history">获得记录</h3>
+          <div id="coins-history" class="coins-history"></div>
+          <p class="panel-note" data-i18n="coins.note">金币暂不能消费；现有换装部件保持免费。</p>
         </section>
         <p id="bag-hint" class="panel-note"></p>
         <button type="button" id="bag-back-today" class="chip" style="margin-top:8px" data-i18n="bag.today">回到今天</button>

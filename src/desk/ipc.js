@@ -12,6 +12,8 @@ const { buildCatalog } = require('./catalog');
 const { loadSettings, saveSettings } = require('./settings');
 const { ensureDayState, recordEggProgress, resolveRollover, markHatched } = require('./dayState');
 const { observeActivityProfile, getActivityStats } = require('./activityStats');
+const { awardCollectionCoin, getCoinWallet } = require('./coinWallet');
+const { collectionRewardEligible } = require('./coinWalletCore');
 const {
   hatchProgressFromProfile,
   hatchStageThresholds,
@@ -255,6 +257,15 @@ function registerIpc() {
     }
   });
 
+  ipcMain.handle('loaflings:get-coin-wallet', () => {
+    try {
+      syncDayBoundary();
+      return { ok: true, ...getCoinWallet() };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
   ipcMain.handle('loaflings:resolve-egg-rollover', (_e, action) => {
     try {
       let profile = null;
@@ -311,6 +322,14 @@ function registerIpc() {
         seedKey: bundle.profile?.seedKey,
       });
       const hatched = markHatched(gate.targetInputs);
+      let coinReward = null;
+      if (collectionRewardEligible(bundle.source)) {
+        try {
+          coinReward = awardCollectionCoin(hatched.date).earned;
+        } catch (err) {
+          console.warn('[desk] collection coin reward', err);
+        }
+      }
       return {
         ok: true,
         source: bundle.source,
@@ -319,6 +338,7 @@ function registerIpc() {
         result: slimResult(bundle.result),
         entry: saved.entry,
         count: saved.count,
+        coinReward,
         collectionPath: saved.path,
         day: { date: hatched.date, phase: hatched.phase, hatchedAt: hatched.hatchedAt },
       };

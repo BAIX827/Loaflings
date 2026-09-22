@@ -59,6 +59,9 @@ contextBridge.exposeInMainWorld('loaflings', {
   getActivityStats() {
     return ipcRenderer.invoke('loaflings:get-activity-stats');
   },
+  getCoinWallet() {
+    return ipcRenderer.invoke('loaflings:get-coin-wallet');
+  },
   resolveEggRollover(action) {
     return ipcRenderer.invoke('loaflings:resolve-egg-rollover', action);
   },

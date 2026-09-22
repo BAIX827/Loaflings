@@ -26,10 +26,14 @@
   let liveKeyOffset = 0;
   let latestHatchProgress = null;
   let lastEggHits = 0;
+  let coinWallet = null;
+  let seenCoinEntries = null;
+  let coinNoticeTimer = null;
   const rolloverEl = document.getElementById('egg-rollover');
   const progressPanelEl = document.getElementById('progress-panel');
   const collectButton = document.getElementById('btn-collect');
   const collectGateEl = document.getElementById('collect-gate');
+  const coinNoticeEl = document.getElementById('coin-notice');
   const GROWTH_PHASES = ['egg', 'cracking', 'hatching', 'newborn', 'growing', 'adult'];
 
   function template(key, values = {}) {
@@ -751,6 +755,7 @@
   await applyPhase('egg');
   await refreshBadge();
   await syncFromMain();
+  await refreshCoinWallet();
 
   document.getElementById('btn-reveal')?.addEventListener('click', async () => {
     if (eggChoiceRequired) return;
@@ -837,7 +842,10 @@
 
   function setBagOpen(open) {
     if (bagEl) bagEl.hidden = !open;
-    if (open) setProgressOpen(false);
+    if (open) {
+      setProgressOpen(false);
+      if (coinNoticeEl) coinNoticeEl.hidden = true;
+    }
   }
 
   async function loadCollectionItems() {
@@ -977,6 +985,61 @@
     }
   }
 
+  function renderCoinWallet() {
+    if (!coinWallet) return;
+    const hud = document.getElementById('hud-coins');
+    if (hud) hud.textContent = `🪙 ${numberText(coinWallet.balance)}`;
+    const balance = document.getElementById('coins-balance');
+    if (balance) balance.textContent = numberText(coinWallet.balance);
+    const today = document.getElementById('coins-today');
+    if (today) today.textContent = template('coins.today', {
+      earned: numberText(coinWallet.todayEarned),
+      limit: numberText(coinWallet.dailyLimit),
+    });
+    for (const kind of ['collection', 'active', 'focus']) {
+      const state = document.getElementById(`coins-${kind}-state`);
+      if (state) state.textContent = tr(coinWallet.todayRewards?.[kind] ? 'coins.done' : 'coins.pending');
+    }
+    const history = document.getElementById('coins-history');
+    if (!history) return;
+    history.replaceChildren();
+    const entries = (coinWallet.entries || []).slice(0, 8);
+    if (!entries.length) {
+      history.textContent = tr('coins.empty');
+      return;
+    }
+    for (const entry of entries) {
+      const row = document.createElement('div');
+      row.className = 'coins-history-row';
+      row.textContent = `${entry.date} · ${tr(`coins.${entry.kind}`)}`;
+      history.appendChild(row);
+    }
+  }
+
+  async function refreshCoinWallet() {
+    if (!api?.getCoinWallet) return;
+    try {
+      const next = await api.getCoinWallet();
+      if (!next?.ok) return;
+      const entries = Array.isArray(next.entries) ? next.entries : [];
+      if (seenCoinEntries) {
+        const gained = entries.filter((entry) => !seenCoinEntries.has(entry.id));
+        const amount = gained.reduce((sum, entry) => sum + (Number(entry.amount) || 0), 0);
+        if (amount > 0 && coinNoticeEl) {
+          coinNoticeEl.textContent = template('coins.notice', { amount: numberText(amount) });
+          coinNoticeEl.hidden = false;
+          clearTimeout(coinNoticeTimer);
+          coinNoticeTimer = setTimeout(() => { coinNoticeEl.hidden = true; }, 3000);
+        }
+      }
+      seenCoinEntries = new Set(entries.map((entry) => entry.id));
+      coinWallet = next;
+      renderCoinWallet();
+    } catch {
+      // Keep the last known balance if the local wallet is temporarily unavailable.
+    }
+  }
+
   async function renderCatalog() {
     if (!bagCatalog || !catalogGrid) return;
     const renderId = ++catalogRenderId;
@@ -1045,16 +1108,20 @@
     if (bagList) bagList.hidden = tab !== 'collection';
     if (bagCatalog) bagCatalog.hidden = tab !== 'catalog';
     if (bagStats) bagStats.hidden = tab !== 'stats';
+    const bagCoins = document.getElementById('bag-coins');
+    if (bagCoins) bagCoins.hidden = tab !== 'coins';
     for (const [id, value] of [
       ['bag-tab-cal', 'calendar'],
       ['bag-tab-list', 'collection'],
       ['bag-tab-catalog', 'catalog'],
       ['bag-tab-stats', 'stats'],
+      ['bag-tab-coins', 'coins'],
     ]) {
       document.getElementById(id)?.classList.toggle('chip-quiet', tab !== value);
     }
     if (tab === 'catalog') void renderCatalog();
     if (tab === 'stats') void loadActivityStats();
+    if (tab === 'coins') void refreshCoinWallet();
   }
 
   async function viewCollectionEntry(entry) {
@@ -1105,7 +1172,7 @@
     setWardrobeOpen(false);
     setSettingsOpen(false);
     setPanelOpen(false);
-    await Promise.all([loadCollectionItems(), loadCatalog(), loadActivityStats()]);
+    await Promise.all([loadCollectionItems(), loadCatalog(), loadActivityStats(), refreshCoinWallet()]);
     renderBagCalendar();
     renderBagList();
     showBagTab('calendar');
@@ -1127,6 +1194,9 @@
   });
   document.getElementById('bag-tab-stats')?.addEventListener('click', () => {
     showBagTab('stats');
+  });
+  document.getElementById('bag-tab-coins')?.addEventListener('click', () => {
+    showBagTab('coins');
   });
 
   // —— Wardrobe: persisted cosmetic overlay for adult Loaflings ——
@@ -1365,6 +1435,7 @@
       renderBagList();
       if (bagCatalog && !bagCatalog.hidden) void renderCatalog();
       if (bagStats && !bagStats.hidden) renderActivityStats();
+      if (!document.getElementById('bag-coins')?.hidden) renderCoinWallet();
     }
   });
 
@@ -1382,6 +1453,7 @@
       setPanelOpen(true);
       await loadCollectionItems();
       await refreshBadge();
+      await refreshCoinWallet();
     }
   });
 
@@ -1839,6 +1911,7 @@
 
 
   setInterval(refreshHatchProgress, 500);
+  setInterval(refreshCoinWallet, 10000);
 
 })();
 

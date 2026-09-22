@@ -274,3 +274,8 @@
 
 2026-09-19 (DAY-ART)
 - Three quality adult PNGs: character/png/style_{common,rare,epic}.png + QUALITY_STYLES.md.
+
+2026-09-23 (COIN WALLET)
+- Documented the agreed daily coin rules in `docs/COIN_ECONOMY.md` before implementation: first real collection +20, 30 active minutes +5, one completed 25-minute focus session +5, one award per kind and local day (maximum 30). Existing wearables stay free; no spending yet.
+- Added a local, idempotent coin ledger, passive profile rewards, real-collection reward, a bilingual Pack wallet view and a small gain notice. Cross-day egg progress and coin days remain independent; demo collections receive no coin reward.
+- Verified 36 Node tests, demo settlement, Electron coin-wallet and existing UI smokes, persisted balance after reload, and clean diff checks.

@@ -2,7 +2,7 @@
 
 /**
  * Visual smoke helper for the real Electron preload + renderer + CSS pipeline.
- * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--growth-timeline] [--hatch-goal] [--history-hud] [--scale-layout]
+ * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--coins] [--rollover] [--progress-gate] [--growth-timeline] [--hatch-goal] [--history-hud] [--scale-layout]
  */
 const path = require('path');
 const os = require('os');
@@ -15,6 +15,7 @@ const outputPath = path.resolve(process.argv[3] || `modular-runtime-${variant}.p
 const exerciseWardrobe = process.argv.includes('--wardrobe');
 const exerciseCatalog = process.argv.includes('--catalog');
 const exerciseStats = process.argv.includes('--stats');
+const exerciseCoins = process.argv.includes('--coins');
 const exerciseRollover = process.argv.includes('--rollover');
 const exerciseProgressGate = process.argv.includes('--progress-gate');
 const exerciseGrowthTimeline = process.argv.includes('--growth-timeline');
@@ -64,6 +65,7 @@ app.whenReady().then(async () => {
   const { loadSettings, saveSettings } = require(path.join(root, 'src', 'desk', 'settings'));
   const { applyWindowSettings } = require(path.join(root, 'src', 'desk', 'window'));
   const { buildCatalog } = require(path.join(root, 'src', 'desk', 'catalog'));
+  const coinStore = require(path.join(root, 'src', 'desk', 'coinWallet'));
   const core = require(path.join(root, 'src', 'desk', 'runtime', 'core.cjs'));
   const stageThresholds = core.hatchStageThresholds();
   const collectionItems = exerciseCatalog || exerciseHistoryHud
@@ -117,6 +119,7 @@ app.whenReady().then(async () => {
     },
     trackedDays: 3,
   });
+  ipcMain.handle('loaflings:get-coin-wallet', () => ({ ok: true, ...coinStore.getCoinWallet() }));
   ipcMain.handle('loaflings:get-hatch-progress', () => rolloverPending
     ? {
         ok: true,
@@ -391,6 +394,38 @@ app.whenReady().then(async () => {
     }
   }
   let historyHudState = null;
+  let coinState = null;
+  if (exerciseCoins) {
+    const date = core.localToday();
+    coinStore.observeCoinProfile({ date, activeSec: 1800, focusSessions: [{ durationSec: 1500 }] });
+    coinStore.awardCollectionCoin(date);
+    coinState = await win.webContents.executeJavaScript(`(async () => {
+      document.getElementById('btn-pack')?.click();
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      document.getElementById('bag-tab-coins')?.click();
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      return {
+        visible: document.getElementById('bag-coins')?.hidden === false,
+        balance: document.getElementById('coins-balance')?.textContent,
+        hud: document.getElementById('hud-coins')?.textContent,
+        today: document.getElementById('coins-today')?.textContent,
+        states: ['collection', 'active', 'focus'].map((kind) => document.getElementById('coins-' + kind + '-state')?.textContent),
+        historyCount: document.querySelectorAll('.coins-history-row').length,
+        notice: document.getElementById('coin-notice')?.textContent,
+      };
+    })()`);
+    if (!coinState.visible || coinState.balance !== '30' || !coinState.hud.includes('30') ||
+      !coinState.today.includes('30 / 30') || coinState.states.some((state) => state !== '已获得') ||
+      coinState.historyCount !== 3 || !coinState.notice.includes('30')) {
+      throw new Error(`coin wallet UI failed: ${JSON.stringify(coinState)}`);
+    }
+    coinState.persistedBalance = JSON.parse(require('fs').readFileSync(coinStore.walletPath(), 'utf8'))
+      .entries.reduce((sum, entry) => sum + entry.amount, 0);
+    if (coinState.persistedBalance !== 30) throw new Error('coin wallet did not persist');
+    win.setContentSize(260, 300);
+    win.setPosition(-10000, -10000);
+    win.showInactive();
+  }
   if (exerciseHistoryHud) {
     historyHudState = await win.webContents.executeJavaScript(`(async () => {
       const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -584,7 +619,7 @@ app.whenReady().then(async () => {
   const image = await win.webContents.capturePage();
   if (exerciseCatalog) win.hide();
   require('fs').writeFileSync(outputPath, image.toPNG());
-  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, growthTimelineState, hatchGoalState, historyHudState, scaleLayoutState })}\n`);
+  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, coinState, rolloverState, progressGateState, growthTimelineState, hatchGoalState, historyHudState, scaleLayoutState })}\n`);
   win.destroy();
   app.quit();
 }).catch((err) => {

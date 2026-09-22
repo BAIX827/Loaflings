@@ -16,6 +16,7 @@ CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shou
 - Read-only catalogue: 9 reachable personality × rarity slots derived from the local collection; missing slots never write placeholder rows
 - Day phase: Electron `userData/day-state.json` (`egg` | `growing` | `hatched`, plus a pending rollover choice)
 - All-time count-only statistics: Electron `userData/activity-stats.json`; replacing an egg does not clear totals
+- Local coin wallet: Electron `userData/coins.json`; three daily rewards are idempotent and capped at 30 coins. See `docs/COIN_ECONOMY.md`; existing wearables remain free.
 
 ## Run (macOS)
 

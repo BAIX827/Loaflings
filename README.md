@@ -1,6 +1,6 @@
 # Loaflings / 摸鱼灵
 
-Passive desktop companion for macOS and Windows: **each day starts as an egg**, your computer habits grow it, and 29,000 clicks + keystrokes hatch one Loafling into your local collection.
+Passive desktop companion for macOS and Windows: **each day starts as an egg**, your computer habits grow it, and 20,000 clicks + keystrokes by default (configurable, minimum 1,000) hatch one Loafling into your local collection.
 
 > You work. It grows. Every day leaves behind a creature.
 
@@ -16,6 +16,7 @@ npm start
 - Live counters need macOS **Accessibility** (and Input Monitoring if prompted) for Electron / Loaflings
 - Fixture-only settle check: `npm run settle:demo`
 - Full non-UI verification: `npm run verify`
+- Optional local coins reward daily activity, a completed focus session and the first real collection; see [`docs/COIN_ECONOMY.md`](docs/COIN_ECONOMY.md). Existing wearables stay free.
 
 ### Packaged `.app` (Mac)
 
@@ -76,6 +77,7 @@ Loaflings/
 │   ├── MVP_DEMO_ACCEPTANCE.md
 │   ├── GENE_CONTRACT_MVP.md
 │   ├── DAY_CYCLE_MVP.md
+│   ├── COIN_ECONOMY.md
 │   ├── SENSE_PROFILE_SCHEMA.md
 │   └── SENSE_LIVE.md
 └── src/

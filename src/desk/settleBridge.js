@@ -8,8 +8,17 @@ const {
 } = require('./hooks/senseLive');
 const { ensureDayState, recordEggProgress, reopenUnreadyEgg, markGrowing } = require('./dayState');
 const { observeActivityProfile } = require('./activityStats');
+const { observeCoinProfile } = require('./coinWallet');
 const { phaseFromProfile, hatchDay, hatchTargetInputs, getApiSource } = require('./hooks/coreDayCycle');
 const { slimResult } = require('./resultView');
+
+function observeCoinsSafely(profile) {
+  try {
+    observeCoinProfile(profile);
+  } catch (err) {
+    console.warn('[desk] coin wallet unavailable', err);
+  }
+}
 
 let demoBundle = null;
 
@@ -92,8 +101,14 @@ function syncDayBoundary() {
   } catch {
     profile = null;
   }
-  if (sense?.previousProfile) observeActivityProfile(sense.previousProfile);
-  if (profile) observeActivityProfile(profile);
+  if (sense?.previousProfile) {
+    observeActivityProfile(sense.previousProfile);
+    observeCoinsSafely(sense.previousProfile);
+  }
+  if (profile) {
+    observeActivityProfile(profile);
+    observeCoinsSafely(profile);
+  }
   let day = ensureDayState({
     previousProfile: sense?.previousProfile || null,
     currentProfile: profile,

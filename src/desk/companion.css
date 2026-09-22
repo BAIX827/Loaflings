@@ -624,6 +624,25 @@ body {
   z-index: 2;
   transition: width 120ms ease-out, height 120ms ease-out;
 }
+.hud-coins {
+  margin-left: 2px;
+  color: #a26c20;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.coin-notice {
+  position: absolute;
+  top: 39px;
+  z-index: 6;
+  margin: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #8b5a14;
+  background: rgba(255, 245, 210, 0.96);
+  font-size: 11px;
+  pointer-events: none;
+}
+.coin-notice[hidden] { display: none; }
 .idle-fx-layer {
   position: absolute;
   inset: 0;
@@ -922,6 +941,22 @@ body {
   margin: 0;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+.coins-history-title {
+  margin: 10px 0 5px;
+  font-size: 11px;
+}
+.coins-history {
+  display: grid;
+  gap: 4px;
+  max-height: 70px;
+  overflow: auto;
+  font-size: 10px;
+}
+.coins-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 /* —— Required choice for an unfinished previous-day egg —— */
