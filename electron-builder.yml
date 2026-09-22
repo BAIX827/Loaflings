@@ -43,3 +43,21 @@ mac:
 dmg:
   title: Loaflings
   artifactName: Loaflings-${version}-${arch}.${ext}
+win:
+  icon: src/art/AppIcon.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+nsis:
+  artifactName: Loaflings-${version}-Windows-${arch}-Setup.${ext}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Loaflings
+portable:
+  artifactName: Loaflings-${version}-Windows-${arch}-Portable.${ext}

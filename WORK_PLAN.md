@@ -12,6 +12,7 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-22 Windows x64 installer / portable release packaging and packaged-app smoke verification
 - [x] 2026-09-22 strict 29,000-activity adult / collection gate and unambiguous historical HUD
 - [x] 2026-09-22 unfinished-egg rollover choice with inherited/reset progress and all-time count statistics
 - [x] 2026-09-22 collection catalogue with collected / missing progress across 9 reachable slots
@@ -37,6 +38,12 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-22 (WINDOWS RELEASE)
+- Added repeatable Windows x64 `dir`, NSIS installer and portable build commands with distinct artifact names, the existing Loaflings icon, Start menu / desktop shortcuts and no unnecessary native rebuild of the bundled `uiohook-napi` Windows N-API binary.
+- Added friend-facing Windows download, SmartScreen, privacy and testing guidance; clarified the project overview for both macOS and Windows.
+- Built `Loaflings-0.1.0-Windows-x64-Setup.exe` and `Loaflings-0.1.0-Windows-x64-Portable.exe`, generated SHA-256 checksums, and confirmed the final portable executable extracted, launched, created isolated user data and loaded the packaged Windows native binding.
+- Verified all 30 automated tests, the demo settlement check, the unpacked Windows app smoke and the final portable-executable smoke. This preview remains unsigned and x64-only.
 
 2026-09-22 (STRICT HATCH GATE)
 - Removed the legacy manual-hatch bypass: Day is read-only progress below 29,000 activity hits, Save is disabled with the exact remaining count, and both renderer and main-process IPC enforce the same threshold.

@@ -1,6 +1,6 @@
 # Loaflings / 摸鱼灵
 
-Passive Mac desktop companion: **each day starts as an egg**, your computer habits grow it, and end-of-day settle hatches one Loafling into your local collection.
+Passive desktop companion for macOS and Windows: **each day starts as an egg**, your computer habits grow it, and 29,000 clicks + keystrokes hatch one Loafling into your local collection.
 
 > You work. It grows. Every day leaves behind a creature.
 
@@ -25,6 +25,14 @@ npm run pack    # → dist/mac-arm64/Loaflings.app (or dist/mac/)
 ```
 
 Details + Gatekeeper note: `src/desk/README.md` (Package Mac `.app`).
+
+### Windows release
+
+```powershell
+npm run dist:win
+```
+
+This creates an x64 installer and a no-install portable `.exe` in `dist/`. Friend-facing download and safety-check instructions are in `docs/WINDOWS_RELEASE.md`.
 
 
 Repo: https://github.com/BAIX827/Loaflings
