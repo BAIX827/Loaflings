@@ -2,7 +2,7 @@
 
 /**
  * Visual smoke helper for the real Electron preload + renderer + CSS pipeline.
- * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover]
+ * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--history-hud]
  */
 const path = require('path');
 const os = require('os');
@@ -16,6 +16,8 @@ const exerciseWardrobe = process.argv.includes('--wardrobe');
 const exerciseCatalog = process.argv.includes('--catalog');
 const exerciseStats = process.argv.includes('--stats');
 const exerciseRollover = process.argv.includes('--rollover');
+const exerciseProgressGate = process.argv.includes('--progress-gate');
+const exerciseHistoryHud = process.argv.includes('--history-hud');
 const root = path.join(__dirname, '..');
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
@@ -58,7 +60,7 @@ function reply(channel, value) {
 app.whenReady().then(async () => {
   const { loadSettings, saveSettings } = require(path.join(root, 'src', 'desk', 'settings'));
   const { buildCatalog } = require(path.join(root, 'src', 'desk', 'catalog'));
-  const collectionItems = exerciseCatalog
+  const collectionItems = exerciseCatalog || exerciseHistoryHud
     ? [
       {
         id: 'builder-common', date: '2026-09-18', personality: 'builder', rarity: 'common',
@@ -89,7 +91,9 @@ app.whenReady().then(async () => {
         choiceRequired: true,
         pendingRollover: { fromDate: '2026-09-21', clicks: 1200, keystrokes: 3400 },
       }
-    : {
+    : exerciseProgressGate || exerciseHistoryHud
+      ? { ok: true, date: result.date, phase: 'egg', alreadyHatched: false, newEgg: false }
+      : {
         ok: true, date: result.date, phase: 'hatched', alreadyHatched: true, newEgg: false,
       });
   reply('loaflings:get-day-settle', { ok: true, source: 'smoke', result });
@@ -120,9 +124,27 @@ app.whenReady().then(async () => {
         dailyKeystrokes: 0,
         idleMood: null,
       }
-    : {
+    : exerciseProgressGate || exerciseHistoryHud
+      ? {
+          ok: true,
+          alreadySaved: false,
+          canCollect: false,
+          targetInputs: 29000,
+          remainingInputs: 29000,
+          progress: { phase: 'egg', inputs: 0, nextStageAt: 3000 },
+          inputs: 0,
+          clicks: 0,
+          keystrokes: 0,
+          dailyClicks: 0,
+          dailyKeystrokes: 0,
+          idleMood: null,
+        }
+      : {
         ok: true,
         alreadySaved: true,
+        canCollect: true,
+        targetInputs: 29000,
+        remainingInputs: 0,
         progress: { phase: 'adult', inputs: 30000, nextStageAt: null },
         inputs: 30000,
         clicks: 12000,
@@ -196,7 +218,13 @@ app.whenReady().then(async () => {
       rolloverHits: document.getElementById('rollover-hits')?.textContent || '',
     };
   })()`);
-  if (exerciseRollover ? (!state.rolloverOpen || state.rolloverHits !== '4600') : (!state.mounted || state.layers.length < 6)) {
+  if (
+    exerciseRollover
+      ? (!state.rolloverOpen || state.rolloverHits !== '4600')
+      : exerciseProgressGate || exerciseHistoryHud
+        ? (state.mounted || state.phase !== 'egg')
+        : (!state.mounted || state.layers.length < 6)
+  ) {
     throw new Error(`modular renderer did not mount: ${JSON.stringify(state)}`);
   }
   let rolloverState = null;
@@ -211,6 +239,57 @@ app.whenReady().then(async () => {
       };
     })()`);
     if (!rolloverState.closed) throw new Error(`rollover choice did not close: ${JSON.stringify(rolloverState)}`);
+  }
+  let progressGateState = null;
+  if (exerciseProgressGate) {
+    progressGateState = await win.webContents.executeJavaScript(`(async () => {
+      const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const collect = document.getElementById('btn-collect');
+      document.getElementById('btn-reveal')?.click();
+      await pause(300);
+      return {
+        collectDisabled: collect?.disabled === true,
+        progressOpen: document.getElementById('progress-panel')?.hidden === false,
+        remaining: document.getElementById('progress-remaining')?.textContent || '',
+        gate: document.getElementById('collect-gate')?.textContent || '',
+        phase: document.getElementById('stage')?.dataset.phase || '',
+      };
+    })()`);
+    if (
+      !progressGateState.collectDisabled ||
+      !progressGateState.progressOpen ||
+      !progressGateState.remaining.includes('29,000') ||
+      progressGateState.phase !== 'egg'
+    ) {
+      throw new Error(`progress gate failed: ${JSON.stringify(progressGateState)}`);
+    }
+  }
+  let historyHudState = null;
+  if (exerciseHistoryHud) {
+    historyHudState = await win.webContents.executeJavaScript(`(async () => {
+      const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      document.getElementById('btn-pack')?.click();
+      await pause(250);
+      document.getElementById('bag-tab-list')?.click();
+      await pause(100);
+      document.querySelector('.bag-item')?.click();
+      await pause(700);
+      return {
+        hud: document.getElementById('hud-hits')?.textContent || '',
+        hudLabelHidden: document.querySelector('.hud-label')?.hidden === true,
+        hudPhaseHidden: document.getElementById('hud-phase')?.hidden === true,
+        banner: document.getElementById('view-banner')?.textContent || '',
+        mounted: Boolean(document.querySelector('.modular-character')),
+      };
+    })()`);
+    if (
+      historyHudState.hud !== '当前蛋：0' ||
+      !historyHudState.hudLabelHidden ||
+      !historyHudState.hudPhaseHidden ||
+      !historyHudState.mounted
+    ) {
+      throw new Error(`history HUD failed: ${JSON.stringify(historyHudState)}`);
+    }
   }
   let wardrobeState = null;
   if (exerciseWardrobe) {
@@ -318,7 +397,7 @@ app.whenReady().then(async () => {
   const image = await win.webContents.capturePage();
   if (exerciseCatalog) win.hide();
   require('fs').writeFileSync(outputPath, image.toPNG());
-  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState })}\n`);
+  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, historyHudState })}\n`);
   win.destroy();
   app.quit();
 }).catch((err) => {

@@ -30,7 +30,9 @@ hatchProgressFromProfile(profile, alreadySaved)
 - @DAY-ART: six assets keyed to the phase ids above.
 - Threshold change: 老大 says the number; CORE updates the constant.
 
-`alreadySaved === true` forces visual `adult` after Day/Save into collection.
+Saved state never overrides growth. An egg remains on the stage derived from
+`activityHits`; only `29,000+` may render as `adult` or be added to collection.
+Legacy same-day saves below the threshold are reopened as an unfinished egg.
 
 **Breaking vs prior 3-phase MVP:** old `hatched` visual id is replaced by `hatching` / `newborn` / `growing` / `adult`. DESK must not expect only three phases.
 
@@ -40,7 +42,9 @@ hatchProgressFromProfile(profile, alreadySaved)
 hatchDay(profile) → one DaylingResult for profile.date
 ```
 
-Visual `adult` ≠ necessarily saved. Save still calls `hatchDay()` once per date.
+Visual `adult` ≠ necessarily saved. Save is enabled only at `29,000+`, then
+calls `hatchDay()` once per date. Before that point, Day opens the read-only
+growth progress panel and Save remains disabled with the exact remaining count.
 
 Adult rendering uses `DaylingResult.appearance`. Existing egg through growing
 PNG assets remain unchanged. Missing modular files fall back to the existing

@@ -70,7 +70,10 @@ test('desktop UI exposes rollover choices and cumulative statistics', () => {
     'bag-tab-stats',
     'stats-activity-hits',
     'stats-window-switches',
+    'progress-panel',
+    'progress-remaining',
   ]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
+  assert.match(html, /id=["']btn-collect["'][^>]*disabled/);
 });

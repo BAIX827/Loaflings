@@ -152,6 +152,21 @@ function recordEggProgress(profile) {
   return current;
 }
 
+function reopenUnreadyEgg(profile, targetInputs) {
+  const current = ensureDayState({ currentProfile: profile });
+  if (!current.alreadyHatched) return current;
+  const egg = freezeEgg(current.egg, profile);
+  if (egg.clicks + egg.keystrokes >= targetInputs) return current;
+  const state = {
+    ...current,
+    phase: egg.clicks + egg.keystrokes > 0 ? 'growing' : 'egg',
+    hatchedAt: null,
+    egg,
+  };
+  writeDayState(state);
+  return present(state);
+}
+
 function resolveRollover(action, profile) {
   const current = ensureDayState({ currentProfile: profile });
   if (!current.choiceRequired) return current;
@@ -204,6 +219,7 @@ module.exports = {
   loadDayState: ensureDayState,
   ensureDayState,
   recordEggProgress,
+  reopenUnreadyEgg,
   resolveRollover,
   markHatched,
   markGrowing,

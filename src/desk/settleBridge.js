@@ -6,9 +6,9 @@ const {
   getLiveProfile,
   ensureToday: ensureSenseToday,
 } = require('./hooks/senseLive');
-const { ensureDayState, recordEggProgress, markGrowing } = require('./dayState');
+const { ensureDayState, recordEggProgress, reopenUnreadyEgg, markGrowing } = require('./dayState');
 const { observeActivityProfile } = require('./activityStats');
-const { phaseFromProfile, hatchDay, getApiSource } = require('./hooks/coreDayCycle');
+const { phaseFromProfile, hatchDay, hatchTargetInputs, getApiSource } = require('./hooks/coreDayCycle');
 const { slimResult } = require('./resultView');
 
 let demoBundle = null;
@@ -98,6 +98,9 @@ function syncDayBoundary() {
     previousProfile: sense?.previousProfile || null,
     currentProfile: profile,
   });
+  if (day.alreadyHatched) {
+    day = reopenUnreadyEgg(profile, hatchTargetInputs());
+  }
   if (profile && !day.choiceRequired && !day.alreadyHatched) {
     day = recordEggProgress(profile);
   }

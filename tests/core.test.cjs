@@ -49,6 +49,12 @@ test('coarse day phase agrees with keyboard-only adult progress', () => {
   assert.equal(core.phaseFromProfile(keyboardDay, false), 'hatched');
 });
 
+test('saved state never promotes a zero-activity egg to adult', () => {
+  const zero = profile();
+  assert.equal(core.hatchProgressFromProfile(zero, true).phase, 'egg');
+  assert.equal(core.phaseFromProfile(zero, true), 'egg');
+});
+
 test('settlement is deterministic and emits a supported style', () => {
   const day = profile({
     keystrokes: 8400,

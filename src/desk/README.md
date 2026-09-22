@@ -2,7 +2,7 @@
 
 Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, frameless, transparent window.
 
-**Day loop:** a local day starts with an **egg**; **Day** (reveal) or **Save** hatches the settled Loafling from CORE. At the next day, a completed egg is replaced automatically. An unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
+**Day loop:** a local day starts with an **egg**. Before 29,000 activity hits, **Day** shows read-only growth progress and **Save** stays disabled with the exact remaining count. At 29,000 the Loafling becomes an adult and may be saved. At the next day, a completed egg is replaced automatically; an unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
 
 CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js` (falls back to `settleDay` stub if dayCycle missing). `DaylingResult.kind = 'loafling'`.
 
@@ -45,8 +45,8 @@ Requires Node 18+.
 ### Try egg → hatch → Save
 
 1. Launch with `npm start` — companion shows **Today’s egg** (not the pet).
-2. Click **Day** — settles (live if available, else demo), hatches pet, opens reveal panel (name/type/rarity/genes…).
-3. Click **Save** — hatches if still egg, upserts into `userData/collection.json` (badge updates).
+2. Click **Day** below 29,000 — opens the current stage, total progress and remaining-count panel without hatching.
+3. At 29,000, the adult appears and **Save** becomes available; Save upserts into `userData/collection.json` (badge updates).
 4. After local midnight / day roll — a finished egg is replaced; an unfinished egg shows **Keep hatching / Choose a new egg**.
 5. `settle:demo` CLI path unchanged.
 
@@ -136,5 +136,6 @@ Main may push `loaflings:day-state` when the calendar day rolls (new egg).
 - No gene/sense formulas in DESK — those stay in `src/core` / `src/sense`
 - CORE has no separate `name` field; desk display name is `personality · rarity`
 - Runtime growth art remains PNG. Adult Loaflings compose body, mutation, expression, paws and cloud from `character/modular/manifest.json`.
+- Browsing a historical collection entry keeps its adult art but changes the HUD to `Current egg: N`, so the live egg count cannot be mistaken for the historical Loafling's hatch count.
 - If a modular adult asset is missing or invalid, the renderer falls back to the existing rarity/adult PNG instead of showing a broken pet.
 - Modular adults use expression/cloud layer swaps for idle moods; newborn/growing phases retain the optional legacy idle PNG pool.

@@ -32,13 +32,14 @@
       <button type="button" id="btn-chrome-peek" class="chrome-peek" title="Show controls" hidden aria-label="Show controls">⚙</button>
       <div id="chrome" class="chrome" role="toolbar" aria-label="Companion controls">
         <button type="button" id="btn-reveal" class="chip" data-i18n="btn.day" title="Day">今日</button>
-        <button type="button" id="btn-collect" class="chip" data-i18n="btn.save" title="Save">收藏</button>
+        <button type="button" id="btn-collect" class="chip" data-i18n="btn.save" title="Save" disabled>收藏</button>
         <button type="button" id="btn-pack" class="chip" data-i18n="btn.pack" title="Pack / calendar">背包</button>
         <button type="button" id="btn-wardrobe" class="chip" data-i18n="btn.wardrobe" title="Wardrobe" hidden>换装</button>
         <button type="button" id="btn-settings" class="chip chip-quiet" data-i18n="btn.settings" title="Settings">设置</button>
         <button type="button" id="btn-quit" class="chip chip-quiet" data-i18n="btn.quit" title="Quit">退出</button>
         <span id="collection-badge" class="badge" title="Collection">0</span>
       </div>
+      <p id="collect-gate" class="collect-gate" aria-live="polite">还差 29,000 活跃可收藏</p>
 
       <!-- debug reveal strip removed from UX; keep node hidden forever -->
       <div id="reveal" class="reveal" hidden aria-hidden="true">
@@ -107,6 +108,26 @@
         <button type="button" id="bag-back-today" class="chip" style="margin-top:8px" data-i18n="bag.today">回到今天</button>
       </aside>
 
+      <aside id="progress-panel" class="panel progress-panel" hidden aria-label="Today's growth progress">
+        <header class="panel-head">
+          <strong data-i18n="progress.title">今日成长进度</strong>
+          <button type="button" id="btn-close-progress" class="chip chip-quiet" title="Close">✕</button>
+        </header>
+        <div class="progress-stage-row">
+          <span data-i18n="progress.stage">当前阶段</span>
+          <strong id="progress-stage">蛋</strong>
+        </div>
+        <div class="progress-total">
+          <strong id="progress-inputs">0</strong>
+          <span>/</span>
+          <span id="progress-target">29,000</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <span id="progress-fill" class="progress-fill"></span>
+        </div>
+        <p id="progress-remaining" class="progress-remaining">还差 29,000 活跃数才能成为成体并收藏。</p>
+      </aside>
+
       <aside id="egg-rollover" class="panel egg-rollover" hidden aria-label="Unfinished egg choice">
         <header class="panel-head">
           <strong data-i18n="rollover.title">昨天的蛋还没孵出来</strong>
@@ -152,7 +173,7 @@
         </header>
         <ol class="guide-steps" id="guide-steps">
           <li>打字和点击合计成 <strong>活跃 hits</strong>，推进六态长大。</li>
-          <li><strong>收藏</strong>就是把当前摸鱼灵正式存进背包，之后可以在日历里再看它。</li>
+          <li>达到 <strong>29,000 活跃</strong>才会成为成体并开放<strong>收藏</strong>；收藏后可以在日历里再看它。</li>
           <li><strong>背包</strong>里有日历、收藏、图鉴和累计统计；图鉴会自动标出已收集与未收集的类型。</li>
           <li><strong>设置</strong>可改语言、藏按键、透明度。</li>
         </ol>

@@ -52,7 +52,6 @@ export function phaseFromProfile(
   profile: DailyActivityProfile,
   alreadyHatched: boolean,
 ): DayPhase {
-  if (alreadyHatched) return 'hatched';
   const progress = hatchProgressFromProfile(profile, false);
   if (progress.stage >= 5) return 'hatched';
   if (progress.stage >= 1) return 'growing';

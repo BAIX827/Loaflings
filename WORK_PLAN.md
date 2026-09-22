@@ -12,6 +12,7 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-22 strict 29,000-activity adult / collection gate and unambiguous historical HUD
 - [x] 2026-09-22 unfinished-egg rollover choice with inherited/reset progress and all-time count statistics
 - [x] 2026-09-22 collection catalogue with collected / missing progress across 9 reachable slots
 - [x] 2026-09-22 clean single-silhouette outlines for all modular cloud moods
@@ -36,6 +37,12 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-22 (STRICT HATCH GATE)
+- Removed the legacy manual-hatch bypass: Day is read-only progress below 29,000 activity hits, Save is disabled with the exact remaining count, and both renderer and main-process IPC enforce the same threshold.
+- Adult appearance is now derived only from real click + keystroke progress. A same-day legacy state saved below the threshold is reopened as an unfinished egg instead of being forced to adult.
+- Historical collection viewing now labels the HUD `当前蛋：N` / `Current egg: N` while preserving the historical adult artwork and viewing banner.
+- Verified 30 automated tests plus real Electron smokes for the zero-hit egg/progress gate and the historical `当前蛋：0` HUD.
 
 2026-09-22 (CROSS-DAY EGG + ALL-TIME STATS)
 - Changed the day boundary so an unfinished egg pauses for an explicit Continue / New Egg choice. Continue preserves the egg's clicks and keystrokes and includes new-day activity; New Egg starts from zero at the moment of the choice.

@@ -15,6 +15,7 @@ const { observeActivityProfile, getActivityStats } = require('./activityStats');
 const {
   hatchProgressFromProfile,
   clicksPerHatchStage,
+  hatchTargetInputs,
   idleMoodFromProfile,
 } = require('./hooks/coreDayCycle');
 const {
@@ -26,6 +27,41 @@ const {
   syncDayBoundary,
 } = require('./settleBridge');
 const { getCompanion, applyWindowSettings } = require('./window');
+
+function progressProfile(day, profile) {
+  if (profile) return effectiveProfileForDay(profile, day);
+  return {
+    date: day.date,
+    seedKey: 'local',
+    clicks: day.egg?.clicks || 0,
+    keystrokes: day.egg?.keystrokes || 0,
+    mouseTravel: 0,
+    idleSec: 0,
+    activeSec: 0,
+    focusSessions: [],
+    windowSwitches: 0,
+    activeHours: Array(24).fill(0),
+  };
+}
+
+function currentHatchSnapshot() {
+  const synced = syncDayBoundary();
+  const day = synced.day || ensureDayState();
+  const profile = synced.profile || null;
+  const eggProfile = progressProfile(day, profile);
+  const progress = hatchProgressFromProfile(eggProfile, false);
+  const targetInputs = hatchTargetInputs();
+  return {
+    synced,
+    day,
+    profile,
+    eggProfile,
+    progress,
+    targetInputs,
+    remainingInputs: Math.max(0, targetInputs - progress.inputs),
+    canCollect: progress.inputs >= targetInputs,
+  };
+}
 
 function registerIpc() {
   ipcMain.on('loaflings:set-ignore-mouse', (_e, ignore) => {
@@ -71,30 +107,19 @@ function registerIpc() {
 
   ipcMain.handle('loaflings:get-hatch-progress', () => {
     try {
-      const synced = syncDayBoundary();
-      const day = synced.day || ensureDayState();
+      const snapshot = currentHatchSnapshot();
+      const { synced, day, profile, eggProfile, progress, targetInputs, remainingInputs, canCollect } = snapshot;
       const alreadySaved = Boolean(day.hatchedAt);
-      const profile = synced.profile || null;
-      const eggProfile = profile ? effectiveProfileForDay(profile, day) : null;
       if (!profile) {
         const clicks = day.egg?.clicks || 0;
         const keystrokes = day.egg?.keystrokes || 0;
-        const progress = hatchProgressFromProfile({
-          date: day.date,
-          seedKey: 'local',
-          clicks,
-          keystrokes,
-          mouseTravel: 0,
-          idleSec: 0,
-          activeSec: 0,
-          focusSessions: [],
-          windowSwitches: 0,
-          activeHours: Array(24).fill(0),
-        }, alreadySaved);
         return {
           ok: true,
           source: 'idle',
           alreadySaved,
+          canCollect,
+          targetInputs,
+          remainingInputs,
           choiceRequired: day.choiceRequired,
           day,
           progress,
@@ -106,7 +131,6 @@ function registerIpc() {
           idleMood: null,
         };
       }
-      const progress = hatchProgressFromProfile(eggProfile, alreadySaved);
       let idleMood = null;
       try {
         idleMood = idleMoodFromProfile(profile);
@@ -117,6 +141,9 @@ function registerIpc() {
         ok: true,
         source: 'live',
         alreadySaved,
+        canCollect,
+        targetInputs,
+        remainingInputs,
         choiceRequired: day.choiceRequired,
         day,
         progress,
@@ -238,6 +265,19 @@ function registerIpc() {
 
   ipcMain.handle('loaflings:collect-day', (_e, opts = {}) => {
     try {
+      const gate = currentHatchSnapshot();
+      if (gate.day.choiceRequired) {
+        return { ok: false, error: 'egg-rollover-choice-required' };
+      }
+      if (!gate.canCollect) {
+        return {
+          ok: false,
+          error: 'hatch-not-ready',
+          remainingInputs: gate.remainingInputs,
+          targetInputs: gate.targetInputs,
+          progress: gate.progress,
+        };
+      }
       const force = opts?.forceSource;
       let bundle;
       if (force === 'demo') {
@@ -294,7 +334,15 @@ function registerIpc() {
 
   ipcMain.handle('loaflings:hatch-day', () => {
     try {
-      syncDayBoundary();
+      const gate = currentHatchSnapshot();
+      if (!gate.canCollect) {
+        return {
+          ok: false,
+          error: 'hatch-not-ready',
+          remainingInputs: gate.remainingInputs,
+          targetInputs: gate.targetInputs,
+        };
+      }
       const state = markHatched();
       return {
         ok: true,

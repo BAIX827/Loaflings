@@ -119,18 +119,10 @@ export function hatchProgressFromClicksAndKeys(
 
 export function hatchProgressFromProfile(
   profile: DailyActivityProfile,
-  alreadySaved: boolean,
+  _alreadySaved: boolean,
 ): HatchProgress {
-  const progress = hatchProgressFromClicksAndKeys(
+  return hatchProgressFromClicksAndKeys(
     profile.clicks,
     profile.keystrokes,
   );
-  if (!alreadySaved) return progress;
-  return {
-    ...progress,
-    stage: 5,
-    phase: 'adult',
-    nextStageAt: null,
-    stageProgress: 1,
-  };
 }

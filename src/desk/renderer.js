@@ -24,7 +24,93 @@
   let eggChoiceRequired = false;
   let liveClickOffset = 0;
   let liveKeyOffset = 0;
+  let latestHatchProgress = null;
+  let lastEggHits = 0;
   const rolloverEl = document.getElementById('egg-rollover');
+  const progressPanelEl = document.getElementById('progress-panel');
+  const collectButton = document.getElementById('btn-collect');
+  const collectGateEl = document.getElementById('collect-gate');
+
+  function template(key, values = {}) {
+    let value = tr(key);
+    for (const [name, replacement] of Object.entries(values)) {
+      value = value.replace(`{${name}}`, String(replacement));
+    }
+    return value;
+  }
+
+  function renderHudHits(hits, visual = phase) {
+    lastEggHits = Math.max(0, Math.floor(Number(hits) || 0));
+    const hudH = document.getElementById('hud-hits');
+    const hudLabel = document.querySelector('.hud-label');
+    const hudPhase = document.getElementById('hud-phase');
+    if (!hudH) return;
+    if (viewingEntry) {
+      const separator = locale === 'en' ? ': ' : '：';
+      hudH.textContent = `${tr('hud.currentEgg')}${separator}${numberText(lastEggHits)}`;
+      if (hudLabel) hudLabel.hidden = true;
+      if (hudPhase) hudPhase.hidden = true;
+      return;
+    }
+    hudH.textContent = String(lastEggHits);
+    if (hudLabel) {
+      hudLabel.hidden = false;
+      hudLabel.textContent = tr('hud.hits');
+    }
+    if (hudPhase) {
+      hudPhase.hidden = false;
+      hudPhase.textContent = normalizePhase(visual);
+    }
+  }
+
+  function renderProgressPanel(hp = latestHatchProgress) {
+    if (!hp?.progress) return;
+    const inputs = Math.max(0, Number(hp.progress.inputs) || 0);
+    const target = Math.max(1, Number(hp.targetInputs) || 29000);
+    const remaining = Math.max(0, Number(hp.remainingInputs ?? target - inputs) || 0);
+    const canCollect = Boolean(hp.canCollect || inputs >= target);
+    const stage = normalizePhase(hp.progress.phase);
+    const stageLabel = document.getElementById('progress-stage');
+    const inputEl = document.getElementById('progress-inputs');
+    const targetEl = document.getElementById('progress-target');
+    const fillEl = document.getElementById('progress-fill');
+    const remainingEl = document.getElementById('progress-remaining');
+    if (stageLabel) stageLabel.textContent = tr(`phase.${stage}`);
+    if (inputEl) inputEl.textContent = numberText(inputs);
+    if (targetEl) targetEl.textContent = numberText(target);
+    if (fillEl) fillEl.style.width = `${Math.min(100, (inputs / target) * 100)}%`;
+    if (remainingEl) {
+      remainingEl.textContent = canCollect
+        ? tr('progress.ready')
+        : template('progress.remaining', { count: numberText(remaining) });
+    }
+  }
+
+  function updateCollectionGate(hp) {
+    if (!hp?.progress) return;
+    latestHatchProgress = hp;
+    const inputs = Math.max(0, Number(hp.progress.inputs) || 0);
+    const target = Math.max(1, Number(hp.targetInputs) || 29000);
+    const remaining = Math.max(0, Number(hp.remainingInputs ?? target - inputs) || 0);
+    const canCollect = !hp.choiceRequired && Boolean(hp.canCollect || inputs >= target);
+    if (collectButton) {
+      collectButton.disabled = !canCollect;
+      collectButton.title = canCollect
+        ? tr('progress.ready')
+        : template('progress.remaining', { count: numberText(remaining) });
+    }
+    if (collectGateEl) {
+      collectGateEl.hidden = canCollect;
+      collectGateEl.textContent = template('progress.collectGate', { count: numberText(remaining) });
+    }
+    if (progressPanelEl && !progressPanelEl.hidden) renderProgressPanel(hp);
+  }
+
+  function setProgressOpen(open) {
+    if (!progressPanelEl) return;
+    progressPanelEl.hidden = !open;
+    if (open) renderProgressPanel();
+  }
 
   function showEggRollover(day) {
     eggChoiceRequired = true;
@@ -32,7 +118,7 @@
     const hits = (Number(pending.clicks) || 0) + (Number(pending.keystrokes) || 0);
     const countEl = document.getElementById('rollover-hits');
     if (countEl) countEl.textContent = String(hits);
-    for (const id of ['panel', 'bag', 'wardrobe', 'guide', 'settings']) {
+    for (const id of ['panel', 'progress-panel', 'bag', 'wardrobe', 'guide', 'settings']) {
       const el = document.getElementById(id);
       if (el) el.hidden = true;
     }
@@ -411,15 +497,14 @@
       await loadPetArt(visual);
     }
 
-    const hudH = document.getElementById('hud-hits');
-    const hudP = document.getElementById('hud-phase');
     const clicks = typeof opts.clicks === 'number' ? opts.clicks : null;
     const keys = typeof opts.keystrokes === 'number' ? opts.keystrokes : null;
     const inputs = typeof opts.inputs === 'number' ? opts.inputs : null;
-    if (hudH && (inputs != null || clicks != null || keys != null)) {
-      hudH.textContent = String(inputs != null ? inputs : (clicks || 0) + (keys || 0));
+    if (inputs != null || clicks != null || keys != null) {
+      renderHudHits(inputs != null ? inputs : (clicks || 0) + (keys || 0), visual);
+    } else if (!viewingEntry) {
+      renderHudHits(lastEggHits, visual);
     }
-    if (hudP) hudP.textContent = visual;
   }
 
   function fillPanel(payload) {
@@ -458,6 +543,7 @@
 
   function setPanelOpen(open) {
     panelEl.hidden = !open;
+    if (open) setProgressOpen(false);
   }
 
   async function refreshBadge() {
@@ -635,6 +721,25 @@
   document.getElementById('btn-reveal')?.addEventListener('click', async () => {
     if (eggChoiceRequired) return;
     setWardrobeOpen(false);
+    let hp = latestHatchProgress;
+    try {
+      const fresh = await api?.getHatchProgress?.();
+      if (fresh?.ok && fresh.progress) {
+        hp = fresh;
+        updateCollectionGate(fresh);
+      }
+    } catch {
+      // Keep the latest known progress.
+    }
+    const inputs = Number(hp?.progress?.inputs) || 0;
+    const target = Number(hp?.targetInputs) || 29000;
+    if (!hp?.canCollect && inputs < target) {
+      setPanelOpen(false);
+      setBagOpen(false);
+      setSettingsOpen(false);
+      setProgressOpen(true);
+      return;
+    }
     if (!dayHatched) {
       await hatch({ save: false, openPanel: true });
       return;
@@ -651,6 +756,9 @@
 
   document.getElementById('btn-close-panel')?.addEventListener('click', () => {
     setPanelOpen(false);
+  });
+  document.getElementById('btn-close-progress')?.addEventListener('click', () => {
+    setProgressOpen(false);
   });
 
 
@@ -674,6 +782,9 @@
       banner.hidden = false;
       banner.textContent = `${tr('bag.viewing')} ${viewingEntry.date} · ${viewingEntry.name || ''}`;
     }
+    renderHudHits(lastEggHits, phase);
+    updateCollectionGate(latestHatchProgress);
+    if (progressPanelEl && !progressPanelEl.hidden) renderProgressPanel();
   }
 
   // —— Pack / calendar (collection) ——
@@ -692,6 +803,7 @@
 
   function setBagOpen(open) {
     if (bagEl) bagEl.hidden = !open;
+    if (open) setProgressOpen(false);
   }
 
   async function loadCollectionItems() {
@@ -940,6 +1052,7 @@
     setBagOpen(false);
     renderBagCalendar();
     renderBagList();
+    await refreshHatchProgress();
   }
 
   async function clearViewing() {
@@ -1033,6 +1146,7 @@
     if (!wardrobeEl) return;
     const canOpen = open && phase === 'adult' && Boolean(MODULAR_MANIFEST);
     wardrobeEl.hidden = !canOpen;
+    if (canOpen) setProgressOpen(false);
     if (canOpen) populateWardrobeControls();
   }
 
@@ -1078,6 +1192,7 @@
 
   function setSettingsOpen(open) {
     if (settingsEl) settingsEl.hidden = !open;
+    if (open) setProgressOpen(false);
   }
 
   function applyChromePrefs(s) {
@@ -1175,7 +1290,7 @@
   });
 
   document.getElementById('btn-collect')?.addEventListener('click', async () => {
-    if (eggChoiceRequired) return;
+    if (eggChoiceRequired || collectButton?.disabled) return;
     setStatus('');
     const payload = await loadSettle(true);
     if (payload?.ok) {
@@ -1390,15 +1505,9 @@
       // Still refresh hits number, keep past look
       try {
         const hp = await api.getHatchProgress();
-        if (hp?.ok) {
-          const hudH = document.getElementById('hud-hits');
-          if (hudH) {
-            const hits =
-              typeof hp.inputs === 'number'
-                ? hp.inputs
-                : (hp.clicks || 0) + (hp.keystrokes || 0);
-            hudH.textContent = String(hits);
-          }
+        if (hp?.ok && hp.progress) {
+          updateCollectionGate(hp);
+          renderHudHits(hp.progress.inputs, hp.progress.phase);
         }
       } catch {
         // ignore
@@ -1408,6 +1517,7 @@
     try {
       const hp = await api.getHatchProgress();
       if (!hp?.ok || !hp.progress) return;
+      updateCollectionGate(hp);
       if (hp.choiceRequired) {
         showEggRollover(hp.day || hp);
         await applyPhase(hp.progress.phase, {
@@ -1421,7 +1531,7 @@
       if (rolloverEl) rolloverEl.hidden = true;
       liveClickOffset = (hp.clicks || 0) - (hp.dailyClicks || 0);
       liveKeyOffset = (hp.keystrokes || 0) - (hp.dailyKeystrokes || 0);
-      const visual = hp.alreadySaved ? 'adult' : hp.progress.phase;
+      const visual = hp.progress.phase;
       if (visual === 'adult' && !lastPayload) await loadSettle(false);
       await applyPhase(visual, {
         clicks: hp.clicks,
@@ -1482,15 +1592,13 @@
   if (api?.onSenseCounts) {
     api.onSenseCounts((payload) => {
       if (eggChoiceRequired) return;
-      const hudH = document.getElementById('hud-hits');
-      if (!hudH) return;
       if (typeof payload?.activityHits === 'number') {
-        hudH.textContent = String(payload.activityHits + liveClickOffset + liveKeyOffset);
+        renderHudHits(payload.activityHits + liveClickOffset + liveKeyOffset, phase);
         return;
       }
       const clicks = typeof payload?.clicks === 'number' ? payload.clicks : 0;
       const keys = typeof payload?.keystrokes === 'number' ? payload.keystrokes : 0;
-      hudH.textContent = String(clicks + keys + liveClickOffset + liveKeyOffset);
+      renderHudHits(clicks + keys + liveClickOffset + liveKeyOffset, phase);
     });
   }
 

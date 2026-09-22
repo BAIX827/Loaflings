@@ -352,19 +352,11 @@ function hatchProgressFromClicksAndKeys(clicks, keystrokes) {
     keystrokes
   );
 }
-function hatchProgressFromProfile(profile, alreadySaved) {
-  const progress = hatchProgressFromClicksAndKeys(
+function hatchProgressFromProfile(profile, _alreadySaved) {
+  return hatchProgressFromClicksAndKeys(
     profile.clicks,
     profile.keystrokes
   );
-  if (!alreadySaved) return progress;
-  return {
-    ...progress,
-    stage: 5,
-    phase: "adult",
-    nextStageAt: null,
-    stageProgress: 1
-  };
 }
 
 // src/core/dayCycle.ts
@@ -376,7 +368,6 @@ function markGrowing(egg) {
   return { ...egg, phase: "growing" };
 }
 function phaseFromProfile(profile, alreadyHatched) {
-  if (alreadyHatched) return "hatched";
   const progress = hatchProgressFromProfile(profile, false);
   if (progress.stage >= 5) return "hatched";
   if (progress.stage >= 1) return "growing";
