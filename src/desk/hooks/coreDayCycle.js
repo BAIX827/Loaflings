@@ -106,6 +106,11 @@ function hatchTargetInputs() {
     : 29000;
 }
 
+function hatchStageThresholds() {
+  const core = require('../runtime/core.cjs');
+  return [...core.HATCH_STAGE_THRESHOLDS];
+}
+
 function idleMoodFromProfile(profile) {
   const core = require('../runtime/core.cjs');
   return core.idleMoodFromProfile(profile);
@@ -127,6 +132,7 @@ module.exports = {
   hatchProgressFromClicks,
   clicksPerHatchStage,
   hatchTargetInputs,
+  hatchStageThresholds,
   idleMoodFromProfile,
   pickWeightedKey,
 };

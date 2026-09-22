@@ -74,11 +74,54 @@
     const inputEl = document.getElementById('progress-inputs');
     const targetEl = document.getElementById('progress-target');
     const fillEl = document.getElementById('progress-fill');
+    const milestonesEl = document.getElementById('progress-milestones');
+    const nextEl = document.getElementById('progress-next');
     const remainingEl = document.getElementById('progress-remaining');
     if (stageLabel) stageLabel.textContent = tr(`phase.${stage}`);
     if (inputEl) inputEl.textContent = numberText(inputs);
     if (targetEl) targetEl.textContent = numberText(target);
-    if (fillEl) fillEl.style.width = `${Math.min(100, (inputs / target) * 100)}%`;
+    const thresholds = hp.stageThresholds;
+    if (Array.isArray(thresholds) && thresholds.length === 6 && milestonesEl) {
+      const phases = ['egg', 'cracking', 'hatching', 'newborn', 'growing', 'adult'];
+      if (milestonesEl.children.length !== phases.length) {
+        const nodes = phases.map(() => {
+          const node = document.createElement('div');
+          node.className = 'progress-milestone';
+          node.setAttribute('role', 'listitem');
+          const dot = document.createElement('span');
+          dot.className = 'progress-dot';
+          dot.setAttribute('aria-hidden', 'true');
+          const name = document.createElement('span');
+          name.className = 'progress-milestone-name';
+          const count = document.createElement('span');
+          count.className = 'progress-milestone-count';
+          node.append(dot, name, count);
+          return node;
+        });
+        milestonesEl.replaceChildren(...nodes);
+      }
+      const current = thresholds.reduce((index, threshold, i) => inputs >= threshold ? i : index, 0);
+      const nextThreshold = thresholds[current + 1];
+      const bandProgress = nextThreshold == null
+        ? 1
+        : Math.min(1, Math.max(0, (inputs - thresholds[current]) / (nextThreshold - thresholds[current])));
+      if (fillEl) fillEl.style.width = `${((current + bandProgress) / (phases.length - 1)) * 100}%`;
+      [...milestonesEl.children].forEach((node, i) => {
+        node.dataset.state = i < current ? 'complete' : i === current ? 'current' : 'upcoming';
+        if (i === current) node.setAttribute('aria-current', 'step');
+        else node.removeAttribute('aria-current');
+        node.querySelector('.progress-milestone-name').textContent = tr(`phase.${phases[i]}`);
+        node.querySelector('.progress-milestone-count').textContent = numberText(thresholds[i]);
+      });
+      if (nextEl) nextEl.textContent = nextThreshold == null
+        ? ''
+        : template('progress.next', {
+          stage: tr(`phase.${phases[current + 1]}`),
+          count: numberText(nextThreshold - inputs),
+        });
+    } else if (fillEl) {
+      fillEl.style.width = `${Math.min(100, (inputs / target) * 100)}%`;
+    }
     if (remainingEl) {
       remainingEl.textContent = canCollect
         ? tr('progress.ready')

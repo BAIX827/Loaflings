@@ -2,7 +2,7 @@
 
 /**
  * Visual smoke helper for the real Electron preload + renderer + CSS pipeline.
- * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--history-hud] [--scale-layout]
+ * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--growth-timeline] [--history-hud] [--scale-layout]
  */
 const path = require('path');
 const os = require('os');
@@ -17,6 +17,7 @@ const exerciseCatalog = process.argv.includes('--catalog');
 const exerciseStats = process.argv.includes('--stats');
 const exerciseRollover = process.argv.includes('--rollover');
 const exerciseProgressGate = process.argv.includes('--progress-gate');
+const exerciseGrowthTimeline = process.argv.includes('--growth-timeline');
 const exerciseHistoryHud = process.argv.includes('--history-hud');
 const exerciseScaleLayout = process.argv.includes('--scale-layout');
 const root = path.join(__dirname, '..');
@@ -62,6 +63,7 @@ app.whenReady().then(async () => {
   const { loadSettings, saveSettings } = require(path.join(root, 'src', 'desk', 'settings'));
   const { applyWindowSettings } = require(path.join(root, 'src', 'desk', 'window'));
   const { buildCatalog } = require(path.join(root, 'src', 'desk', 'catalog'));
+  const stageThresholds = [...require(path.join(root, 'src', 'desk', 'runtime', 'core.cjs')).HATCH_STAGE_THRESHOLDS];
   const collectionItems = exerciseCatalog || exerciseHistoryHud
     ? [
       {
@@ -93,7 +95,7 @@ app.whenReady().then(async () => {
         choiceRequired: true,
         pendingRollover: { fromDate: '2026-09-21', clicks: 1200, keystrokes: 3400 },
       }
-    : exerciseProgressGate || exerciseHistoryHud
+    : exerciseProgressGate || exerciseHistoryHud || exerciseGrowthTimeline
       ? { ok: true, date: result.date, phase: 'egg', alreadyHatched: false, newEgg: false }
       : {
         ok: true, date: result.date, phase: 'hatched', alreadyHatched: true, newEgg: false,
@@ -120,18 +122,35 @@ app.whenReady().then(async () => {
         choiceRequired: true,
         day: { pendingRollover: { clicks: 1200, keystrokes: 3400 } },
         progress: { phase: 'cracking', inputs: 4600, nextStageAt: 8000 },
+        stageThresholds,
         clicks: 1200,
         keystrokes: 3400,
         dailyClicks: 0,
         dailyKeystrokes: 0,
         idleMood: null,
       }
-    : exerciseProgressGate || exerciseHistoryHud
+    : exerciseGrowthTimeline
       ? {
           ok: true,
           alreadySaved: false,
           canCollect: false,
           targetInputs: 29000,
+          stageThresholds,
+          remainingInputs: 12000,
+          progress: { phase: 'newborn', stage: 3, inputs: 17000, nextStageAt: 21000 },
+          clicks: 7000,
+          keystrokes: 10000,
+          dailyClicks: 7000,
+          dailyKeystrokes: 10000,
+          idleMood: null,
+        }
+      : exerciseProgressGate || exerciseHistoryHud
+      ? {
+          ok: true,
+          alreadySaved: false,
+          canCollect: false,
+          targetInputs: 29000,
+          stageThresholds,
           remainingInputs: 29000,
           progress: { phase: 'egg', inputs: 0, nextStageAt: 3000 },
           inputs: 0,
@@ -146,6 +165,7 @@ app.whenReady().then(async () => {
         alreadySaved: true,
         canCollect: true,
         targetInputs: 29000,
+        stageThresholds,
         remainingInputs: 0,
         progress: { phase: 'adult', inputs: 30000, nextStageAt: null },
         inputs: 30000,
@@ -229,6 +249,8 @@ app.whenReady().then(async () => {
       ? (!state.rolloverOpen || state.rolloverHits !== '4600')
       : exerciseProgressGate || exerciseHistoryHud
         ? (state.mounted || state.phase !== 'egg')
+        : exerciseGrowthTimeline
+          ? state.phase !== 'newborn'
         : (!state.mounted || state.layers.length < 6)
   ) {
     throw new Error(`modular renderer did not mount: ${JSON.stringify(state)}`);
@@ -257,6 +279,8 @@ app.whenReady().then(async () => {
         collectDisabled: collect?.disabled === true,
         progressOpen: document.getElementById('progress-panel')?.hidden === false,
         remaining: document.getElementById('progress-remaining')?.textContent || '',
+        milestones: [...document.querySelectorAll('.progress-milestone')]
+          .map((node) => node.dataset.state),
         gate: document.getElementById('collect-gate')?.textContent || '',
         phase: document.getElementById('stage')?.dataset.phase || '',
       };
@@ -264,11 +288,42 @@ app.whenReady().then(async () => {
     if (
       !progressGateState.collectDisabled ||
       !progressGateState.progressOpen ||
+      progressGateState.milestones.join(',') !== 'current,upcoming,upcoming,upcoming,upcoming,upcoming' ||
       !progressGateState.remaining.includes('29,000') ||
       progressGateState.phase !== 'egg'
     ) {
       throw new Error(`progress gate failed: ${JSON.stringify(progressGateState)}`);
     }
+  }
+  let growthTimelineState = null;
+  if (exerciseGrowthTimeline) {
+    growthTimelineState = await win.webContents.executeJavaScript(`(async () => {
+      document.getElementById('btn-reveal')?.click();
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      const nodes = [...document.querySelectorAll('.progress-milestone')];
+      return {
+        open: document.getElementById('progress-panel')?.hidden === false,
+        labels: nodes.map((node) => node.querySelector('.progress-milestone-name')?.textContent),
+        thresholds: nodes.map((node) => node.querySelector('.progress-milestone-count')?.textContent),
+        states: nodes.map((node) => node.dataset.state),
+        next: document.getElementById('progress-next')?.textContent,
+        remaining: document.getElementById('progress-remaining')?.textContent,
+        fill: parseFloat(document.getElementById('progress-fill')?.style.width || '0'),
+      };
+    })()`);
+    if (
+      !growthTimelineState.open ||
+      growthTimelineState.labels.length !== 6 ||
+      growthTimelineState.thresholds.join(',') !== '0,3,000,8,000,14,000,21,000,29,000' ||
+      growthTimelineState.states.join(',') !== 'complete,complete,complete,current,upcoming,upcoming' ||
+      !growthTimelineState.next.includes('4,000') ||
+      growthTimelineState.fill < 68 || growthTimelineState.fill > 69
+    ) {
+      throw new Error(`growth timeline failed: ${JSON.stringify(growthTimelineState)}`);
+    }
+    win.setContentSize(260, 300);
+    win.setPosition(-10000, -10000);
+    win.showInactive();
   }
   let historyHudState = null;
   if (exerciseHistoryHud) {
@@ -464,7 +519,7 @@ app.whenReady().then(async () => {
   const image = await win.webContents.capturePage();
   if (exerciseCatalog) win.hide();
   require('fs').writeFileSync(outputPath, image.toPNG());
-  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, historyHudState, scaleLayoutState })}\n`);
+  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, growthTimelineState, historyHudState, scaleLayoutState })}\n`);
   win.destroy();
   app.quit();
 }).catch((err) => {

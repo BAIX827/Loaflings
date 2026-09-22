@@ -16,6 +16,7 @@ const {
   hatchProgressFromProfile,
   clicksPerHatchStage,
   hatchTargetInputs,
+  hatchStageThresholds,
   idleMoodFromProfile,
 } = require('./hooks/coreDayCycle');
 const {
@@ -119,6 +120,7 @@ function registerIpc() {
           alreadySaved,
           canCollect,
           targetInputs,
+          stageThresholds: hatchStageThresholds(),
           remainingInputs,
           choiceRequired: day.choiceRequired,
           day,
@@ -143,6 +145,7 @@ function registerIpc() {
         alreadySaved,
         canCollect,
         targetInputs,
+        stageThresholds: hatchStageThresholds(),
         remainingInputs,
         choiceRequired: day.choiceRequired,
         day,

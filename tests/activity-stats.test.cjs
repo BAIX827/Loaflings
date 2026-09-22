@@ -71,6 +71,8 @@ test('desktop UI exposes rollover choices and cumulative statistics', () => {
     'stats-activity-hits',
     'stats-window-switches',
     'progress-panel',
+    'progress-milestones',
+    'progress-next',
     'progress-remaining',
   ]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));

@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const core = require('../src/desk/runtime/core.cjs');
+const { hatchStageThresholds } = require('../src/desk/hooks/coreDayCycle');
 const { slimResult } = require('../src/desk/resultView');
 
 function profile(overrides = {}) {
@@ -22,6 +23,7 @@ function profile(overrides = {}) {
 }
 
 test('six hatch thresholds use combined clicks and keystrokes', () => {
+  assert.deepEqual(hatchStageThresholds(), [0, 3000, 8000, 14000, 21000, 29000]);
   const cases = [
     [0, 'egg'],
     [2999, 'egg'],

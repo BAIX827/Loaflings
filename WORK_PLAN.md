@@ -13,6 +13,7 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-23 six-stage growth timeline with milestone thresholds and next-stage distance
 - [x] 2026-09-23 character-only scaling with stable functional panel layout
 - [x] 2026-09-23 wardrobe icon cards with individual SVG previews, selected state and persisted wearables
 - [x] 2026-09-22 Figma-aligned 2D asset production, export and acceptance documentation
@@ -42,6 +43,11 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-23 (GROWTH TIMELINE)
+- Replaced the plain growth bar with six labeled milestone nodes for Egg, Cracking, Hatching, Newborn, Growing and Adult. Nodes show their actual cumulative activity thresholds, completed/current/upcoming states and progress through the current stage.
+- Added the exact activity remaining until the next stage while keeping the existing total-to-adult count and strict 29,000 collection gate. Threshold values flow from CORE through the main-process progress response instead of a second renderer-side rules list.
+- Verified all 30 Node tests, Electron visual smokes for zero-hit Egg and a 17,000-hit Newborn midway state, milestone positions and next-stage count, plus `git diff --check`.
 
 2026-09-23 (STABLE SCALE LAYOUT)
 - The size slider now changes the character art directly. The companion window keeps its base 260 × 300 space below 1× and grows only above 1×, so shrinking no longer compresses the settings, wardrobe or collection UI.
