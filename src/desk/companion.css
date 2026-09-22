@@ -35,6 +35,7 @@ body {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  transition: width 120ms ease-out, height 120ms ease-out;
 }
 
 .pet svg,
@@ -153,11 +154,15 @@ body {
 
 .panel {
   position: absolute;
-  left: 10px;
-  right: 10px;
+  left: 50%;
+  right: auto;
   bottom: 10px;
-  max-height: 58%;
+  width: 240px;
+  max-width: calc(100% - 20px);
+  max-height: 196px;
   overflow: auto;
+  box-sizing: border-box;
+  transform: translateX(-50%);
   padding: 10px 12px 12px;
   border-radius: 14px;
   background: rgba(255, 253, 252, 0.94);
@@ -224,6 +229,7 @@ body {
   justify-content: center;
   gap: 0;
   flex: 0 0 auto;
+  transition: width 120ms ease-out, height 120ms ease-out;
 }
 
 .egg-art {
@@ -390,7 +396,7 @@ body {
 
 /* —— Wardrobe —— */
 .wardrobe {
-  max-height: 78%;
+  max-height: 256px;
 }
 .wardrobe-slot {
   margin: 9px 0;
@@ -546,6 +552,7 @@ body {
   max-height: 62%;
   pointer-events: none;
   z-index: 2;
+  transition: width 120ms ease-out, height 120ms ease-out;
 }
 .idle-fx-layer {
   position: absolute;
@@ -648,7 +655,7 @@ body {
   font-size: 10px;
 }
 .bag {
-  max-height: 78%;
+  max-height: 256px;
 }
 .bag-cal {
   display: grid;

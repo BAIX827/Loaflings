@@ -23,7 +23,9 @@ function applyWindowSettings(win, settings) {
   if (!win || win.isDestroyed()) return;
   const s = settings || loadSettings();
   win.setOpacity(s.opacity);
-  win.setContentSize(Math.round(BASE_W * s.scale), Math.round(BASE_H * s.scale));
+  // Keep enough room for the controls when the character is scaled down.
+  const windowScale = Math.max(1, s.scale);
+  win.setContentSize(Math.round(BASE_W * windowScale), Math.round(BASE_H * windowScale));
   win.setMovable(!s.lockPosition);
   if (s.position && typeof s.position.x === 'number') {
     win.setPosition(Math.round(s.position.x), Math.round(s.position.y));

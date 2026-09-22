@@ -13,6 +13,7 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-23 character-only scaling with stable functional panel layout
 - [x] 2026-09-23 wardrobe icon cards with individual SVG previews, selected state and persisted wearables
 - [x] 2026-09-22 Figma-aligned 2D asset production, export and acceptance documentation
 - [x] 2026-09-22 Windows x64 installer / portable release packaging and packaged-app smoke verification
@@ -41,6 +42,11 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-23 (STABLE SCALE LAYOUT)
+- The size slider now changes the character art directly. The companion window keeps its base 260 × 300 space below 1× and grows only above 1×, so shrinking no longer compresses the settings, wardrobe or collection UI.
+- Function panels use fixed baseline dimensions and stay centered rather than stretching with the window; character art gets a short size transition. The saved scale is restored on launch.
+- Verified 30 Node tests, Electron resize smoke at 0.6× and 1.6× (stable settings panel, correctly sized art), persisted scale after reload, wardrobe click/save/reload and collection catalogue smokes, plus `git diff --check`.
 
 2026-09-23 (WARDROBE ICON CARDS)
 - Replaced the three wearable dropdowns with image cards for every existing hat, pair of glasses and outfit, plus a `none` card in each category. Used the original modular SVGs for previews and kept adult-only access, slot IDs and saved wardrobe settings unchanged.

@@ -2,7 +2,7 @@
 
 /**
  * Visual smoke helper for the real Electron preload + renderer + CSS pipeline.
- * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--history-hud]
+ * Usage: electron scripts/capture-modular-runtime.cjs <common|rare|epic> <png> [--wardrobe] [--catalog] [--stats] [--rollover] [--progress-gate] [--history-hud] [--scale-layout]
  */
 const path = require('path');
 const os = require('os');
@@ -18,6 +18,7 @@ const exerciseStats = process.argv.includes('--stats');
 const exerciseRollover = process.argv.includes('--rollover');
 const exerciseProgressGate = process.argv.includes('--progress-gate');
 const exerciseHistoryHud = process.argv.includes('--history-hud');
+const exerciseScaleLayout = process.argv.includes('--scale-layout');
 const root = path.join(__dirname, '..');
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
@@ -59,6 +60,7 @@ function reply(channel, value) {
 
 app.whenReady().then(async () => {
   const { loadSettings, saveSettings } = require(path.join(root, 'src', 'desk', 'settings'));
+  const { applyWindowSettings } = require(path.join(root, 'src', 'desk', 'window'));
   const { buildCatalog } = require(path.join(root, 'src', 'desk', 'catalog'));
   const collectionItems = exerciseCatalog || exerciseHistoryHud
     ? [
@@ -165,8 +167,11 @@ app.whenReady().then(async () => {
     };
   });
   ipcMain.handle('loaflings:get-settings', () => ({ ok: true, settings: loadSettings() }));
+  let win;
   ipcMain.handle('loaflings:set-settings', (_event, partial = {}) => {
-    return { ok: true, settings: saveSettings(partial) };
+    const settings = saveSettings(partial);
+    if (exerciseScaleLayout) applyWindowSettings(win, settings);
+    return { ok: true, settings };
   });
   reply('loaflings:get-sense-status', { ok: true, backend: 'smoke' });
   reply('loaflings:hatch-day', { ok: true });
@@ -174,8 +179,9 @@ app.whenReady().then(async () => {
   reply('loaflings:quit', { ok: true });
   ipcMain.on('loaflings:set-ignore-mouse', () => {});
 
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     show: false,
+    frame: !exerciseScaleLayout,
     width: 480,
     height: 360,
     backgroundColor: '#f7f2ec',
@@ -407,15 +413,61 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript(`document.getElementById('btn-wardrobe')?.click()`);
     await new Promise((resolve) => setTimeout(resolve, 350));
   }
+  let scaleLayoutState = null;
+  if (exerciseScaleLayout) {
+    win.setPosition(-10000, -10000);
+    win.showInactive();
+    await win.webContents.executeJavaScript(`document.getElementById('btn-settings')?.click()`);
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const setScale = async (value) => {
+      await win.webContents.executeJavaScript(`(() => {
+        const slider = document.getElementById('set-scale');
+        slider.value = '${value}';
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+      })()`);
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      return win.webContents.executeJavaScript(`(() => {
+        const panel = document.getElementById('settings').getBoundingClientRect();
+        const art = document.getElementById('pet').getBoundingClientRect();
+        return { windowWidth: innerWidth, windowHeight: innerHeight,
+          panelWidth: panel.width, panelHeight: panel.height, artWidth: art.width };
+      })()`);
+    };
+    const smallLayout = { ...await setScale(0.6), contentSize: win.getContentSize() };
+    const largeLayout = { ...await setScale(1.6), contentSize: win.getContentSize() };
+    scaleLayoutState = { small: smallLayout, large: largeLayout };
+    const { small, large } = scaleLayoutState;
+    if (
+      small.contentSize[0] < 260 || small.contentSize[1] < 300 ||
+      large.contentSize[0] - small.contentSize[0] !== 156 ||
+      large.contentSize[1] - small.contentSize[1] !== 180 ||
+      Math.abs(small.panelWidth - large.panelWidth) > 1 ||
+      Math.abs(small.panelHeight - large.panelHeight) > 1 ||
+      Math.abs(small.artWidth - 120) > 1 ||
+      Math.abs(large.artWidth - 320) > 1
+    ) {
+      throw new Error(`scale changed the controls layout: ${JSON.stringify(scaleLayoutState)}`);
+    }
+    await win.loadFile(indexPath);
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    scaleLayoutState.persistedArtWidth = await win.webContents.executeJavaScript(
+      `document.getElementById('pet').getBoundingClientRect().width`,
+    );
+    if (Math.abs(scaleLayoutState.persistedArtWidth - 320) > 1) {
+      throw new Error(`saved scale did not restore: ${JSON.stringify(scaleLayoutState)}`);
+    }
+    await win.webContents.executeJavaScript(`document.getElementById('btn-settings')?.click()`);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
   win.webContents.invalidate();
   await new Promise((resolve) => setTimeout(resolve, 500));
   const image = await win.webContents.capturePage();
   if (exerciseCatalog) win.hide();
   require('fs').writeFileSync(outputPath, image.toPNG());
-  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, historyHudState })}\n`);
+  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, rolloverState, progressGateState, historyHudState, scaleLayoutState })}\n`);
   win.destroy();
   app.quit();
 }).catch((err) => {
   console.error(err);
-  app.exit(1);
+  process.exit(1);
 });

@@ -253,7 +253,10 @@
     if (!api?.getSettings) return;
     try {
       const res = await api.getSettings();
-      if (res?.ok) wardrobe = normalizeWardrobe(res.settings?.wardrobe);
+      if (res?.ok) {
+        wardrobe = normalizeWardrobe(res.settings?.wardrobe);
+        applyPetScale(res.settings?.scale);
+      }
     } catch {
       // Keep the safe empty wardrobe when settings are unavailable.
     }
@@ -1236,6 +1239,12 @@
     if (chromePeekEl) chromePeekEl.hidden = showChrome;
   }
 
+  function applyPetScale(value) {
+    const scale = Math.min(1.6, Math.max(0.6, Number(value) || 1));
+    stageEl.style.setProperty('--art-w', `${200 * scale}px`);
+    stageEl.style.setProperty('--art-h', `${150 * scale}px`);
+  }
+
   async function hydrateSettings() {
     if (!api?.getSettings) return;
     try {
@@ -1246,6 +1255,7 @@
       populateWardrobeControls();
       if (opacityEl) opacityEl.value = String(s.opacity);
       if (scaleEl) scaleEl.value = String(s.scale);
+      applyPetScale(s.scale);
       if (lockEl) lockEl.checked = Boolean(s.lockPosition);
       if (showChromeEl) showChromeEl.checked = s.showChrome !== false;
       if (showHudEl) showHudEl.checked = s.showHud !== false;
@@ -1278,7 +1288,9 @@
     api?.setSettings?.({ opacity: Number(opacityEl.value) });
   });
   scaleEl?.addEventListener('input', () => {
-    api?.setSettings?.({ scale: Number(scaleEl.value) });
+    const scale = Number(scaleEl.value);
+    applyPetScale(scale);
+    api?.setSettings?.({ scale });
   });
   lockEl?.addEventListener('change', () => {
     api?.setSettings?.({ lockPosition: Boolean(lockEl.checked) });
