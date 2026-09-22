@@ -1,6 +1,7 @@
 # WORK_PLAN
 
 ## Current
+- [ ] 2026-09-23 Figma 2D 素材库：文件已创建；待 Figma Starter MCP 调用额度恢复后建立页面、变量并导入现有 40 个 SVG 组件，完成组合 QA。仓库侧索引见 `character/ASSET_LIBRARY_INDEX.md`。
 - [ ] Soft polish / optional next
   - [ ] Reference-aligned optional idle PNG expression / pose pool (3 expression review masters generated; poses remain)
   - [ ] Review the 3 basic and 2 mutation SVG templates in the live desktop runtime, then approve or revise the art direction
@@ -12,6 +13,8 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-23 wardrobe icon cards with individual SVG previews, selected state and persisted wearables
+- [x] 2026-09-22 Figma-aligned 2D asset production, export and acceptance documentation
 - [x] 2026-09-22 Windows x64 installer / portable release packaging and packaged-app smoke verification
 - [x] 2026-09-22 strict 29,000-activity adult / collection gate and unambiguous historical HUD
 - [x] 2026-09-22 unfinished-egg rollover choice with inherited/reset progress and all-time count statistics
@@ -38,6 +41,23 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-23 (WARDROBE ICON CARDS)
+- Replaced the three wearable dropdowns with image cards for every existing hat, pair of glasses and outfit, plus a `none` card in each category. Used the original modular SVGs for previews and kept adult-only access, slot IDs and saved wardrobe settings unchanged.
+- Added visible selected states and accessible button labels; the selection update retains keyboard focus. Updated the Electron wardrobe smoke for card clicks, preview loading and saved-state reload.
+- Verified all 30 Node tests, real Electron wardrobe click/save/reload smoke at the companion window size, visual screenshot of the icon panel, and `git diff --check`.
+- Unrelated local tooling issue: `npm` points to a missing global npm-cli.js, and direct `compile-runtime.mjs` currently fails to resolve the core entry in this environment. Existing compiled runtime allowed the scoped renderer smoke; this task did not alter the build tooling.
+
+2026-09-23 (ASSET LIBRARY START)
+- Created the Figma working file `Loaflings — Modular 2D Asset Library` and verified it is blank with no existing Loafling components or variables.
+- Indexed the 40 existing modular SVGs by production page, stable ID and repository slot in `character/ASSET_LIBRARY_INDEX.md`; kept the manifest as runtime authority.
+- Figma Starter MCP call limit blocked the first variable write, so no Figma pages, tokens or components were claimed as complete. Next step is to resume those writes when access is available.
+
+2026-09-22 (2D ASSET PRODUCTION RULES)
+- Added `character/ASSET_PRODUCTION_GUIDE.md` as the production workflow for Figma, AI concept batches and repository delivery while preserving the character spec and canonical SVG as higher visual authorities.
+- Locked the shared `1200 × 900` authoring space, manifest-owned anchors and layer order, stable slot/ID naming, modular-over-combinatorial production rule, batch review flow, suggested first expansion scale, SVG/PNG export requirements and visual/runtime acceptance checklist.
+- Linked the guide from the character specification, expansion plan and README; corrected the stale PNG-only style note to reflect PNG hatch stages plus the current modular SVG adult runtime and PNG fallback.
+- Verified every referenced local authority and preview file exists, documented canvas/layer values match `character/modular/manifest.json`, all expected cross-links resolve and `git diff --check` passes.
 
 2026-09-22 (WINDOWS RELEASE)
 - Added repeatable Windows x64 `dir`, NSIS installer and portable build commands with distinct artifact names, the existing Loaflings icon, Start menu / desktop shortcuts and no unnecessary native rebuild of the bundled `uiohook-napi` Windows N-API binary.

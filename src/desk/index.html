@@ -150,18 +150,18 @@
           <strong data-i18n="wardrobe.title">衣柜 · 换装</strong>
           <button type="button" id="btn-close-wardrobe" class="chip chip-quiet" title="Close">✕</button>
         </header>
-        <label class="wardrobe-row">
-          <span data-i18n="wardrobe.headwear">帽子</span>
-          <select id="wardrobe-headwear"></select>
-        </label>
-        <label class="wardrobe-row">
-          <span data-i18n="wardrobe.facewear">眼镜</span>
-          <select id="wardrobe-facewear"></select>
-        </label>
-        <label class="wardrobe-row">
-          <span data-i18n="wardrobe.outfit">衣服</span>
-          <select id="wardrobe-outfit"></select>
-        </label>
+        <section class="wardrobe-slot">
+          <strong id="wardrobe-headwear-label" data-i18n="wardrobe.headwear">帽子</strong>
+          <div id="wardrobe-headwear" class="wardrobe-grid" role="group" aria-labelledby="wardrobe-headwear-label"></div>
+        </section>
+        <section class="wardrobe-slot">
+          <strong id="wardrobe-facewear-label" data-i18n="wardrobe.facewear">眼镜</strong>
+          <div id="wardrobe-facewear" class="wardrobe-grid" role="group" aria-labelledby="wardrobe-facewear-label"></div>
+        </section>
+        <section class="wardrobe-slot">
+          <strong id="wardrobe-outfit-label" data-i18n="wardrobe.outfit">衣服</strong>
+          <div id="wardrobe-outfit" class="wardrobe-grid" role="group" aria-labelledby="wardrobe-outfit-label"></div>
+        </section>
         <p class="panel-note" data-i18n="wardrobe.note">选择会自动保存，并应用到所有成年摸鱼灵。</p>
         <button type="button" id="btn-reset-wardrobe" class="chip wardrobe-reset" data-i18n="wardrobe.reset">全部脱下</button>
       </aside>

@@ -5,6 +5,10 @@
 > This document defines the visual DNA that should remain consistent across
 > all Loafling characters, variants, illustrations, sprites and animations.
 
+Production workflow, Figma structure, naming, export and batch acceptance rules
+are defined in `ASSET_PRODUCTION_GUIDE.md`. The modular runtime architecture and
+current implementation inventory are recorded in `CHARACTER_EXPANSION_PLAN.md`.
+
 ---
 
 ## 1. Core Identity

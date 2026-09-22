@@ -389,23 +389,89 @@ body {
 }
 
 /* —— Wardrobe —— */
-.wardrobe .wardrobe-row {
-  display: grid;
-  grid-template-columns: 58px 1fr;
-  align-items: center;
-  gap: 10px;
-  margin: 8px 0;
-  font-size: 12px;
+.wardrobe {
+  max-height: 78%;
 }
-.wardrobe select {
+.wardrobe-slot {
+  margin: 9px 0;
+}
+.wardrobe-slot > strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+.wardrobe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.wardrobe-card {
   min-width: 0;
-  width: 100%;
-  font-size: 12px;
-  border-radius: 8px;
+  padding: 3px;
   border: 1px solid rgba(75, 58, 50, 0.15);
-  padding: 4px 6px;
-  color: rgba(75, 58, 50, 0.92);
+  border-radius: 9px;
   background: #fff;
+  color: rgba(75, 58, 50, 0.92);
+  cursor: pointer;
+}
+.wardrobe-card:hover,
+.wardrobe-card:focus-visible {
+  border-color: #8cb7f0;
+  outline: none;
+}
+.wardrobe-card[aria-pressed='true'] {
+  border-color: #597baf;
+  background: #eaf4ff;
+  box-shadow: 0 0 0 1px #597baf inset;
+}
+.wardrobe-preview {
+  position: relative;
+  display: block;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff8f1;
+}
+.wardrobe-preview img {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+  object-fit: fill;
+}
+.wardrobe-preview-headwear img {
+  width: 192px;
+  height: 144px;
+  left: calc(50% - 96px);
+  top: calc(50% - 52px);
+}
+.wardrobe-card[data-id='hat_knit_blue'] .wardrobe-preview-headwear img {
+  left: calc(50% - 82px);
+}
+.wardrobe-preview-facewear img {
+  width: 156px;
+  height: 117px;
+  left: calc(50% - 78px);
+  top: calc(50% - 69px);
+}
+.wardrobe-preview-outfit img {
+  width: 120px;
+  height: 90px;
+  left: calc(50% - 60px);
+  top: calc(50% - 56px);
+}
+.wardrobe-preview-none {
+  display: grid;
+  place-items: center;
+  color: rgba(75, 58, 50, 0.48);
+  font-size: 26px;
+}
+.wardrobe-caption {
+  display: block;
+  min-height: 24px;
+  margin-top: 3px;
+  font-size: 9px;
+  line-height: 1.25;
+  text-align: center;
 }
 .wardrobe-reset {
   margin-top: 8px;

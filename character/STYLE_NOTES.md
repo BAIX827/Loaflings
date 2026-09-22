@@ -21,6 +21,10 @@ Do not revert to earlier generated “ugly” icon style.
 Canonical geometry remains `character/svg/Pet_Base_Master.svg`; this file governs *feeling* and marketing/icon look.
 
 
-## Runtime format (2026-09-19)
+## Runtime format (updated 2026-09-22)
 
-Pet display = **PNG only** under `character/png/`. SVG under `character/svg/` archived, not deleted, not shown in shell.
+- Egg through growing phases use PNG under `character/png/`.
+- Adult characters use ordered modular SVG layers from
+  `character/modular/manifest.json`.
+- Adult PNGs remain safe fallbacks and visual references.
+- Production, Figma and export rules live in `ASSET_PRODUCTION_GUIDE.md`.

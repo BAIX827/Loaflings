@@ -3,6 +3,9 @@
 > 状态：根据第一轮评审修订
 > 依据：`reference/`、`LOAFLING_CHARACTER_SPEC_UPDATED.md`、`svg/Pet_Base_Master.svg`
 > 核心结论：**不要为每个组合生成一张完整角色图；只生产可复用部件，再由运行时合成。**
+>
+> Figma 文件结构、批量制作步骤、命名、导出和验收流程见
+> `ASSET_PRODUCTION_GUIDE.md`。
 
 ## 1. 为什么必须模块化
 

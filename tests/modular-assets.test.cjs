@@ -127,6 +127,11 @@ test('the desktop wardrobe exposes all three wearable slots', () => {
   ]) {
     assert.match(html, new RegExp(`id="${id}"`));
   }
+  assert.doesNotMatch(html, /<select id="wardrobe-/);
+  assert.match(html, /class="wardrobe-grid" role="group"/);
+  const renderer = fs.readFileSync(path.join(root, 'src', 'desk', 'renderer.js'), 'utf8');
+  assert.match(renderer, /img\.src = modularAssetUrl\(entry\.src\)/);
+  assert.match(renderer, /aria-pressed/);
   assert.equal(Object.keys(manifest.headwear).length, 5);
   assert.equal(Object.keys(manifest.facewear).length, 3);
   assert.equal(Object.keys(manifest.outfits).length, 4);

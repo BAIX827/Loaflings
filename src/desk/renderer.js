@@ -1128,17 +1128,45 @@
 
   function populateWardrobeControls() {
     if (!MODULAR_MANIFEST) return;
-    for (const [slot, select] of Object.entries(wardrobeSlotEls)) {
-      if (!select) continue;
+    for (const [slot, grid] of Object.entries(wardrobeSlotEls)) {
+      if (!grid) continue;
       const group = MODULAR_MANIFEST[wardrobeGroups[slot]] || {};
-      const options = Object.entries(group).map(([id, entry]) => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = wardrobeLabel(id, entry);
-        return option;
+      const cards = Object.entries(group).map(([id, entry]) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'wardrobe-card';
+        card.dataset.id = id;
+        card.setAttribute('aria-pressed', String(wardrobe[slot] === id));
+        const label = wardrobeLabel(id, entry);
+        card.setAttribute('aria-label', label);
+        card.title = label;
+        const preview = document.createElement('span');
+        preview.className = `wardrobe-preview wardrobe-preview-${slot}`;
+        if (entry?.src) {
+          const img = document.createElement('img');
+          img.src = modularAssetUrl(entry.src);
+          img.alt = '';
+          img.draggable = false;
+          preview.appendChild(img);
+        } else {
+          preview.classList.add('wardrobe-preview-none');
+          preview.textContent = '∅';
+        }
+        const caption = document.createElement('span');
+        caption.className = 'wardrobe-caption';
+        caption.textContent = label;
+        card.append(preview, caption);
+        return card;
       });
-      select.replaceChildren(...options);
-      select.value = wardrobe[slot];
+      grid.replaceChildren(...cards);
+    }
+  }
+
+  function syncWardrobeSelection() {
+    for (const [slot, grid] of Object.entries(wardrobeSlotEls)) {
+      grid?.querySelectorAll('.wardrobe-card').forEach((card) => {
+        card.setAttribute('aria-pressed', String(card.dataset.id === wardrobe[slot]));
+      });
     }
   }
 
@@ -1155,7 +1183,7 @@
     wardrobe = normalizeWardrobe({ ...wardrobe, ...partial }, base?.body);
     const res = await api?.setSettings?.({ wardrobe });
     if (res?.ok) wardrobe = normalizeWardrobe(res.settings?.wardrobe, base?.body);
-    populateWardrobeControls();
+    syncWardrobeSelection();
     if (phase === 'adult') {
       petLoaded = false;
       lastVisualPhase = '';
@@ -1173,8 +1201,11 @@
   document.getElementById('btn-close-wardrobe')?.addEventListener('click', () => {
     setWardrobeOpen(false);
   });
-  for (const [slot, select] of Object.entries(wardrobeSlotEls)) {
-    select?.addEventListener('change', () => void applyWardrobeChange({ [slot]: select.value }));
+  for (const [slot, grid] of Object.entries(wardrobeSlotEls)) {
+    grid?.addEventListener('click', (event) => {
+      const card = event.target.closest('.wardrobe-card');
+      if (card && grid.contains(card)) void applyWardrobeChange({ [slot]: card.dataset.id });
+    });
   }
   document.getElementById('btn-reset-wardrobe')?.addEventListener('click', () => {
     void applyWardrobeChange({ headwear: 'none', facewear: 'none', outfit: 'none' });

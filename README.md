@@ -69,6 +69,7 @@ Loaflings/
 │   ├── loafling-standard-base.css
 │   ├── LOAFLING_CHARACTER_SPEC_UPDATED.md
 │   ├── PARTS_MVP.md          ← body / cloud / face / tail
+│   ├── ASSET_PRODUCTION_GUIDE.md ← Figma / batch art / export rules
 │   └── STYLE_NOTES.md
 ├── reference/                ← inspiration only (not requirements)
 ├── docs/

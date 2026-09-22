@@ -299,26 +299,34 @@ app.whenReady().then(async () => {
       const hat = document.getElementById('wardrobe-headwear');
       const glasses = document.getElementById('wardrobe-facewear');
       const outfit = document.getElementById('wardrobe-outfit');
-      hat.value = 'hat_knit_blue';
-      hat.dispatchEvent(new Event('change', { bubbles: true }));
+      hat.querySelector('[data-id="hat_knit_blue"]')?.click();
       await pause(180);
-      glasses.value = 'glasses_round_cocoa';
-      glasses.dispatchEvent(new Event('change', { bubbles: true }));
+      glasses.querySelector('[data-id="glasses_round_cocoa"]')?.click();
       await pause(180);
-      outfit.value = 'outfit_vest_sage';
-      outfit.dispatchEvent(new Event('change', { bubbles: true }));
+      outfit.querySelector('[data-id="outfit_vest_sage"]')?.click();
       await pause(350);
       const root = document.querySelector('.modular-character');
       return {
         panelOpen: document.getElementById('wardrobe')?.hidden === false,
-        optionCounts: [hat.options.length, glasses.options.length, outfit.options.length],
+        optionCounts: [hat, glasses, outfit].map((grid) => grid.querySelectorAll('.wardrobe-card').length),
+        previewCounts: [hat, glasses, outfit].map((grid) => grid.querySelectorAll('.wardrobe-preview img').length),
+        previewsLoaded: [...document.querySelectorAll('.wardrobe-preview img')]
+          .every((img) => img.complete && img.naturalWidth > 0),
+        selected: [hat, glasses, outfit].map((grid) => grid.querySelector('[aria-pressed="true"]')?.dataset.id),
         recipe: root?.dataset.recipe || '',
         layers: [...document.querySelectorAll('.modular-character .character-layer')]
           .map((node) => node.dataset.layer),
       };
     })()`);
     const expected = ['hat_knit_blue', 'glasses_round_cocoa', 'outfit_vest_sage'];
-    if (!wardrobeState.panelOpen || expected.some((id) => !wardrobeState.recipe.includes(id))) {
+    if (
+      !wardrobeState.panelOpen ||
+      wardrobeState.optionCounts.join(',') !== '5,3,4' ||
+      wardrobeState.previewCounts.join(',') !== '4,2,3' ||
+      !wardrobeState.previewsLoaded ||
+      wardrobeState.selected.join(',') !== expected.join(',') ||
+      expected.some((id) => !wardrobeState.recipe.includes(id))
+    ) {
       throw new Error(`wardrobe renderer did not update: ${JSON.stringify(wardrobeState)}`);
     }
     await win.loadFile(indexPath);
@@ -391,6 +399,13 @@ app.whenReady().then(async () => {
     if (!statsState.panelOpen || !statsState.statsOpen || !statsState.activityHits.includes('54')) {
       throw new Error(`statistics renderer did not mount: ${JSON.stringify(statsState)}`);
     }
+  }
+  if (exerciseWardrobe) {
+    win.setContentSize(260, 300);
+    win.setPosition(-10000, -10000);
+    win.showInactive();
+    await win.webContents.executeJavaScript(`document.getElementById('btn-wardrobe')?.click()`);
+    await new Promise((resolve) => setTimeout(resolve, 350));
   }
   win.webContents.invalidate();
   await new Promise((resolve) => setTimeout(resolve, 500));
