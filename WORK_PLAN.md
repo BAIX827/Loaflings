@@ -8,9 +8,10 @@
   - [ ] Review the 3 basic and 2 mutation SVG templates in the live desktop runtime, then approve or revise the art direction
   - [ ] Optional: Developer ID sign + notarize
   - [ ] Optional short interactions (feed / dig / evolution choice)
-  - Acceptance: `docs/MVP_DEMO_ACCEPTANCE.md`
+  - Historical MVP acceptance baseline: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
+- [ ] Version 2 proposed product direction: implement the scoped autonomous-moments → daily memory sequence in `docs/VERSION_2_PLAN.md`; broader ideas and deferred features in `docs/FEATURE_IDEAS.md`. This is planning only; no V2 feature is marked complete.
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
@@ -46,6 +47,14 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-23 (DOCUMENTATION SYNC)
+- Audited the current source, assets, package scripts and Markdown against the existing growth, cross-day egg, modular adult, coin wallet and Windows release implementation. Updated the top-level and module READMEs, hatch art and gene contract notes, profile schema, and V2 planning copy; labelled the old Mac demo acceptance as a historical baseline. Preserved the existing V2 drafts and their work-plan entry.
+- Verified `npm run verify` (36 Node tests and demo settlement), local Markdown links, and `git diff --check`. No runtime code changed.
+
+2026-09-23 (VERSION 2 PRODUCT DOCUMENTS)
+- Recorded the desktop-companion feature candidates and product boundaries in `docs/FEATURE_IDEAS.md`; selected a feasible Version 2 sequence in `docs/VERSION_2_PLAN.md`: reliable local moments, quiet personality-aware presentation, then evidence-based hatch memories.
+- Kept souvenirs, sharing, expeditions, ecosystem and multi-day variants as later candidates. The existing coin system was not changed.
 
 2026-09-23 (CONFIGURABLE HATCH GOAL)
 - Lowered the default adult/collection goal from 29,000 to 20,000 activity hits. Settings now persists a whole-number hatch goal, clamps values below 1,000, and refreshes the current unfinished egg immediately. The five preceding milestone floors scale from the original 0 / 3 / 8 / 14 / 21 / 29 proportions; click and keystroke counts remain cumulative as before.

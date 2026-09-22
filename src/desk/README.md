@@ -1,10 +1,10 @@
-# Loaflings desk shell (Mac companion)
+# Loaflings desk shell (macOS and Windows companion)
 
 Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, frameless, transparent window.
 
 **Day loop:** a local day starts with an **egg**. The default adult goal is 20,000 activity hits; Settings can change it to any whole number of at least 1,000. All five intermediate thresholds scale proportionally. Before the goal, **Day** shows read-only growth progress and **Save** stays disabled with the exact remaining count. At the goal the Loafling becomes an adult and may be saved. A completed egg keeps its goal if Settings change later. At the next day, a completed egg is replaced automatically; an unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
 
-CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js` (falls back to `settleDay` stub if dayCycle missing). `DaylingResult.kind = 'loafling'`.
+CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js`, with a compatibility fallback to `settleDay` if the compiled day-cycle API is unavailable. `DaylingResult.kind = 'loafling'`.
 
 - Egg → growing: five transparent runtime PNG stages under `character/png/`
 - Adult: layered SVG recipe from `character/modular/`; rarity PNGs remain a safe fallback
@@ -18,7 +18,7 @@ CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shou
 - All-time count-only statistics: Electron `userData/activity-stats.json`; replacing an egg does not clear totals
 - Local coin wallet: Electron `userData/coins.json`; three daily rewards are idempotent and capped at 30 coins. See `docs/COIN_ECONOMY.md`; existing wearables remain free.
 
-## Run (macOS)
+## Run from source (macOS or Windows)
 
 From the **repo root**:
 
@@ -126,6 +126,7 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 | `loaflings:get-collection` | Read collection JSON |
 | `loaflings:get-catalog` | Read derived catalogue progress and slots |
 | `loaflings:get-activity-stats` | Read all-time count totals |
+| `loaflings:get-coin-wallet` | Read local balance, rewards and recent entries |
 | `loaflings:resolve-egg-rollover` | Continue the unfinished egg or replace it |
 
 Main may push `loaflings:day-state` when the calendar day rolls (new egg).

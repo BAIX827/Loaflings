@@ -1,6 +1,6 @@
 # character/png — runtime pet art
 
-**Use these for the companion.** SVG in `../svg/` is archive only (do not delete; do not display).
+These PNGs provide the egg-through-growing runtime stages, adult fallbacks and visual review masters. Adult characters normally use layered SVG assets from `../modular/`. SVGs in `../svg/` are archived geometry and are not used directly by the companion.
 
 ## Hatch stages (activityHits)
 
@@ -11,7 +11,7 @@
 | `Pet_Hatching.png` | hatching |
 | `Pet_Newborn.png` | newborn |
 | `Pet_Growing.png` | growing |
-| `Pet_Adult.png` / `Pet_Base_Master.png` | adult |
+| `Pet_Adult.png` / `Pet_Base_Master.png` | adult fallback |
 
 ## Quality adults (post-hatch style)
 

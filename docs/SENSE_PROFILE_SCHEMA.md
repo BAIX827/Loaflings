@@ -31,5 +31,6 @@ See `src/sense/fixtures/demo-day.json`.
 ## Code
 
 - Types: `src/sense/profile.ts`
-- Aggregator stub: `src/sense/builder.ts`
+- Fixture/offline builder: `src/sense/builder.ts`
+- Live aggregation: `src/sense/liveSensor.js`
 - Re-export: `src/sense/index.ts`

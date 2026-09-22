@@ -3,8 +3,9 @@
 Art-facing code for Loaflings.
 
 - Part IDs and asset paths: `parts.ts`
-- Runtime visuals: `../../character/png/`
-- Canonical editable geometry: `../../character/svg/`
+- Egg-through-growing runtime PNGs and adult fallbacks: `../../character/png/`
+- Layered adult runtime assets and manifest: `../../character/modular/`
+- Archived canonical editable geometry: `../../character/svg/`
 - Do not invent new gene fields here — follow DAY-CORE + `character/PARTS_MVP.md`
 
 App icon: `AppIcon.png` (from 老大 style ref `reference/loafling-style-cozy-desk.png`).

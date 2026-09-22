@@ -1,5 +1,7 @@
 # MVP Mac Demo — Acceptance (DAY-LEAD)
 
+Historical Mac demo acceptance baseline from the early MVP. For the current macOS/Windows runtime, growth, collection and packaging behaviour, see `README.md`, `src/desk/README.md` and `docs/DAY_CYCLE_MVP.md`.
+
 Goal: a runnable Mac companion app that grows a Loafling from local behaviour, using current art until further notice.
 
 ## In scope

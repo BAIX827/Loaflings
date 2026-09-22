@@ -5,7 +5,7 @@ Canonical geometry: `character/svg/Pet_Base_Master.svg`; runtime art: `character
 
 ## Daily form
 
-One egg per local day → `hatchDay` / `settleDay` → one Loafling. See `docs/DAY_CYCLE_MVP.md`.
+One active egg at a time → `hatchDay` / `settleDay` → one Loafling. An unfinished egg can continue across local days after the player chooses. See `docs/DAY_CYCLE_MVP.md`.
 
 ## Pipeline
 

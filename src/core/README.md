@@ -11,7 +11,8 @@ Pure rules engine (no Electron, no hooks): profile → energy → genes → sett
 | `genes.ts` | body / cloud / face / tail |
 | `rng.ts` | Seeded PRNG |
 | `settle.ts` | `settleDay()` → one DaylingResult |
-| `hatchProgress.ts` | 6 visual stages from clicks |
+| `hatchProgress.ts` | 6 visual stages from clicks + keystrokes; configurable goal |
+| `appearance.ts` | Deterministic adult modular appearance recipe |
 | `dayCycle.ts` | egg lifecycle + `hatchDay` / new-day |
 | `idleMood.ts` | Optional idle expr/pose weights (presentation only) |
 | `index.ts` | Public barrel |
