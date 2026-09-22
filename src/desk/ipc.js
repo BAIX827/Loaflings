@@ -4,21 +4,23 @@
 const { app, ipcMain } = require('electron');
 const {
   getLiveProfile,
-  getLiveSettle,
   getSenseStatus,
   openAccessibilitySettings,
 } = require('./hooks/senseLive');
 const { loadCollection, saveToCollection } = require('./collection');
+const { buildCatalog } = require('./catalog');
 const { loadSettings, saveSettings } = require('./settings');
-const { ensureDayState, markHatched } = require('./dayState');
+const { ensureDayState, recordEggProgress, resolveRollover, markHatched } = require('./dayState');
+const { observeActivityProfile, getActivityStats } = require('./activityStats');
 const {
   hatchProgressFromProfile,
-  hatchProgressFromClicks,
   clicksPerHatchStage,
   idleMoodFromProfile,
 } = require('./hooks/coreDayCycle');
 const {
   getDemoBundle,
+  getLiveEggSettle,
+  effectiveProfileForDay,
   resolveSettleBundle,
   slimResult,
   syncDayBoundary,
@@ -69,30 +71,42 @@ function registerIpc() {
 
   ipcMain.handle('loaflings:get-hatch-progress', () => {
     try {
-      syncDayBoundary();
-      const day = ensureDayState();
+      const synced = syncDayBoundary();
+      const day = synced.day || ensureDayState();
       const alreadySaved = Boolean(day.hatchedAt);
-      let profile = null;
-      try {
-        profile = getLiveProfile();
-      } catch {
-        profile = null;
-      }
+      const profile = synced.profile || null;
+      const eggProfile = profile ? effectiveProfileForDay(profile, day) : null;
       if (!profile) {
-        const progress = hatchProgressFromClicks(0);
+        const clicks = day.egg?.clicks || 0;
+        const keystrokes = day.egg?.keystrokes || 0;
+        const progress = hatchProgressFromProfile({
+          date: day.date,
+          seedKey: 'local',
+          clicks,
+          keystrokes,
+          mouseTravel: 0,
+          idleSec: 0,
+          activeSec: 0,
+          focusSessions: [],
+          windowSwitches: 0,
+          activeHours: Array(24).fill(0),
+        }, alreadySaved);
         return {
           ok: true,
           source: 'idle',
           alreadySaved,
+          choiceRequired: day.choiceRequired,
           day,
           progress,
-          clicks: 0,
+          clicks,
           clicksPerStage: clicksPerHatchStage(),
-          keystrokes: 0,
+          keystrokes,
+          dailyClicks: 0,
+          dailyKeystrokes: 0,
           idleMood: null,
         };
       }
-      const progress = hatchProgressFromProfile(profile, alreadySaved);
+      const progress = hatchProgressFromProfile(eggProfile, alreadySaved);
       let idleMood = null;
       try {
         idleMood = idleMoodFromProfile(profile);
@@ -103,11 +117,14 @@ function registerIpc() {
         ok: true,
         source: 'live',
         alreadySaved,
+        choiceRequired: day.choiceRequired,
         day,
         progress,
-        clicks: profile.clicks || 0,
+        clicks: eggProfile.clicks || 0,
         clicksPerStage: clicksPerHatchStage(),
-        keystrokes: profile.keystrokes || 0,
+        keystrokes: eggProfile.keystrokes || 0,
+        dailyClicks: profile.clicks || 0,
+        dailyKeystrokes: profile.keystrokes || 0,
         idleMood,
       };
     } catch (err) {
@@ -127,7 +144,8 @@ function registerIpc() {
 
   ipcMain.handle('loaflings:get-live-settle', () => {
     try {
-      const bundle = getLiveSettle();
+      const bundle = getLiveEggSettle();
+      if (bundle?.ok === false) return bundle;
       if (!bundle) return { ok: false, error: 'live-sense-not-started' };
       const { profile, result, persistPath } = bundle;
       return {
@@ -187,6 +205,37 @@ function registerIpc() {
     }
   });
 
+  ipcMain.handle('loaflings:get-catalog', () => {
+    try {
+      const col = loadCollection();
+      return { ok: true, ...buildCatalog(col.items) };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle('loaflings:get-activity-stats', () => {
+    try {
+      const profile = getLiveProfile();
+      if (profile) observeActivityProfile(profile);
+      return { ok: true, ...getActivityStats() };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle('loaflings:resolve-egg-rollover', (_e, action) => {
+    try {
+      let profile = null;
+      try { profile = getLiveProfile(); } catch { profile = null; }
+      const day = resolveRollover(action, profile);
+      const updated = profile ? recordEggProgress(profile) : day;
+      return { ok: true, action, day: updated };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
   ipcMain.handle('loaflings:collect-day', (_e, opts = {}) => {
     try {
       const force = opts?.forceSource;
@@ -195,7 +244,8 @@ function registerIpc() {
         const { profile, result, fixturePath } = getDemoBundle();
         bundle = { ok: true, source: 'demo', profile, result, fixturePath };
       } else if (force === 'live') {
-        const live = getLiveSettle();
+        const live = getLiveEggSettle();
+        if (live?.ok === false) return live;
         if (!live?.result) {
           return { ok: false, error: 'live-sense-not-started' };
         }

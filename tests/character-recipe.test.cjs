@@ -4,7 +4,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   DEFAULT_RECIPE,
+  DEFAULT_WARDROBE,
   normalizeCharacterRecipe,
+  normalizeWardrobe,
   legacyRecipeFromResult,
   recipeFromResult,
   layersForRecipe,
@@ -30,6 +32,23 @@ test('invalid recipe fields safely fall back to the default recipe', () => {
       outfit: 'missing_outfit',
     }),
     DEFAULT_RECIPE,
+  );
+});
+
+test('wardrobe validation only accepts declared wearable slots', () => {
+  assert.deepEqual(
+    normalizeWardrobe({
+      headwear: 'hat_knit_blue',
+      facewear: 'missing_glasses',
+      outfit: 'outfit_vest_sage',
+      body: 'body_long',
+      expression: 'expr_grumpy',
+    }),
+    {
+      headwear: 'hat_knit_blue',
+      facewear: DEFAULT_WARDROBE.facewear,
+      outfit: 'outfit_vest_sage',
+    },
   );
 });
 

@@ -77,9 +77,23 @@ body {
 .chrome {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   margin-top: 2px;
   -webkit-app-region: no-drag;
+}
+
+.chrome .chip {
+  padding: 3px 6px;
+  font-size: 10px;
+}
+
+.chrome .chip-quiet {
+  padding: 2px 4px;
+}
+
+.chrome .badge {
+  min-width: 16px;
+  padding: 2px 4px;
 }
 
 .chip {
@@ -304,6 +318,29 @@ body {
   justify-content: flex-start !important;
 }
 
+/* —— Wardrobe —— */
+.wardrobe .wardrobe-row {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.wardrobe select {
+  min-width: 0;
+  width: 100%;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(75, 58, 50, 0.15);
+  padding: 4px 6px;
+  color: rgba(75, 58, 50, 0.92);
+  background: #fff;
+}
+.wardrobe-reset {
+  margin-top: 8px;
+}
+
 
 /* —— Mid hatch stages (hatching / newborn / growing) —— */
 .stage[data-phase='hatching'] .egg { display: block; }
@@ -467,6 +504,16 @@ body {
   gap: 6px;
   margin-bottom: 8px;
 }
+.bag-tabs .chip {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 10px;
+}
+.bag {
+  max-height: 78%;
+}
 .bag-cal {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -506,6 +553,12 @@ body {
   max-height: 160px;
   overflow: auto;
 }
+.bag-cal[hidden],
+.bag-list[hidden],
+.catalog[hidden],
+.bag-stats[hidden] {
+  display: none !important;
+}
 .bag-item {
   appearance: none;
   border: none;
@@ -520,6 +573,177 @@ body {
 }
 .bag-item.active {
   background: rgba(140, 183, 240, 0.35);
+}
+
+/* —— Collection catalog —— */
+.catalog-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 10px;
+  color: rgba(75, 58, 50, 0.72);
+}
+.catalog-progress-track {
+  position: relative;
+  height: 5px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(75, 58, 50, 0.1);
+}
+.catalog-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: inherit;
+  background: #8cb7f0;
+  transition: width 180ms ease-out;
+}
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.catalog-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 5px;
+  border: 1px solid rgba(75, 58, 50, 0.1);
+  border-radius: 11px;
+  background: rgba(255, 253, 252, 0.78);
+}
+.catalog-card.is-collected {
+  border-color: rgba(140, 183, 240, 0.55);
+  background: rgba(234, 244, 255, 0.62);
+}
+.catalog-number {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  z-index: 2;
+  font-size: 8px;
+  color: rgba(75, 58, 50, 0.45);
+}
+.catalog-art {
+  position: relative;
+  width: 100%;
+  height: 58px;
+  pointer-events: none;
+}
+.catalog-art .modular-character {
+  position: absolute;
+  inset: 0;
+}
+.catalog-art img.character-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+}
+.catalog-card.is-missing .catalog-art {
+  filter: grayscale(1) brightness(0.68);
+  opacity: 0.32;
+}
+.catalog-name,
+.catalog-meta,
+.catalog-state {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.catalog-name {
+  font-size: 9px;
+  font-weight: 650;
+  color: rgba(75, 58, 50, 0.9);
+}
+.catalog-meta {
+  margin-top: 1px;
+  font-size: 8px;
+  color: rgba(75, 58, 50, 0.52);
+}
+.catalog-state {
+  margin-top: 3px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  font-size: 8px;
+  text-align: center;
+  color: rgba(75, 58, 50, 0.62);
+  background: rgba(75, 58, 50, 0.06);
+}
+.catalog-card.is-collected .catalog-state {
+  color: #436d9f;
+  background: rgba(140, 183, 240, 0.25);
+}
+
+/* —— All-time count statistics —— */
+.stats-hero {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 11px;
+  color: #436d9f;
+  background: rgba(140, 183, 240, 0.2);
+  font-size: 11px;
+}
+.stats-hero strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 10px;
+  margin: 0;
+  font-size: 11px;
+}
+.stats-grid dt {
+  color: rgba(75, 58, 50, 0.62);
+}
+.stats-grid dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* —— Required choice for an unfinished previous-day egg —— */
+.egg-rollover {
+  z-index: 12;
+  text-align: center;
+}
+.egg-rollover .panel-head {
+  justify-content: center;
+}
+.rollover-copy {
+  margin: 6px 0 10px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.rollover-progress {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px;
+  border-radius: 10px;
+  color: #436d9f;
+  background: rgba(140, 183, 240, 0.2);
+  font-size: 10px;
+}
+.rollover-progress strong {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.rollover-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
 }
 .settings select {
   font-size: 12px;

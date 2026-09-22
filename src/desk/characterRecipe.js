@@ -17,6 +17,11 @@ const RECIPE_FIELDS = Object.freeze([
 ]);
 
 const DEFAULT_RECIPE = Object.freeze({ ...manifest.defaultRecipe });
+const DEFAULT_WARDROBE = Object.freeze({
+  headwear: DEFAULT_RECIPE.headwear,
+  facewear: DEFAULT_RECIPE.facewear,
+  outfit: DEFAULT_RECIPE.outfit,
+});
 
 function hasChoice(group, id) {
   return typeof id === 'string' && Object.hasOwn(group, id);
@@ -58,6 +63,34 @@ function normalizeCharacterRecipe(candidate) {
     if (!compatible(entry, body)) recipe[slot] = 'none';
   }
   return recipe;
+}
+
+/**
+ * Validate the three player-controlled cosmetic slots without touching the
+ * Loafling's body, expression, cloud or innate marking.
+ * @param {object|null|undefined} candidate
+ * @param {string} [body]
+ * @returns {{ headwear: string, facewear: string, outfit: string }}
+ */
+function normalizeWardrobe(candidate, body = DEFAULT_RECIPE.body) {
+  const input = candidate && typeof candidate === 'object' ? candidate : {};
+  const safeBody = hasChoice(manifest.bodies, body) ? body : DEFAULT_RECIPE.body;
+  const wardrobe = {
+    headwear: hasChoice(manifest.headwear, input.headwear)
+      ? input.headwear
+      : DEFAULT_WARDROBE.headwear,
+    facewear: hasChoice(manifest.facewear, input.facewear)
+      ? input.facewear
+      : DEFAULT_WARDROBE.facewear,
+    outfit: hasChoice(manifest.outfits, input.outfit)
+      ? input.outfit
+      : DEFAULT_WARDROBE.outfit,
+  };
+  const groupBySlot = { headwear: 'headwear', facewear: 'facewear', outfit: 'outfits' };
+  for (const slot of Object.keys(wardrobe)) {
+    if (!compatible(manifest[groupBySlot[slot]]?.[wardrobe[slot]], safeBody)) wardrobe[slot] = 'none';
+  }
+  return wardrobe;
 }
 
 /**
@@ -137,7 +170,9 @@ module.exports = {
   manifest,
   RECIPE_FIELDS,
   DEFAULT_RECIPE,
+  DEFAULT_WARDROBE,
   normalizeCharacterRecipe,
+  normalizeWardrobe,
   legacyRecipeFromResult,
   recipeFromResult,
   layersForRecipe,

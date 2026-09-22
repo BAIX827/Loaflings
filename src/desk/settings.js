@@ -5,9 +5,10 @@
 const path = require('path');
 const { app } = require('electron');
 const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
+const { DEFAULT_WARDROBE, normalizeWardrobe } = require('./characterRecipe');
 
 const DEFAULTS = Object.freeze({
-  version: 3,
+  version: 4,
   opacity: 1,
   scale: 1,
   lockPosition: false,
@@ -15,6 +16,7 @@ const DEFAULTS = Object.freeze({
   showHud: true,
   /** @type {'zh'|'en'} */
   locale: 'zh',
+  wardrobe: DEFAULT_WARDROBE,
   /** @type {{ x: number, y: number } | null} */
   position: null,
 });
@@ -29,13 +31,14 @@ function clamp(n, lo, hi) {
 
 function normalize(raw) {
   const s = { ...DEFAULTS, ...(raw && typeof raw === 'object' ? raw : {}) };
-  s.version = 3;
+  s.version = 4;
   s.opacity = clamp(Number(s.opacity) || 1, 0.25, 1);
   s.scale = clamp(Number(s.scale) || 1, 0.6, 1.6);
   s.lockPosition = Boolean(s.lockPosition);
   s.showChrome = s.showChrome !== false;
   s.showHud = s.showHud !== false;
   s.locale = s.locale === 'en' ? 'en' : 'zh';
+  s.wardrobe = normalizeWardrobe(s.wardrobe);
   if (
     s.position &&
     typeof s.position.x === 'number' &&
@@ -53,7 +56,15 @@ function loadSettings() {
 }
 
 function saveSettings(partial) {
-  const next = normalize({ ...loadSettings(), ...partial });
+  const current = loadSettings();
+  const next = normalize({
+    ...current,
+    ...partial,
+    wardrobe: {
+      ...current.wardrobe,
+      ...(partial?.wardrobe && typeof partial.wardrobe === 'object' ? partial.wardrobe : {}),
+    },
+  });
   writeJsonAtomic(settingsPath(), next);
   return next;
 }

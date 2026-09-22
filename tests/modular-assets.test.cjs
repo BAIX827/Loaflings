@@ -92,6 +92,18 @@ test('every modular part exists and remains an editable transparent SVG', () => 
   }
 });
 
+test('cloud moods use clean silhouette outlines without overlapping lobe strokes', () => {
+  for (const [id, entry] of Object.entries(manifest.cloudMoods)) {
+    const svg = fs.readFileSync(path.join(modularRoot, entry.src), 'utf8');
+    const silhouetteCount = (svg.match(/data-part="cloud-silhouette"/g) || []).length;
+    const outlinedCircleCount = (svg.match(/<circle\b[^>]*stroke=/g) || []).length;
+    const expectedCloudCount = id === 'cloud_twin' ? 2 : 1;
+    assert.equal(silhouetteCount, expectedCloudCount, `${id} needs one outline per cloud`);
+    assert.equal(outlinedCircleCount, expectedCloudCount, `${id} should only outline its thought dot`);
+    assert.doesNotMatch(svg, /<ellipse\b/, `${id} should not use an overlapping outlined base`);
+  }
+});
+
 test('the modular preview exposes independent customization controls', () => {
   const html = fs.readFileSync(path.join(modularRoot, 'preview.html'), 'utf8');
   for (const control of ['template', 'body', 'marking', 'expression', 'cloudMood', 'headwear', 'facewear', 'outfit']) {
@@ -102,4 +114,20 @@ test('the modular preview exposes independent customization controls', () => {
   const inlineScript = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   assert.ok(inlineScript, 'preview inline script is missing');
   assert.doesNotThrow(() => new Function(inlineScript));
+});
+
+test('the desktop wardrobe exposes all three wearable slots', () => {
+  const html = fs.readFileSync(path.join(root, 'src', 'desk', 'index.html'), 'utf8');
+  for (const id of [
+    'btn-wardrobe',
+    'wardrobe-headwear',
+    'wardrobe-facewear',
+    'wardrobe-outfit',
+    'btn-reset-wardrobe',
+  ]) {
+    assert.match(html, new RegExp(`id="${id}"`));
+  }
+  assert.equal(Object.keys(manifest.headwear).length, 5);
+  assert.equal(Object.keys(manifest.facewear).length, 3);
+  assert.equal(Object.keys(manifest.outfits).length, 4);
 });

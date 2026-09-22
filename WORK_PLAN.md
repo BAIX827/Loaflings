@@ -10,9 +10,12 @@
 
 ## Next
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
-- [ ] Optional wardrobe UI for unlocked headwear / facewear / outfits
 
 ## Done
+- [x] 2026-09-22 unfinished-egg rollover choice with inherited/reset progress and all-time count statistics
+- [x] 2026-09-22 collection catalogue with collected / missing progress across 9 reachable slots
+- [x] 2026-09-22 clean single-silhouette outlines for all modular cloud moods
+- [x] 2026-09-22 adult wardrobe UI with persisted headwear / facewear / outfit loadout
 - [x] 2026-09-21 modular adult runtime integration: CharacterAppearance, layered SVG renderer, collection v2 migration and PNG fallback
 - [x] 2026-09-21 starter templates: Classic / Chubby / Long plus reference-inspired Patchy / Twin Cloud mutations
 - [x] 2026-09-21 modular character v2 starter library: 3 bodies, 8 faces, 9 clouds, 4 hats, 2 glasses, 3 outfits, manifest and composer
@@ -33,6 +36,29 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-22 (CROSS-DAY EGG + ALL-TIME STATS)
+- Changed the day boundary so an unfinished egg pauses for an explicit Continue / New Egg choice. Continue preserves the egg's clicks and keystrokes and includes new-day activity; New Egg starts from zero at the moment of the choice.
+- Kept permanent totals separate from egg progress. The Pack now has a Statistics tab for activity hits, clicks, keystrokes, mouse distance, active/focus/idle time, focus sessions, window switches and tracked days; only numeric behaviour summaries are stored.
+- Added atomic v2 day-state persistence, safe migration from the prior state shape, previous-profile capture at midnight/startup, bilingual UI and IPC bridges.
+- Verified 29 automated tests, demo settlement, clean diff checks, and real Electron smokes for a 4,600-hit rollover prompt/resolution and the cumulative Statistics tab.
+
+2026-09-22 (COLLECTION CATALOGUE)
+- Added a third Pack tab that derives 9 real catalogue slots from the three currently reachable personalities and three rarities, without adding placeholder rows or changing hatch rules. The legacy `balanced` label is not treated as reachable because current CORE always resolves work, explore or dream.
+- Collected cards show their appearance, latest collection date and duplicate count; missing cards use a muted silhouette. A progress bar reports collected slots out of 9.
+- Added a read-only catalogue projection and IPC endpoint, bilingual copy, reusable miniature modular rendering, and fixed Pack tab visibility so calendar/list/catalog panels do not overlap.
+- Verified 24 automated tests, demo settlement, clean diff checks, and a real Electron catalogue smoke with 9 cards, 3 collected, 6 missing and 57 rendered character layers.
+
+2026-09-22 (CLOUD SILHOUETTES)
+- Replaced the overlapping stroked construction circles in all 10 modular cloud moods with one clean outer silhouette per visible cloud; Twin Cloud keeps two independent silhouettes.
+- Preserved thought dots and mood details including focus rays, sparkles, question mark, moon/star, sleep marks, rain and lightning.
+- Verified 21 automated tests plus real Electron captures of the focused standard cloud and Twin Cloud; no internal lobe boundaries remain.
+
+2026-09-22 (WARDROBE)
+- Added an adult-only wardrobe panel backed by the existing modular library: 4 hats, 2 pairs of glasses and 3 outfits, plus independent none/reset choices.
+- Kept body, expression, cloud mood, marking and genes unchanged. The selected cosmetic loadout is validated against the manifest, saved in desk settings v4, applied to today's adult and collection previews, and restored after reload.
+- Compacted the desktop toolbar so the new bilingual Dress up control remains inside the existing companion width.
+- Verified 20 automated tests, demo settlement, clean diff checks, and a real Electron wardrobe smoke covering option counts, ordered wearable layers and reload persistence.
 
 2026-09-21 (MODULAR RUNTIME)
 - Added deterministic `CharacterAppearance` to CORE without changing the four locked gene fields: personality selects Classic / Chubby / Long, Rare selects Patchy and Epic selects Twin Cloud.

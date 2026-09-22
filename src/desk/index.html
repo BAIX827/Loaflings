@@ -34,6 +34,7 @@
         <button type="button" id="btn-reveal" class="chip" data-i18n="btn.day" title="Day">今日</button>
         <button type="button" id="btn-collect" class="chip" data-i18n="btn.save" title="Save">收藏</button>
         <button type="button" id="btn-pack" class="chip" data-i18n="btn.pack" title="Pack / calendar">背包</button>
+        <button type="button" id="btn-wardrobe" class="chip" data-i18n="btn.wardrobe" title="Wardrobe" hidden>换装</button>
         <button type="button" id="btn-settings" class="chip chip-quiet" data-i18n="btn.settings" title="Settings">设置</button>
         <button type="button" id="btn-quit" class="chip chip-quiet" data-i18n="btn.quit" title="Quit">退出</button>
         <span id="collection-badge" class="badge" title="Collection">0</span>
@@ -64,17 +65,84 @@
 
       <aside id="bag" class="panel bag" hidden aria-label="Pack">
         <header class="panel-head">
-          <strong data-i18n="bag.title">背包 · 日历</strong>
+          <strong data-i18n="bag.title">背包</strong>
           <button type="button" id="btn-close-bag" class="chip chip-quiet" title="Close">✕</button>
         </header>
         <div class="bag-tabs">
           <button type="button" id="bag-tab-cal" class="chip" data-i18n="bag.cal">日历</button>
           <button type="button" id="bag-tab-list" class="chip chip-quiet" data-i18n="bag.list">收藏</button>
+          <button type="button" id="bag-tab-catalog" class="chip chip-quiet" data-i18n="bag.catalog">图鉴</button>
+          <button type="button" id="bag-tab-stats" class="chip chip-quiet" data-i18n="bag.stats">统计</button>
         </div>
         <div id="bag-cal" class="bag-cal"></div>
         <div id="bag-list" class="bag-list" hidden></div>
+        <section id="bag-catalog" class="catalog" hidden aria-label="Loafling catalog">
+          <div class="catalog-progress" aria-live="polite">
+            <span id="catalog-progress-label">已收集 0 / 9</span>
+            <span class="catalog-progress-track" aria-hidden="true">
+              <span id="catalog-progress-fill" class="catalog-progress-fill"></span>
+            </span>
+          </div>
+          <div id="catalog-grid" class="catalog-grid"></div>
+        </section>
+        <section id="bag-stats" class="bag-stats" hidden aria-label="All-time activity statistics">
+          <div class="stats-hero">
+            <span data-i18n="stats.activityHits">累计活跃</span>
+            <strong id="stats-activity-hits">0</strong>
+          </div>
+          <dl class="stats-grid">
+            <dt data-i18n="stats.clicks">点击</dt><dd id="stats-clicks">0</dd>
+            <dt data-i18n="stats.keystrokes">键盘</dt><dd id="stats-keystrokes">0</dd>
+            <dt data-i18n="stats.mouseTravel">鼠标移动</dt><dd id="stats-mouse-travel">0 m</dd>
+            <dt data-i18n="stats.activeTime">活跃时间</dt><dd id="stats-active-time">0 分钟</dd>
+            <dt data-i18n="stats.focusTime">专注时间</dt><dd id="stats-focus-time">0 分钟</dd>
+            <dt data-i18n="stats.focusSessions">专注次数</dt><dd id="stats-focus-sessions">0</dd>
+            <dt data-i18n="stats.idleTime">空闲时间</dt><dd id="stats-idle-time">0 分钟</dd>
+            <dt data-i18n="stats.windowSwitches">窗口切换</dt><dd id="stats-window-switches">0</dd>
+            <dt data-i18n="stats.trackedDays">记录天数</dt><dd id="stats-tracked-days">0</dd>
+          </dl>
+          <p class="panel-note" data-i18n="stats.note">累计统计从启用此功能后开始，只记录数量，不记录输入内容。</p>
+        </section>
         <p id="bag-hint" class="panel-note"></p>
         <button type="button" id="bag-back-today" class="chip" style="margin-top:8px" data-i18n="bag.today">回到今天</button>
+      </aside>
+
+      <aside id="egg-rollover" class="panel egg-rollover" hidden aria-label="Unfinished egg choice">
+        <header class="panel-head">
+          <strong data-i18n="rollover.title">昨天的蛋还没孵出来</strong>
+        </header>
+        <p class="rollover-copy" data-i18n="rollover.copy">要继承原来的活跃进度继续孵化，还是换一颗新蛋重新计数？</p>
+        <div class="rollover-progress">
+          <span data-i18n="rollover.saved">已保存进度</span>
+          <strong id="rollover-hits">0</strong>
+          <span data-i18n="hud.hits">活跃</span>
+        </div>
+        <div class="rollover-actions">
+          <button type="button" id="btn-continue-egg" class="chip" data-i18n="rollover.continue">接着孵化</button>
+          <button type="button" id="btn-new-egg" class="chip chip-quiet" data-i18n="rollover.new">换个新蛋</button>
+        </div>
+        <p class="panel-note" data-i18n="rollover.note">换新蛋只会清空当前蛋进度，累计统计不会被清除。</p>
+      </aside>
+
+      <aside id="wardrobe" class="panel wardrobe" hidden aria-label="Wardrobe">
+        <header class="panel-head">
+          <strong data-i18n="wardrobe.title">衣柜 · 换装</strong>
+          <button type="button" id="btn-close-wardrobe" class="chip chip-quiet" title="Close">✕</button>
+        </header>
+        <label class="wardrobe-row">
+          <span data-i18n="wardrobe.headwear">帽子</span>
+          <select id="wardrobe-headwear"></select>
+        </label>
+        <label class="wardrobe-row">
+          <span data-i18n="wardrobe.facewear">眼镜</span>
+          <select id="wardrobe-facewear"></select>
+        </label>
+        <label class="wardrobe-row">
+          <span data-i18n="wardrobe.outfit">衣服</span>
+          <select id="wardrobe-outfit"></select>
+        </label>
+        <p class="panel-note" data-i18n="wardrobe.note">选择会自动保存，并应用到所有成年摸鱼灵。</p>
+        <button type="button" id="btn-reset-wardrobe" class="chip wardrobe-reset" data-i18n="wardrobe.reset">全部脱下</button>
       </aside>
 
       <aside id="guide" class="panel guide" hidden aria-label="Welcome">
@@ -84,8 +152,8 @@
         </header>
         <ol class="guide-steps" id="guide-steps">
           <li>打字和点击合计成 <strong>活跃 hits</strong>，推进六态长大。</li>
-          <li>点 <strong>收藏</strong> 把今天的摸鱼灵存进背包；一天一只。</li>
-          <li><strong>背包</strong>里有日历：孵化后可切换看昨天/哪天的样子。</li>
+          <li><strong>收藏</strong>就是把当前摸鱼灵正式存进背包，之后可以在日历里再看它。</li>
+          <li><strong>背包</strong>里有日历、收藏、图鉴和累计统计；图鉴会自动标出已收集与未收集的类型。</li>
           <li><strong>设置</strong>可改语言、藏按键、透明度。</li>
         </ol>
         <button type="button" id="btn-guide-ok" class="chip" style="margin-top:8px" data-i18n="guide.ok">知道啦 ✿</button>

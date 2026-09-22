@@ -27,6 +27,15 @@ function todayLocal() {
   return `${y}-${m}-${day}`;
 }
 
+function cloneProfile(profile) {
+  if (!profile) return null;
+  return {
+    ...profile,
+    focusSessions: Array.isArray(profile.focusSessions) ? [...profile.focusSessions] : [],
+    activeHours: Array.isArray(profile.activeHours) ? [...profile.activeHours] : Array(24).fill(0),
+  };
+}
+
 class LiveSensor extends EventEmitter {
   /**
    * @param {object} opts
@@ -43,6 +52,7 @@ class LiveSensor extends EventEmitter {
     this.powerMonitor = opts.powerMonitor || null;
     this.scaleFactor = opts.scaleFactor || 2;
     this.enableInputHook = opts.enableInputHook !== false;
+    this.pendingPreviousProfile = null;
     this.profile = this.#loadOrCreate();
     this.lastMouse = null;
     this.lastPersistAt = 0;
@@ -74,6 +84,9 @@ class LiveSensor extends EventEmitter {
       }
       return raw;
     }
+    if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw.date || '')) {
+      this.pendingPreviousProfile = cloneProfile(raw);
+    }
     return emptyProfile(date, this.seedKey);
   }
 
@@ -92,12 +105,19 @@ class LiveSensor extends EventEmitter {
     if (this.profile.date === today) return;
     this.#endFocus();
     this.#writePersist();
+    this.pendingPreviousProfile = cloneProfile(this.profile);
     this.profile = emptyProfile(today, this.seedKey);
     this.lastMouse = null;
     this.focusStartedAt = null;
     this.lastActiveAt = Date.now();
     this.#writePersist();
     console.log('[sense] new day egg', today);
+  }
+
+  consumePreviousProfile() {
+    const profile = this.pendingPreviousProfile;
+    this.pendingPreviousProfile = null;
+    return cloneProfile(profile);
   }
 
   persist(force = false) {

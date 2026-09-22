@@ -53,6 +53,15 @@ contextBridge.exposeInMainWorld('loaflings', {
   getCollection() {
     return ipcRenderer.invoke('loaflings:get-collection');
   },
+  getCatalog() {
+    return ipcRenderer.invoke('loaflings:get-catalog');
+  },
+  getActivityStats() {
+    return ipcRenderer.invoke('loaflings:get-activity-stats');
+  },
+  resolveEggRollover(action) {
+    return ipcRenderer.invoke('loaflings:resolve-egg-rollover', action);
+  },
   /**
    * Settle (live→demo by default) and upsert into userData/collection.json.
    * @param {{ forceSource?: 'demo'|'live' }} [opts]

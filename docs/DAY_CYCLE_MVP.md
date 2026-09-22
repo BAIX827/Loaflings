@@ -2,7 +2,8 @@
 
 Confirmed with 老大 + `reference/process.png`:
 
-1. **One egg per day** → grow from behaviour → Save hatches one Loafling into collection → next day new egg.
+1. **One active egg at a time** → grow from behaviour → Save hatches one Loafling into collection.
+   At the next local day, a completed egg is replaced automatically; an unfinished egg waits for the player to continue it or choose a new egg.
 2. **Visual growth**: **6 stages**, **cumulative activityHits** (LEAD 2026-09-18).
    activityHits = **clicks + keystrokes**. Thresholds: 0 / 3k / 8k / 14k / 21k / 29k → adult.
    See `character/HATCH_PHASES.md` (old equal 1000/stage retired).
@@ -51,7 +52,12 @@ rarity/adult PNG.
 shouldStartNewEgg(lastDate, today) + SENSE ensureToday()
 ```
 
-Never merge multiple days into one creature.
+- If the previous egg was saved/hatched, the new local day starts a fresh egg.
+- If it was unfinished, DESK persists a required choice:
+  - **Continue** keeps the egg's accumulated clicks + keystrokes and adds today's activity.
+  - **New egg** sets a baseline at the moment of the choice, so earlier activity that day is not assigned to the replacement egg.
+- The continued click/keystroke values are also supplied to CORE settlement for that egg. Other behaviour fields remain today's live profile.
+- All-time count statistics are separate from egg progress. Replacing an egg never clears those totals.
 
 ## Related
 

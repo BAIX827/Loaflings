@@ -2,7 +2,7 @@
 
 Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, frameless, transparent window.
 
-**Day loop:** each local calendar day starts as an **egg**; **Day** (reveal) or **Save** hatches today’s settled Loafling from CORE; next day → new egg (`ensureToday` + desk day-state).
+**Day loop:** a local day starts with an **egg**; **Day** (reveal) or **Save** hatches the settled Loafling from CORE. At the next day, a completed egg is replaced automatically. An unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
 
 CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shouldStartNewEgg` via `hooks/coreDayCycle.js` (falls back to `settleDay` stub if dayCycle missing). `DaylingResult.kind = 'loafling'`.
 
@@ -13,7 +13,9 @@ CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shou
 - Demo day: `src/sense/fixtures/demo-day.json` → `assertProfileShape` → `settleDay()` (`src/core`)
 - Live day (optional): `senseLive` / `getLiveSettle()` when Accessibility + uiohook are available; `ensureToday()` rolls profile date
 - Local collection: Electron `userData/collection.json` v2 (one upsert per `date:seedKey`, including `appearance`)
-- Day phase: Electron `userData/day-state.json` (`egg` | `hatched` per local date)
+- Read-only catalogue: 9 reachable personality × rarity slots derived from the local collection; missing slots never write placeholder rows
+- Day phase: Electron `userData/day-state.json` (`egg` | `growing` | `hatched`, plus a pending rollover choice)
+- All-time count-only statistics: Electron `userData/activity-stats.json`; replacing an egg does not clear totals
 
 ## Run (macOS)
 
@@ -45,7 +47,7 @@ Requires Node 18+.
 1. Launch with `npm start` — companion shows **Today’s egg** (not the pet).
 2. Click **Day** — settles (live if available, else demo), hatches pet, opens reveal panel (name/type/rarity/genes…).
 3. Click **Save** — hatches if still egg, upserts into `userData/collection.json` (badge updates).
-4. After local midnight / day roll — egg returns (SENSE `ensureToday` + desk day-state).
+4. After local midnight / day roll — a finished egg is replaced; an unfinished egg shows **Keep hatching / Choose a new egg**.
 5. `settle:demo` CLI path unchanged.
 
 ## Package Mac `.app` (Dock / double-click)
@@ -95,8 +97,11 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 |------|------|
 | `main.js` | Transparent always-on-top window + IPC + day boundary poll |
 | `dayState.js` | Persist egg/hatched phase per local date under `userData` |
+| `eggProgress.js` | Calculate carried egg counts and new-egg baselines |
+| `activityStats.js` / `activityStatsCore.js` | Persist and deduplicate all-time count statistics |
 | `pipeline.js` | Loads SENSE fixture → CORE `settleDay()` |
 | `collection.js` | Persist/load local collection under `userData` |
+| `catalog.js` | Project collection rows onto the 9-slot collected/missing catalogue |
 | `characterRecipe.js` | Validate recipes, migrate old collection rows and resolve ordered SVG layers |
 | `resultView.js` | Pure renderer-safe projection of CORE settle results |
 | `../shared/jsonFile.cjs` | Shared atomic JSON persistence helper |
@@ -118,13 +123,16 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 | `loaflings:get-day-settle` | Live if available, else demo |
 | `loaflings:collect-day` | Settle + upsert collection + hatch |
 | `loaflings:get-collection` | Read collection JSON |
+| `loaflings:get-catalog` | Read derived catalogue progress and slots |
+| `loaflings:get-activity-stats` | Read all-time count totals |
+| `loaflings:resolve-egg-rollover` | Continue the unfinished egg or replace it |
 
 Main may push `loaflings:day-state` when the calendar day rolls (new egg).
 
 ## Wiring notes
 
 - SENSE sensors not required for MVP — fixture is enough; live is optional
-- Day boundary: desk `ensureDayState()` + SENSE `ensureToday()` (when live is up)
+- Day boundary: desk `ensureDayState()` + SENSE `ensureToday()` (when live is up); unfinished progress pauses until the rollover choice is resolved
 - No gene/sense formulas in DESK — those stay in `src/core` / `src/sense`
 - CORE has no separate `name` field; desk display name is `personality · rarity`
 - Runtime growth art remains PNG. Adult Loaflings compose body, mutation, expression, paws and cloud from `character/modular/manifest.json`.

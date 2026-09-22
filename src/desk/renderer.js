@@ -20,6 +20,47 @@
   /** @type {object|null} collection entry when browsing pack */
   let viewingEntry = null;
   let collectionItems = [];
+  let wardrobe = { headwear: 'none', facewear: 'none', outfit: 'none' };
+  let eggChoiceRequired = false;
+  let liveClickOffset = 0;
+  let liveKeyOffset = 0;
+  const rolloverEl = document.getElementById('egg-rollover');
+
+  function showEggRollover(day) {
+    eggChoiceRequired = true;
+    const pending = day?.pendingRollover || day?.day?.pendingRollover || {};
+    const hits = (Number(pending.clicks) || 0) + (Number(pending.keystrokes) || 0);
+    const countEl = document.getElementById('rollover-hits');
+    if (countEl) countEl.textContent = String(hits);
+    for (const id of ['panel', 'bag', 'wardrobe', 'guide', 'settings']) {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    }
+    if (rolloverEl) rolloverEl.hidden = false;
+  }
+
+  async function resolveEggChoice(action) {
+    if (!api?.resolveEggRollover) return;
+    const buttons = [document.getElementById('btn-continue-egg'), document.getElementById('btn-new-egg')];
+    buttons.forEach((button) => { if (button) button.disabled = true; });
+    try {
+      const payload = await api.resolveEggRollover(action);
+      if (!payload?.ok) throw new Error(payload?.error || 'rollover choice failed');
+      eggChoiceRequired = false;
+      if (rolloverEl) rolloverEl.hidden = true;
+      lastPayload = null;
+      dayHatched = false;
+      await syncFromMain();
+      await refreshHatchProgress();
+    } catch (err) {
+      setStatus(err?.message || String(err));
+    } finally {
+      buttons.forEach((button) => { if (button) button.disabled = false; });
+    }
+  }
+
+  document.getElementById('btn-continue-egg')?.addEventListener('click', () => void resolveEggChoice('continue'));
+  document.getElementById('btn-new-egg')?.addEventListener('click', () => void resolveEggChoice('new'));
 
   /** Hatch growth stays raster; adult Loaflings use the modular SVG library. */
   const PHASE_FILES = api?.parts?.hatchFiles || {
@@ -111,9 +152,31 @@
     return recipe;
   }
 
+  function normalizeWardrobe(candidate, body) {
+    const recipe = normalizeRecipe({
+      ...MODULAR_MANIFEST?.defaultRecipe,
+      body: body || MODULAR_MANIFEST?.defaultRecipe?.body,
+      ...(candidate && typeof candidate === 'object' ? candidate : {}),
+    });
+    return recipe
+      ? { headwear: recipe.headwear, facewear: recipe.facewear, outfit: recipe.outfit }
+      : { headwear: 'none', facewear: 'none', outfit: 'none' };
+  }
+
+  async function loadWardrobeSettings() {
+    if (!api?.getSettings) return;
+    try {
+      const res = await api.getSettings();
+      if (res?.ok) wardrobe = normalizeWardrobe(res.settings?.wardrobe);
+    } catch {
+      // Keep the safe empty wardrobe when settings are unavailable.
+    }
+  }
+
   function currentAppearanceRecipe() {
     const source = viewingEntry?.appearance || lastPayload?.result?.appearance;
-    return normalizeRecipe(source);
+    const base = normalizeRecipe(source);
+    return base ? { ...base, ...normalizeWardrobe(wardrobe, base.body) } : null;
   }
 
   function recipeToken(recipe) {
@@ -161,7 +224,7 @@
     });
   }
 
-  async function mountModular(candidate) {
+  async function createModularCharacter(candidate) {
     if (!MODULAR_MANIFEST) throw new Error('modular manifest unavailable');
     const recipe = normalizeRecipe(candidate);
     const body = MODULAR_MANIFEST.bodies[recipe.body];
@@ -196,6 +259,11 @@
       wrapper.appendChild(img);
     }
     await Promise.all(pending);
+    return { wrapper, recipe };
+  }
+
+  async function mountModular(candidate) {
+    const { wrapper, recipe } = await createModularCharacter(candidate);
     petEl.classList.add('modular');
     petEl.replaceChildren(wrapper);
     return recipe;
@@ -315,6 +383,12 @@
     const visual = normalizePhase(next);
     phase = visual;
     stageEl.dataset.phase = visual;
+    const wardrobeButton = document.getElementById('btn-wardrobe');
+    if (wardrobeButton) wardrobeButton.hidden = visual !== 'adult';
+    if (visual !== 'adult') {
+      const wardrobePanel = document.getElementById('wardrobe');
+      if (wardrobePanel) wardrobePanel.hidden = true;
+    }
     if (visual === 'cracking' || visual === 'hatching' || visual === 'growing') {
       stageEl.dataset.growing = '1';
     } else {
@@ -518,6 +592,17 @@
         await applyPhase('egg');
         return;
       }
+      if (day.choiceRequired) {
+        showEggRollover(day);
+        const pending = day.pendingRollover || {};
+        await applyPhase(day.phase === 'growing' ? 'cracking' : 'egg', {
+          clicks: Number(pending.clicks) || 0,
+          keystrokes: Number(pending.keystrokes) || 0,
+        });
+        return;
+      }
+      eggChoiceRequired = false;
+      if (rolloverEl) rolloverEl.hidden = true;
       if (day.newEgg) {
         lastPayload = null;
         dayHatched = false;
@@ -542,11 +627,14 @@
   }
 
   // Morning default: egg (no auto-hatch on boot)
+  await loadWardrobeSettings();
   await applyPhase('egg');
   await refreshBadge();
   await syncFromMain();
 
   document.getElementById('btn-reveal')?.addEventListener('click', async () => {
+    if (eggChoiceRequired) return;
+    setWardrobeOpen(false);
     if (!dayHatched) {
       await hatch({ save: false, openPanel: true });
       return;
@@ -592,7 +680,15 @@
   const bagEl = document.getElementById('bag');
   const bagCal = document.getElementById('bag-cal');
   const bagList = document.getElementById('bag-list');
+  const bagCatalog = document.getElementById('bag-catalog');
+  const bagStats = document.getElementById('bag-stats');
+  const catalogGrid = document.getElementById('catalog-grid');
+  const catalogProgressLabel = document.getElementById('catalog-progress-label');
+  const catalogProgressFill = document.getElementById('catalog-progress-fill');
   const viewBanner = document.getElementById('view-banner');
+  let catalogData = null;
+  let activityStats = null;
+  let catalogRenderId = 0;
 
   function setBagOpen(open) {
     if (bagEl) bagEl.hidden = !open;
@@ -681,6 +777,140 @@
     }
   }
 
+  async function loadActivityStats() {
+    if (!api?.getActivityStats) return null;
+    try {
+      const payload = await api.getActivityStats();
+      if (!payload?.ok) return null;
+      activityStats = payload;
+      renderActivityStats();
+      return payload;
+    } catch {
+      return null;
+    }
+  }
+
+  function numberText(value, maximumFractionDigits = 0) {
+    return new Intl.NumberFormat(locale === 'en' ? 'en-AU' : 'zh-CN', {
+      maximumFractionDigits,
+    }).format(Number(value) || 0);
+  }
+
+  function distanceText(metres) {
+    const value = Number(metres) || 0;
+    return value >= 1000
+      ? `${numberText(value / 1000, 2)} km`
+      : `${numberText(value, 1)} m`;
+  }
+
+  function durationText(seconds) {
+    const total = Math.max(0, Math.floor(Number(seconds) || 0));
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    if (locale === 'en') return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    return hours > 0 ? `${hours}小时 ${minutes}分钟` : `${minutes}分钟`;
+  }
+
+  function renderActivityStats() {
+    const totals = activityStats?.totals || {};
+    const values = {
+      'stats-activity-hits': numberText(totals.activityHits),
+      'stats-clicks': numberText(totals.clicks),
+      'stats-keystrokes': numberText(totals.keystrokes),
+      'stats-mouse-travel': distanceText(totals.mouseTravel),
+      'stats-active-time': durationText(totals.activeSec),
+      'stats-focus-time': durationText(totals.focusSec),
+      'stats-focus-sessions': numberText(totals.focusSessions),
+      'stats-idle-time': durationText(totals.idleSec),
+      'stats-window-switches': numberText(totals.windowSwitches),
+      'stats-tracked-days': numberText(activityStats?.trackedDays),
+    };
+    for (const [id, value] of Object.entries(values)) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+  }
+
+  async function renderCatalog() {
+    if (!bagCatalog || !catalogGrid) return;
+    const renderId = ++catalogRenderId;
+    const total = Number(catalogData?.total) || 0;
+    const collected = Number(catalogData?.collectedCount) || 0;
+    if (catalogProgressLabel) {
+      catalogProgressLabel.textContent = `${tr('catalog.progress')} ${collected} / ${total}`;
+    }
+    if (catalogProgressFill) {
+      const percent = total > 0 ? Math.round((collected / total) * 100) : 0;
+      catalogProgressFill.style.width = `${percent}%`;
+    }
+    catalogGrid.replaceChildren();
+    if (!Array.isArray(catalogData?.slots)) return;
+
+    const renderTasks = [];
+    for (const slot of catalogData.slots) {
+      const card = document.createElement('article');
+      card.className = `catalog-card ${slot.collected ? 'is-collected' : 'is-missing'}`;
+      card.dataset.catalogId = slot.id;
+      card.setAttribute(
+        'aria-label',
+        `${labelPersonality(slot.personality)} · ${labelRarity(slot.rarity)} · ${tr(slot.collected ? 'catalog.collected' : 'catalog.missing')}`,
+      );
+
+      const number = document.createElement('span');
+      number.className = 'catalog-number';
+      number.textContent = `#${String(slot.number).padStart(2, '0')}`;
+
+      const art = document.createElement('div');
+      art.className = 'catalog-art';
+      art.setAttribute('aria-hidden', 'true');
+
+      const name = document.createElement('div');
+      name.className = 'catalog-name';
+      name.textContent = labelPersonality(slot.personality);
+
+      const meta = document.createElement('div');
+      meta.className = 'catalog-meta';
+      meta.textContent = labelRarity(slot.rarity);
+
+      const state = document.createElement('div');
+      state.className = 'catalog-state';
+      if (slot.collected) {
+        const copies = slot.count > 1 ? ` · ${slot.count} ${tr('catalog.copies')}` : '';
+        state.textContent = `${tr('catalog.collected')} · ${slot.latestCollectedDate || '—'}${copies}`;
+      } else {
+        state.textContent = tr('catalog.missing');
+      }
+
+      card.append(number, art, name, meta, state);
+      catalogGrid.appendChild(card);
+      renderTasks.push(
+        createModularCharacter(slot.appearance)
+          .then(({ wrapper }) => {
+            if (renderId === catalogRenderId && art.isConnected) art.replaceChildren(wrapper);
+          })
+          .catch((err) => console.warn('[loaflings] catalog art', slot.id, err)),
+      );
+    }
+    await Promise.all(renderTasks);
+  }
+
+  function showBagTab(tab) {
+    if (bagCal) bagCal.hidden = tab !== 'calendar';
+    if (bagList) bagList.hidden = tab !== 'collection';
+    if (bagCatalog) bagCatalog.hidden = tab !== 'catalog';
+    if (bagStats) bagStats.hidden = tab !== 'stats';
+    for (const [id, value] of [
+      ['bag-tab-cal', 'calendar'],
+      ['bag-tab-list', 'collection'],
+      ['bag-tab-catalog', 'catalog'],
+      ['bag-tab-stats', 'stats'],
+    ]) {
+      document.getElementById(id)?.classList.toggle('chip-quiet', tab !== value);
+    }
+    if (tab === 'catalog') void renderCatalog();
+    if (tab === 'stats') void loadActivityStats();
+  }
+
   async function viewCollectionEntry(entry) {
     viewingEntry = entry;
     if (stageEl) stageEl.dataset.viewing = '1';
@@ -724,11 +954,14 @@
   }
 
   document.getElementById('btn-pack')?.addEventListener('click', async () => {
+    if (eggChoiceRequired) return;
+    setWardrobeOpen(false);
     setSettingsOpen(false);
     setPanelOpen(false);
-    await loadCollectionItems();
+    await Promise.all([loadCollectionItems(), loadCatalog(), loadActivityStats()]);
     renderBagCalendar();
     renderBagList();
+    showBagTab('calendar');
     setBagOpen(true);
   });
   document.getElementById('btn-close-bag')?.addEventListener('click', () => setBagOpen(false));
@@ -737,16 +970,100 @@
     await clearViewing();
   });
   document.getElementById('bag-tab-cal')?.addEventListener('click', () => {
-    if (bagCal) bagCal.hidden = false;
-    if (bagList) bagList.hidden = true;
-    document.getElementById('bag-tab-cal')?.classList.remove('chip-quiet');
-    document.getElementById('bag-tab-list')?.classList.add('chip-quiet');
+    showBagTab('calendar');
   });
   document.getElementById('bag-tab-list')?.addEventListener('click', () => {
-    if (bagCal) bagCal.hidden = true;
-    if (bagList) bagList.hidden = false;
-    document.getElementById('bag-tab-list')?.classList.remove('chip-quiet');
-    document.getElementById('bag-tab-cal')?.classList.add('chip-quiet');
+    showBagTab('collection');
+  });
+  document.getElementById('bag-tab-catalog')?.addEventListener('click', () => {
+    showBagTab('catalog');
+  });
+  document.getElementById('bag-tab-stats')?.addEventListener('click', () => {
+    showBagTab('stats');
+  });
+
+  // —— Wardrobe: persisted cosmetic overlay for adult Loaflings ——
+  const wardrobeEl = document.getElementById('wardrobe');
+  const wardrobeSlotEls = {
+    headwear: document.getElementById('wardrobe-headwear'),
+    facewear: document.getElementById('wardrobe-facewear'),
+    outfit: document.getElementById('wardrobe-outfit'),
+  };
+  const wardrobeGroups = {
+    headwear: 'headwear',
+    facewear: 'facewear',
+    outfit: 'outfits',
+  };
+
+  function wardrobeLabel(id, entry) {
+    if (id === 'none') return tr('wardrobe.none');
+    const translated = tr(`wardrobe.${id}`);
+    return translated === `wardrobe.${id}` ? (entry?.label || id) : translated;
+  }
+
+  async function loadCatalog() {
+    if (!api?.getCatalog) return null;
+    try {
+      const catalog = await api.getCatalog();
+      catalogData = catalog?.ok ? catalog : null;
+      return catalogData;
+    } catch {
+      catalogData = null;
+      return null;
+    }
+  }
+
+  function populateWardrobeControls() {
+    if (!MODULAR_MANIFEST) return;
+    for (const [slot, select] of Object.entries(wardrobeSlotEls)) {
+      if (!select) continue;
+      const group = MODULAR_MANIFEST[wardrobeGroups[slot]] || {};
+      const options = Object.entries(group).map(([id, entry]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = wardrobeLabel(id, entry);
+        return option;
+      });
+      select.replaceChildren(...options);
+      select.value = wardrobe[slot];
+    }
+  }
+
+  function setWardrobeOpen(open) {
+    if (!wardrobeEl) return;
+    const canOpen = open && phase === 'adult' && Boolean(MODULAR_MANIFEST);
+    wardrobeEl.hidden = !canOpen;
+    if (canOpen) populateWardrobeControls();
+  }
+
+  async function applyWardrobeChange(partial) {
+    const base = normalizeRecipe(viewingEntry?.appearance || lastPayload?.result?.appearance);
+    wardrobe = normalizeWardrobe({ ...wardrobe, ...partial }, base?.body);
+    const res = await api?.setSettings?.({ wardrobe });
+    if (res?.ok) wardrobe = normalizeWardrobe(res.settings?.wardrobe, base?.body);
+    populateWardrobeControls();
+    if (phase === 'adult') {
+      petLoaded = false;
+      lastVisualPhase = '';
+      await loadPetArt('adult');
+    }
+  }
+
+  document.getElementById('btn-wardrobe')?.addEventListener('click', () => {
+    if (eggChoiceRequired) return;
+    setPanelOpen(false);
+    setBagOpen(false);
+    setSettingsOpen(false);
+    setWardrobeOpen(wardrobeEl?.hidden !== false);
+  });
+  document.getElementById('btn-close-wardrobe')?.addEventListener('click', () => {
+    setWardrobeOpen(false);
+  });
+  for (const [slot, select] of Object.entries(wardrobeSlotEls)) {
+    select?.addEventListener('change', () => void applyWardrobeChange({ [slot]: select.value }));
+  }
+  document.getElementById('btn-reset-wardrobe')?.addEventListener('click', () => {
+    void applyWardrobeChange({ headwear: 'none', facewear: 'none', outfit: 'none' });
   });
 
   // —— Settings ——
@@ -779,6 +1096,8 @@
       const res = await api.getSettings();
       if (!res?.ok || !res.settings) return;
       const s = res.settings;
+      wardrobe = normalizeWardrobe(s.wardrobe, currentAppearanceRecipe()?.body);
+      populateWardrobeControls();
       if (opacityEl) opacityEl.value = String(s.opacity);
       if (scaleEl) scaleEl.value = String(s.scale);
       if (lockEl) lockEl.checked = Boolean(s.lockPosition);
@@ -794,6 +1113,8 @@
   }
 
   document.getElementById('btn-settings')?.addEventListener('click', async () => {
+    if (eggChoiceRequired) return;
+    setWardrobeOpen(false);
     setPanelOpen(false);
     await hydrateSettings();
     setSettingsOpen(true);
@@ -802,6 +1123,7 @@
     setSettingsOpen(false);
   });
   chromePeekEl?.addEventListener('click', async () => {
+    if (eggChoiceRequired) return;
     await api?.setSettings?.({ showChrome: true });
     await hydrateSettings();
     setSettingsOpen(true);
@@ -832,12 +1154,19 @@
     locale = localeEl.value === 'en' ? 'en' : 'zh';
     await api?.setSettings?.({ locale });
     applyLocale();
+    populateWardrobeControls();
     if (lastPayload && panelEl && !panelEl.hidden) fillPanel(lastPayload);
     if (viewingEntry) {
       const banner = document.getElementById('view-banner');
       if (banner && !banner.hidden) {
         banner.textContent = `${tr('bag.viewing')} ${viewingEntry.date} · ${viewingEntry.name || ''}`;
       }
+    }
+    if (bagEl && !bagEl.hidden) {
+      renderBagCalendar();
+      renderBagList();
+      if (bagCatalog && !bagCatalog.hidden) void renderCatalog();
+      if (bagStats && !bagStats.hidden) renderActivityStats();
     }
   });
 
@@ -846,6 +1175,7 @@
   });
 
   document.getElementById('btn-collect')?.addEventListener('click', async () => {
+    if (eggChoiceRequired) return;
     setStatus('');
     const payload = await loadSettle(true);
     if (payload?.ok) {
@@ -862,7 +1192,18 @@
   });
 
   api?.onDayState?.(async (day) => {
-    if (day?.newEgg || day?.phase === 'egg') {
+    if (!day?.choiceRequired) {
+      eggChoiceRequired = false;
+      if (rolloverEl) rolloverEl.hidden = true;
+    }
+    if (day?.choiceRequired) {
+      showEggRollover(day);
+      const pending = day.pendingRollover || {};
+      await applyPhase(day.phase === 'growing' ? 'cracking' : 'egg', {
+        clicks: Number(pending.clicks) || 0,
+        keystrokes: Number(pending.keystrokes) || 0,
+      });
+    } else if (day?.newEgg || day?.phase === 'egg') {
       lastPayload = null;
       dayHatched = false;
       await applyPhase('egg', { caption: 'New day · fresh egg' });
@@ -1067,6 +1408,19 @@
     try {
       const hp = await api.getHatchProgress();
       if (!hp?.ok || !hp.progress) return;
+      if (hp.choiceRequired) {
+        showEggRollover(hp.day || hp);
+        await applyPhase(hp.progress.phase, {
+          clicks: hp.clicks,
+          keystrokes: hp.keystrokes || 0,
+          inputs: hp.progress.inputs,
+        });
+        return;
+      }
+      eggChoiceRequired = false;
+      if (rolloverEl) rolloverEl.hidden = true;
+      liveClickOffset = (hp.clicks || 0) - (hp.dailyClicks || 0);
+      liveKeyOffset = (hp.keystrokes || 0) - (hp.dailyKeystrokes || 0);
       const visual = hp.alreadySaved ? 'adult' : hp.progress.phase;
       if (visual === 'adult' && !lastPayload) await loadSettle(false);
       await applyPhase(visual, {
@@ -1094,6 +1448,7 @@
     if (guideEl) guideEl.hidden = !open;
   }
   function maybeShowGuide() {
+    if (eggChoiceRequired) return;
     try {
       if (localStorage.getItem(GUIDE_KEY) === '1') return;
     } catch {
@@ -1126,15 +1481,16 @@
   // Live counts from DAY-SENSE (immediate, not waiting for 500ms poll)
   if (api?.onSenseCounts) {
     api.onSenseCounts((payload) => {
+      if (eggChoiceRequired) return;
       const hudH = document.getElementById('hud-hits');
       if (!hudH) return;
       if (typeof payload?.activityHits === 'number') {
-        hudH.textContent = String(payload.activityHits);
+        hudH.textContent = String(payload.activityHits + liveClickOffset + liveKeyOffset);
         return;
       }
       const clicks = typeof payload?.clicks === 'number' ? payload.clicks : 0;
       const keys = typeof payload?.keystrokes === 'number' ? payload.keystrokes : 0;
-      hudH.textContent = String(clicks + keys);
+      hudH.textContent = String(clicks + keys + liveClickOffset + liveKeyOffset);
     });
   }
 
@@ -1257,6 +1613,7 @@
     if (panelEl && !panelEl.hidden) return true;
     if (document.getElementById('settings') && !document.getElementById('settings').hidden) return true;
     if (document.getElementById('bag') && !document.getElementById('bag').hidden) return true;
+    if (document.getElementById('wardrobe') && !document.getElementById('wardrobe').hidden) return true;
     if (document.getElementById('guide') && !document.getElementById('guide').hidden) return true;
     const stack = document.elementsFromPoint(clientX, clientY);
     for (const el of stack) {

@@ -1,9 +1,6 @@
 <svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
   <g id="Cloud_Excited">
-    <circle cx="516" cy="160" r="44" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
-    <circle cx="597" cy="136" r="62" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
-    <circle cx="676" cy="160" r="44" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
-    <circle cx="601" cy="176" r="52" fill="#FFF3EF" stroke="#F39A78" stroke-width="5"/>
+    <path id="Cloud_Silhouette" data-part="cloud-silhouette" d="M500 214C472 214 450 194 450 167C450 141 470 120 496 118C503 90 529 71 559 74C575 51 607 44 633 57C652 66 665 82 669 100C700 95 729 116 736 146C758 153 771 175 766 197C761 218 741 231 719 229C666 234 551 233 500 214Z" fill="#FFF3EF" stroke="#F39A78" stroke-width="5" stroke-linejoin="round"/>
     <circle cx="601" cy="249" r="7" fill="#FFF3EF" stroke="#F39A78" stroke-width="4"/>
     <path id="Spark_Left" d="M458 117V87M443 102H473" stroke="#F5C84C" stroke-width="7" stroke-linecap="round"/>
     <path id="Spark_Right" d="M735 145V115M720 130H750" stroke="#F5C84C" stroke-width="7" stroke-linecap="round"/>

@@ -63,10 +63,12 @@ function ensureToday() {
   const before = sensor.profile?.date;
   sensor.ensureToday();
   const after = sensor.profile?.date;
+  const previousProfile = sensor.consumePreviousProfile?.() || null;
   return {
     ok: true,
-    rolled: Boolean(before && after && before !== after),
+    rolled: Boolean(previousProfile || (before && after && before !== after)),
     date: after,
+    previousProfile: previousProfile || undefined,
   };
 }
 

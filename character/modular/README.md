@@ -26,8 +26,9 @@ three bodies as compatible. The rejected scarf concept is not part of the
 library.
 
 `review/` contains browser-rendered PNG snapshots of the default, focus, rainy
-and sleepy recipes. They are visual QA outputs only; the editable SVG modules
-remain the production source.
+and sleepy recipes, plus real desktop-runtime captures for rarity, wardrobe
+and catalogue integration. They are visual QA outputs only; the editable SVG
+modules remain the production source.
 
 The mutation templates deliberately change one identity feature at a time:
 Patchy changes only the marking layer, while Twin Cloud changes only the cloud
@@ -63,4 +64,6 @@ source, but treat the checked-in SVG and the preview as the runtime contract.
   body merely to add a marking or special cloud.
 - Clothes sit below `pawsForeground`; glasses sit above the expression; hats
   sit below `cloudMood`.
+- Build each visible cloud from one outlined silhouette path. Construction
+  circles may guide the shape, but must not leave overlapping internal strokes.
 - Add parts to `manifest.json` and the preview before wiring them into DESK.

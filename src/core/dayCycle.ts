@@ -1,6 +1,7 @@
 /**
- * One egg per local day → behaviour grows it → settle locks one Loafling.
- * Next calendar day always starts a new egg (never merges days).
+ * Behaviour grows the active egg → settle locks one Loafling.
+ * Daily SENSE profiles still roll at midnight; DESK may carry an unfinished
+ * egg's click + keystroke progress after an explicit player choice.
  *
  * Visual stages: see hatchProgress.ts (cumulative clicks + keystrokes).
  * Idle presentation: see idleMood.ts (does not affect settle).

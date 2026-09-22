@@ -55,8 +55,8 @@ app.whenReady().then(() => {
     try {
       const day = syncDayBoundary();
       const companion = getCompanion();
-      if (day.newEgg && companion && !companion.isDestroyed()) {
-        console.log('[loaflings] new day egg', day.date);
+      if (day.dayChanged && companion && !companion.isDestroyed()) {
+        console.log('[loaflings] day boundary', day.date, day.choiceRequired ? 'choice' : 'new-egg');
         companion.webContents.send('loaflings:day-state', day);
       }
     } catch (err) {
