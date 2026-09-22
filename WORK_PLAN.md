@@ -3,6 +3,7 @@
 ## Current
 - [ ] 2026-09-23 Figma 2D 素材库：文件已创建；待 Figma Starter MCP 调用额度恢复后建立页面、变量并导入现有 40 个 SVG 组件，完成组合 QA。仓库侧索引见 `character/ASSET_LIBRARY_INDEX.md`。
 - [ ] Soft polish / optional next
+  - [ ] Consider splitting the large desktop renderer into focused modules in a separate, regression-tested change; avoid incidental restructuring during feature work
   - [ ] Reference-aligned optional idle PNG expression / pose pool (3 expression review masters generated; poses remain)
   - [ ] Review the 3 basic and 2 mutation SVG templates in the live desktop runtime, then approve or revise the art direction
   - [ ] Optional: Developer ID sign + notarize
@@ -13,6 +14,7 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-23 scoped desktop code cleanup and unused-stub removal
 - [x] 2026-09-23 six-stage growth timeline with milestone thresholds and next-stage distance
 - [x] 2026-09-23 character-only scaling with stable functional panel layout
 - [x] 2026-09-23 wardrobe icon cards with individual SVG previews, selected state and persisted wearables
@@ -44,6 +46,12 @@
 
 ## Log
 
+2026-09-23 (DESKTOP CODE CLEANUP)
+- Audited current desktop growth, collection and integration paths. Shared the progress number normalization between the timeline and collection gate, reused one CORE threshold read within each IPC progress snapshot, and aligned phase normalization with the timeline's phase list. Kept the cross-day settlement helper because it is still used.
+- Removed two unreferenced legacy CORE/SENSE stub modules. Left the larger renderer decomposition for a separate task with dedicated regression coverage; no game rules or appearance assets changed.
+- Verified the runtime build, all 30 Node tests, demo settlement, Electron smokes for the zero-activity collection gate and midway growth timeline, and `git diff --check`.
+- Local tooling note: the global npm shim points to a missing npm CLI; the runtime build succeeds under normal permissions, while this sandbox's parent-directory read restriction can make the same build fail. This is not a repository build-script defect.
+
 2026-09-23 (GROWTH TIMELINE)
 - Replaced the plain growth bar with six labeled milestone nodes for Egg, Cracking, Hatching, Newborn, Growing and Adult. Nodes show their actual cumulative activity thresholds, completed/current/upcoming states and progress through the current stage.
 - Added the exact activity remaining until the next stage while keeping the existing total-to-adult count and strict 29,000 collection gate. Threshold values flow from CORE through the main-process progress response instead of a second renderer-side rules list.
@@ -58,7 +66,7 @@
 - Replaced the three wearable dropdowns with image cards for every existing hat, pair of glasses and outfit, plus a `none` card in each category. Used the original modular SVGs for previews and kept adult-only access, slot IDs and saved wardrobe settings unchanged.
 - Added visible selected states and accessible button labels; the selection update retains keyboard focus. Updated the Electron wardrobe smoke for card clicks, preview loading and saved-state reload.
 - Verified all 30 Node tests, real Electron wardrobe click/save/reload smoke at the companion window size, visual screenshot of the icon panel, and `git diff --check`.
-- Unrelated local tooling issue: `npm` points to a missing global npm-cli.js, and direct `compile-runtime.mjs` currently fails to resolve the core entry in this environment. Existing compiled runtime allowed the scoped renderer smoke; this task did not alter the build tooling.
+- Local tooling issue observed then: the global npm shim points to a missing npm CLI. A later normal-permission runtime build passed; the earlier direct build failure was caused by this sandbox's parent-directory read restriction, not the repository script.
 
 2026-09-23 (ASSET LIBRARY START)
 - Created the Figma working file `Loaflings — Modular 2D Asset Library` and verified it is blank with no existing Loafling components or variables.

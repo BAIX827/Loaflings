@@ -15,7 +15,6 @@ const { observeActivityProfile, getActivityStats } = require('./activityStats');
 const {
   hatchProgressFromProfile,
   clicksPerHatchStage,
-  hatchTargetInputs,
   hatchStageThresholds,
   idleMoodFromProfile,
 } = require('./hooks/coreDayCycle');
@@ -51,13 +50,15 @@ function currentHatchSnapshot() {
   const profile = synced.profile || null;
   const eggProfile = progressProfile(day, profile);
   const progress = hatchProgressFromProfile(eggProfile, false);
-  const targetInputs = hatchTargetInputs();
+  const stageThresholds = hatchStageThresholds();
+  const targetInputs = stageThresholds[stageThresholds.length - 1];
   return {
     synced,
     day,
     profile,
     eggProfile,
     progress,
+    stageThresholds,
     targetInputs,
     remainingInputs: Math.max(0, targetInputs - progress.inputs),
     canCollect: progress.inputs >= targetInputs,
@@ -109,7 +110,7 @@ function registerIpc() {
   ipcMain.handle('loaflings:get-hatch-progress', () => {
     try {
       const snapshot = currentHatchSnapshot();
-      const { synced, day, profile, eggProfile, progress, targetInputs, remainingInputs, canCollect } = snapshot;
+      const { synced, day, profile, eggProfile, progress, stageThresholds, targetInputs, remainingInputs, canCollect } = snapshot;
       const alreadySaved = Boolean(day.hatchedAt);
       if (!profile) {
         const clicks = day.egg?.clicks || 0;
@@ -120,7 +121,7 @@ function registerIpc() {
           alreadySaved,
           canCollect,
           targetInputs,
-          stageThresholds: hatchStageThresholds(),
+          stageThresholds,
           remainingInputs,
           choiceRequired: day.choiceRequired,
           day,
@@ -145,7 +146,7 @@ function registerIpc() {
         alreadySaved,
         canCollect,
         targetInputs,
-        stageThresholds: hatchStageThresholds(),
+        stageThresholds,
         remainingInputs,
         choiceRequired: day.choiceRequired,
         day,

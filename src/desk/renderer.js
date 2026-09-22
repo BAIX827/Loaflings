@@ -30,6 +30,7 @@
   const progressPanelEl = document.getElementById('progress-panel');
   const collectButton = document.getElementById('btn-collect');
   const collectGateEl = document.getElementById('collect-gate');
+  const GROWTH_PHASES = ['egg', 'cracking', 'hatching', 'newborn', 'growing', 'adult'];
 
   function template(key, values = {}) {
     let value = tr(key);
@@ -63,12 +64,17 @@
     }
   }
 
-  function renderProgressPanel(hp = latestHatchProgress) {
-    if (!hp?.progress) return;
+  function progressTotals(hp) {
     const inputs = Math.max(0, Number(hp.progress.inputs) || 0);
     const target = Math.max(1, Number(hp.targetInputs) || 29000);
     const remaining = Math.max(0, Number(hp.remainingInputs ?? target - inputs) || 0);
     const canCollect = Boolean(hp.canCollect || inputs >= target);
+    return { inputs, target, remaining, canCollect };
+  }
+
+  function renderProgressPanel(hp = latestHatchProgress) {
+    if (!hp?.progress) return;
+    const { inputs, target, remaining, canCollect } = progressTotals(hp);
     const stage = normalizePhase(hp.progress.phase);
     const stageLabel = document.getElementById('progress-stage');
     const inputEl = document.getElementById('progress-inputs');
@@ -81,10 +87,9 @@
     if (inputEl) inputEl.textContent = numberText(inputs);
     if (targetEl) targetEl.textContent = numberText(target);
     const thresholds = hp.stageThresholds;
-    if (Array.isArray(thresholds) && thresholds.length === 6 && milestonesEl) {
-      const phases = ['egg', 'cracking', 'hatching', 'newborn', 'growing', 'adult'];
-      if (milestonesEl.children.length !== phases.length) {
-        const nodes = phases.map(() => {
+    if (Array.isArray(thresholds) && thresholds.length === GROWTH_PHASES.length && milestonesEl) {
+      if (milestonesEl.children.length !== GROWTH_PHASES.length) {
+        const nodes = GROWTH_PHASES.map(() => {
           const node = document.createElement('div');
           node.className = 'progress-milestone';
           node.setAttribute('role', 'listitem');
@@ -105,18 +110,18 @@
       const bandProgress = nextThreshold == null
         ? 1
         : Math.min(1, Math.max(0, (inputs - thresholds[current]) / (nextThreshold - thresholds[current])));
-      if (fillEl) fillEl.style.width = `${((current + bandProgress) / (phases.length - 1)) * 100}%`;
+      if (fillEl) fillEl.style.width = `${((current + bandProgress) / (GROWTH_PHASES.length - 1)) * 100}%`;
       [...milestonesEl.children].forEach((node, i) => {
         node.dataset.state = i < current ? 'complete' : i === current ? 'current' : 'upcoming';
         if (i === current) node.setAttribute('aria-current', 'step');
         else node.removeAttribute('aria-current');
-        node.querySelector('.progress-milestone-name').textContent = tr(`phase.${phases[i]}`);
+        node.querySelector('.progress-milestone-name').textContent = tr(`phase.${GROWTH_PHASES[i]}`);
         node.querySelector('.progress-milestone-count').textContent = numberText(thresholds[i]);
       });
       if (nextEl) nextEl.textContent = nextThreshold == null
         ? ''
         : template('progress.next', {
-          stage: tr(`phase.${phases[current + 1]}`),
+          stage: tr(`phase.${GROWTH_PHASES[current + 1]}`),
           count: numberText(nextThreshold - inputs),
         });
     } else if (fillEl) {
@@ -132,10 +137,8 @@
   function updateCollectionGate(hp) {
     if (!hp?.progress) return;
     latestHatchProgress = hp;
-    const inputs = Math.max(0, Number(hp.progress.inputs) || 0);
-    const target = Math.max(1, Number(hp.targetInputs) || 29000);
-    const remaining = Math.max(0, Number(hp.remainingInputs ?? target - inputs) || 0);
-    const canCollect = !hp.choiceRequired && Boolean(hp.canCollect || inputs >= target);
+    const { remaining, canCollect: progressReady } = progressTotals(hp);
+    const canCollect = !hp.choiceRequired && progressReady;
     if (collectButton) {
       collectButton.disabled = !canCollect;
       collectButton.title = canCollect
@@ -473,28 +476,13 @@
     return hit === key ? (src || '—') : hit;
   }
 
-  /**
-   * Visual daytime phases from CORE hatchProgress: egg | cracking | hatched.
-   * Day/Save still gates collection via hatchDay.
-   * @param {'egg' | 'cracking' | 'hatched' | 'growing'} next
-   * @param {{ caption?: string, clicks?: number, keystrokes?: number, nextAt?: number|null }} [opts]
-   */
+  /** Visual growth phases from CORE; settlement still gates collection. */
   const EGGISH = new Set(['egg', 'cracking', 'hatching']);
   const PETISH = new Set(['newborn', 'growing', 'adult', 'hatched']);
 
   function normalizePhase(next) {
     if (next === 'hatched') return 'adult';
-    if (
-      next === 'egg' ||
-      next === 'cracking' ||
-      next === 'hatching' ||
-      next === 'newborn' ||
-      next === 'growing' ||
-      next === 'adult'
-    ) {
-      return next;
-    }
-    return 'egg';
+    return GROWTH_PHASES.includes(next) ? next : 'egg';
   }
 
   const CAPTIONS = {
