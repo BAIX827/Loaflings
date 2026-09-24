@@ -114,3 +114,14 @@ test('appearance maps personality and rarity without changing gene fields', () =
   assert.equal(epicExplorer.cloudMood, 'cloud_twin');
   assert.equal(epicExplorer.marking, 'none');
 });
+
+test('seeded visual roll reaches each new hatchable variant', () => {
+  const energy = { work: 10, explore: 10, dream: 50 };
+  assert.equal(core.resolveAppearance(energy, 'builder', 'common', 0.65).body, 'body_bun');
+  assert.equal(core.resolveAppearance(energy, 'explorer', 'common', 0.85).body, 'body_pudgy');
+  assert.equal(core.resolveAppearance(energy, 'dreamer', 'common', 0.85).body, 'body_long');
+  assert.equal(core.resolveAppearance(energy, 'dreamer', 'rare', 0.3).body, 'body_round_mocha');
+  assert.equal(core.resolveAppearance(energy, 'dreamer', 'rare', 0.55).body, 'body_pointy_strawberry');
+  assert.equal(core.resolveAppearance(energy, 'dreamer', 'rare', 0.8).body, 'body_melted_matcha');
+  assert.equal(core.resolveAppearance(energy, 'dreamer', 'epic', 0.8).cloudMood, 'cloud_twin');
+});

@@ -32,6 +32,8 @@ test('collection keeps the first memory snapshot on repeated Save and reads lega
     const saved = collection.loadCollection();
     assert.equal(saved.items.length, 1);
     assert.deepEqual(saved.items[0].memory, firstMemory);
+    assert.equal(saved.items[0].nameZh, '建造者 · 普通');
+    assert.equal(saved.items[0].nameEn, 'Builder · Common');
     assert.equal(saved.version, 3);
 
     const legacy = { version: 2, items: [{ ...saved.items[0], id: 'older', memory: undefined }] };

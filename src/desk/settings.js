@@ -9,11 +9,13 @@ const { DEFAULT_WARDROBE, normalizeWardrobe } = require('./characterRecipe');
 const { DEFAULT_HATCH_TARGET, normalizeHatchTarget } = require('./runtime/core.cjs');
 
 const DEFAULTS = Object.freeze({
-  version: 4,
+  version: 5,
   opacity: 1,
   scale: 1,
   hatchTarget: DEFAULT_HATCH_TARGET,
   lockPosition: false,
+  movementMode: 'manual',
+  layerMode: 'top',
   showChrome: true,
   showHud: true,
   /** @type {'zh'|'en'} */
@@ -33,11 +35,14 @@ function clamp(n, lo, hi) {
 
 function normalize(raw) {
   const s = { ...DEFAULTS, ...(raw && typeof raw === 'object' ? raw : {}) };
-  s.version = 4;
+  s.version = 5;
   s.opacity = clamp(Number(s.opacity) || 1, 0.25, 1);
   s.scale = clamp(Number(s.scale) || 1, 0.6, 1.6);
   s.hatchTarget = normalizeHatchTarget(s.hatchTarget);
-  s.lockPosition = Boolean(s.lockPosition);
+  s.movementMode = ['manual', 'wander', 'fixed'].includes(raw?.movementMode)
+    ? raw.movementMode : raw?.lockPosition ? 'fixed' : 'manual';
+  s.lockPosition = s.movementMode === 'fixed';
+  s.layerMode = s.layerMode === 'desktop' ? 'desktop' : 'top';
   s.showChrome = s.showChrome !== false;
   s.showHud = s.showHud !== false;
   s.locale = s.locale === 'en' ? 'en' : 'zh';
@@ -60,9 +65,12 @@ function loadSettings() {
 
 function saveSettings(partial) {
   const current = loadSettings();
+  const movementMode = partial?.movementMode || (Object.hasOwn(partial || {}, 'lockPosition')
+    ? partial.lockPosition ? 'fixed' : 'manual' : current.movementMode);
   const next = normalize({
     ...current,
     ...partial,
+    movementMode,
     wardrobe: {
       ...current.wardrobe,
       ...(partial?.wardrobe && typeof partial.wardrobe === 'object' ? partial.wardrobe : {}),

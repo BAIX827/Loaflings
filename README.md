@@ -25,7 +25,7 @@ npm start
 2. **Day / 今日** also shows moments recorded from count-only focus, idle, mouse travel and window-switch activity. **Pack / 背包 → Moments / 奇遇** keeps local history. A brief character reaction may appear when a new moment is recorded.
 3. At the adult goal, choose **Save / 收藏**. The new collection entry keeps a bilingual hatch memory based on its settled personality, traits and recorded moments. Open it again from the Pack calendar or collection. Older entries show a neutral summary.
 4. At a day change, an unfinished egg asks whether to continue its progress or start a new egg. Earlier moments stay in Pack history; only moments belonging to the current egg can enter its memory.
-5. **Pack / 背包** also has the catalog, all-time statistics and coins. Coins cannot be spent yet; adult wardrobe items remain free. Change language, hatch goal or appearance settings in **Settings / 设置**, where you can reopen the first-run guide.
+5. **Pack / 背包** also has the 10-form catalog (five basic forms and five hatchable mutations), all-time statistics and coins. Coins cannot be spent yet; adult wardrobe items remain free and are grouped into hat, face accessory and outfit tabs. Change language, hatch goal, movement (manual drag, gentle wander or fixed position) and window layer in **Settings / 设置**, where you can reopen the first-run guide. On Windows, Desktop bottom places the companion behind regular windows; it can come forward while being used and returns to the bottom when focus leaves.
 
 The first-run guide is available in Chinese and English. Moment history starts when this feature is enabled; it does not reconstruct events from older activity records. A recorded moment stays in local history even when its brief desktop reaction is missed.
 

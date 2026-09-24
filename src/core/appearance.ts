@@ -8,8 +8,9 @@ import type { EnergyPool } from './energy';
 import type { Personality, Rarity } from './genes';
 
 export interface CharacterAppearance {
-  body: 'body_classic' | 'body_chubby' | 'body_long';
-  marking: 'none' | 'marking_patchy';
+  body: 'body_classic' | 'body_chubby' | 'body_long' | 'body_bun' | 'body_pudgy'
+    | 'body_round_mocha' | 'body_pointy_strawberry' | 'body_melted_matcha';
+  marking: 'none' | 'marking_patchy' | 'marking_sesame' | 'marking_dapple';
   expression:
     | 'expr_normal'
     | 'expr_happy'
@@ -23,7 +24,7 @@ export interface CharacterAppearance {
     | 'cloud_curious'
     | 'cloud_focused'
     | 'cloud_dreamy'
-    | 'cloud_twin';
+    | 'cloud_twin' | 'cloud_mocha' | 'cloud_strawberry' | 'cloud_sprout';
   headwear: 'none';
   facewear: 'none';
   outfit: 'none';
@@ -48,6 +49,7 @@ export function resolveAppearance(
   energy: EnergyPool,
   personality: Personality,
   rarity: Rarity,
+  variantRoll?: number,
 ): CharacterAppearance {
   let body: CharacterAppearance['body'] = 'body_classic';
   let expression: CharacterAppearance['expression'] = 'expr_happy';
@@ -67,7 +69,7 @@ export function resolveAppearance(
     cloudMood = energy.dream > 35 ? 'cloud_dreamy' : 'cloud_sleepy';
   }
 
-  return {
+  const appearance: CharacterAppearance = {
     body,
     marking: rarity === 'rare' ? 'marking_patchy' : 'none',
     expression,
@@ -76,4 +78,29 @@ export function resolveAppearance(
     facewear: 'none',
     outfit: 'none',
   };
+  // A separate seeded roll chooses the visual recipe. Omitting it retains the
+  // historical mapping for old callers and collection migration.
+  if (variantRoll === undefined) return appearance;
+  const roll = Number.isFinite(variantRoll) ? Math.min(0.999999, Math.max(0, variantRoll)) : 0;
+  if (rarity === 'common') {
+    if (personality === 'builder') appearance.body = roll < 0.5 ? 'body_classic' : 'body_bun';
+    else if (personality === 'explorer') appearance.body = roll < 0.5 ? 'body_chubby' : 'body_pudgy';
+    else if (personality === 'dreamer') appearance.body = 'body_long';
+  } else if (rarity === 'rare') {
+    const variant = Math.floor(roll * 4);
+    if (variant === 1) {
+      appearance.body = 'body_round_mocha';
+      appearance.marking = 'marking_sesame';
+      appearance.cloudMood = 'cloud_mocha';
+    } else if (variant === 2) {
+      appearance.body = 'body_pointy_strawberry';
+      appearance.marking = 'marking_dapple';
+      appearance.cloudMood = 'cloud_strawberry';
+    } else if (variant === 3) {
+      appearance.body = 'body_melted_matcha';
+      appearance.marking = 'none';
+      appearance.cloudMood = 'cloud_sprout';
+    }
+  }
+  return appearance;
 }

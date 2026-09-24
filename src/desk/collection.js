@@ -6,6 +6,7 @@ const path = require('path');
 const { app } = require('electron');
 const { readJsonFile, writeJsonAtomic } = require('../shared/jsonFile.cjs');
 const { recipeFromResult } = require('./characterRecipe');
+const { labelId } = require('./i18n');
 
 const FILE_NAME = 'collection.json';
 
@@ -55,6 +56,8 @@ function entryFromSettle(result, meta = {}) {
     kind: result?.kind || 'loafling',
     /** Display name — CORE has no name; use personality + rarity label. */
     name: `${personality} · ${rarity}`,
+    nameZh: `${labelId('zh', 'personality', personality)} · ${labelId('zh', 'rarity', rarity)}`,
+    nameEn: `${labelId('en', 'personality', personality)} · ${labelId('en', 'rarity', rarity)}`,
     /** Type alias for personality (builder / explorer / dreamer / balanced). */
     type: personality,
     personality,
@@ -82,6 +85,9 @@ function saveToCollection(result, meta = {}) {
   if (idx >= 0) {
     // A saved story is a snapshot. Repeated Save must not rewrite it from later activity.
     entry.memory = col.items[idx].memory || null;
+    entry.name = col.items[idx].name || entry.name;
+    entry.nameZh = col.items[idx].nameZh || entry.nameZh;
+    entry.nameEn = col.items[idx].nameEn || entry.nameEn;
     col.items[idx] = entry;
   } else {
     col.items.push(entry);

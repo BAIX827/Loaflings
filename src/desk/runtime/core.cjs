@@ -211,7 +211,7 @@ var DEFAULT_APPEARANCE = {
   facewear: "none",
   outfit: "none"
 };
-function resolveAppearance(energy, personality, rarity) {
+function resolveAppearance(energy, personality, rarity, variantRoll) {
   let body = "body_classic";
   let expression = "expr_happy";
   let cloudMood = "cloud_happy";
@@ -228,7 +228,7 @@ function resolveAppearance(energy, personality, rarity) {
     expression = "expr_sleepy";
     cloudMood = energy.dream > 35 ? "cloud_dreamy" : "cloud_sleepy";
   }
-  return {
+  const appearance = {
     body,
     marking: rarity === "rare" ? "marking_patchy" : "none",
     expression,
@@ -237,6 +237,29 @@ function resolveAppearance(energy, personality, rarity) {
     facewear: "none",
     outfit: "none"
   };
+  if (variantRoll === void 0) return appearance;
+  const roll = Number.isFinite(variantRoll) ? Math.min(0.999999, Math.max(0, variantRoll)) : 0;
+  if (rarity === "common") {
+    if (personality === "builder") appearance.body = roll < 0.5 ? "body_classic" : "body_bun";
+    else if (personality === "explorer") appearance.body = roll < 0.5 ? "body_chubby" : "body_pudgy";
+    else if (personality === "dreamer") appearance.body = "body_long";
+  } else if (rarity === "rare") {
+    const variant = Math.floor(roll * 4);
+    if (variant === 1) {
+      appearance.body = "body_round_mocha";
+      appearance.marking = "marking_sesame";
+      appearance.cloudMood = "cloud_mocha";
+    } else if (variant === 2) {
+      appearance.body = "body_pointy_strawberry";
+      appearance.marking = "marking_dapple";
+      appearance.cloudMood = "cloud_strawberry";
+    } else if (variant === 3) {
+      appearance.body = "body_melted_matcha";
+      appearance.marking = "none";
+      appearance.cloudMood = "cloud_sprout";
+    }
+  }
+  return appearance;
 }
 
 // src/core/settle.ts
@@ -249,7 +272,12 @@ function settleDay(profile) {
   const personality = resolvePersonality(energy);
   const rarity = resolveRarity(energy, rarityRng);
   const style = styleForRarity(rarity);
-  const appearance = resolveAppearance(energy, personality, rarity);
+  const appearance = resolveAppearance(
+    energy,
+    personality,
+    rarity,
+    rngFromKeys(profile.date, profile.seedKey, "appearance")()
+  );
   const traits = buildTraits(energy, personality);
   const events = rollIdleEvents(profile, energy, eventRng);
   return {

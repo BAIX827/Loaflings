@@ -71,7 +71,7 @@ app.whenReady().then(async () => {
     }] : [],
     count: adult ? 1 : 0,
   }));
-  reply('get-catalog', () => ({ ok: true, slots: [], total: 9, collectedCount: 0 }));
+  reply('get-catalog', () => ({ ok: true, slots: [], total: 10, collectedCount: 0 }));
   reply('get-activity-stats', () => ({ ok: true, totals: {}, trackedDays: 0 }));
   reply('get-coin-wallet', () => ({
     ok: true, balance: 0, todayEarned: 0, dailyLimit: 30,
@@ -145,14 +145,34 @@ app.whenReady().then(async () => {
       open: !document.getElementById('panel').hidden,
       memory: document.getElementById('memory-copy').textContent,
       moments: document.querySelectorAll('#panel-moments .moment-row').length,
+      genes: document.getElementById('f-genes').textContent,
+      traits: document.getElementById('f-traits').textContent,
+      phase: document.getElementById('hud-phase').textContent,
+      languageOptions: document.getElementById('set-locale').textContent.trim(),
       width: innerWidth,
     };
   })()`);
-  if (!adultPanel.open || !adultPanel.memory.includes('工作能量') || adultPanel.width !== 260) {
+  if (!adultPanel.open || !adultPanel.memory.includes('工作能量') || adultPanel.width !== 260
+    || !adultPanel.genes.includes('基础身体') || !adultPanel.traits.includes('专注')
+    || adultPanel.phase !== '成体' || !adultPanel.languageOptions.includes('英文')) {
     throw new Error(`hatch memory failed: ${JSON.stringify(adultPanel)}`);
   }
-  const english = await win.webContents.executeJavaScript(`(async () => {
+  const wardrobe = await win.webContents.executeJavaScript(`(() => {
     document.getElementById('btn-close-panel').click();
+    document.getElementById('btn-wardrobe').click();
+    document.getElementById('wardrobe-tab-facewear').click();
+    const faceOnly = document.getElementById('wardrobe-slot-headwear').hidden
+      && !document.getElementById('wardrobe-slot-facewear').hidden
+      && document.getElementById('wardrobe-slot-outfit').hidden;
+    document.getElementById('wardrobe-tab-outfit').click();
+    const outfitOnly = document.getElementById('wardrobe-slot-headwear').hidden
+      && document.getElementById('wardrobe-slot-facewear').hidden
+      && !document.getElementById('wardrobe-slot-outfit').hidden;
+    document.getElementById('btn-close-wardrobe').click();
+    return { faceOnly, outfitOnly };
+  })()`);
+  if (!wardrobe.faceOnly || !wardrobe.outfitOnly) throw new Error(`wardrobe tabs failed: ${JSON.stringify(wardrobe)}`);
+  const english = await win.webContents.executeJavaScript(`(async () => {
     document.getElementById('btn-settings').click();
     await new Promise((resolve) => setTimeout(resolve, 150));
     const locale = document.getElementById('set-locale');
@@ -164,9 +184,18 @@ app.whenReady().then(async () => {
     document.getElementById('btn-guide-ok').click();
     document.getElementById('btn-reveal').click();
     await new Promise((resolve) => setTimeout(resolve, 150));
-    return { guideText, memory: document.getElementById('memory-copy').textContent };
+    return {
+      guideText,
+      memory: document.getElementById('memory-copy').textContent,
+      genes: document.getElementById('f-genes').textContent,
+      traits: document.getElementById('f-traits').textContent,
+      phase: document.getElementById('hud-phase').textContent,
+      languageOptions: document.getElementById('set-locale').textContent.trim(),
+    };
   })()`);
-  if (!english.guideText.includes('moments') || !english.memory.includes('Work energy')) {
+  if (!english.guideText.includes('moments') || !english.memory.includes('Work energy')
+    || !english.genes.includes('Base body') || !english.traits.includes('Focused')
+    || english.phase !== 'Adult' || !english.languageOptions.includes('Chinese')) {
     throw new Error(`English guide or memory failed: ${JSON.stringify(english)}`);
   }
   const historical = await win.webContents.executeJavaScript(`(async () => {
@@ -178,16 +207,19 @@ app.whenReady().then(async () => {
     await new Promise((resolve) => setTimeout(resolve, 250));
     document.getElementById('btn-reveal').click();
     await new Promise((resolve) => setTimeout(resolve, 150));
-    return document.getElementById('memory-copy').textContent;
+    return {
+      memory: document.getElementById('memory-copy').textContent,
+      name: document.getElementById('f-name').textContent,
+    };
   })()`);
-  if (historical !== historicalMemory.en) {
-    throw new Error(`historical memory failed: ${historical}`);
+  if (historical.memory !== historicalMemory.en || historical.name !== 'Builder · Common') {
+    throw new Error(`historical memory failed: ${JSON.stringify(historical)}`);
   }
   if (outputPath) {
     const capture = await win.webContents.capturePage();
     fs.writeFileSync(outputPath, capture.toPNG());
   }
-  process.stdout.write(`${JSON.stringify({ guide, progress, history, cue, adultPanel, english, historical })}\n`);
+  process.stdout.write(`${JSON.stringify({ guide, progress, history, cue, adultPanel, wardrobe, english, historical })}\n`);
   win.destroy();
   app.quit();
 }).catch((error) => {

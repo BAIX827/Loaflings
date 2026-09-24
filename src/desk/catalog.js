@@ -1,79 +1,59 @@
 'use strict';
 
-const { legacyRecipeFromResult, recipeFromResult } = require('./characterRecipe');
+const { recipeFromResult, normalizeCharacterRecipe } = require('./characterRecipe');
+const manifest = require('../../character/modular/manifest.json');
 
-const CATALOG_PERSONALITIES = Object.freeze([
-  'builder',
-  'explorer',
-  'dreamer',
-]);
-const CATALOG_RARITIES = Object.freeze(['common', 'rare', 'epic']);
-
-function catalogSlotId(personality, rarity) {
-  return `${personality}:${rarity}`;
-}
-
-function representativeAppearance(personality, rarity) {
-  return legacyRecipeFromResult({
-    personality,
-    rarity,
-    // Keep the dreamer catalogue representative stable and visibly dreamy.
-    energy: { work: 0, explore: 0, dream: 50 },
-  });
-}
-
-/**
- * Project collection rows onto the complete, currently reachable catalogue.
- * A slot is a personality + rarity combination; duplicate hatches increase its
- * count without creating invented species or modifying collection storage.
- * @param {object[]} items
- */
-function buildCatalog(items) {
-  const validItems = Array.isArray(items)
-    ? items.filter((item) => (
-      item &&
-      CATALOG_PERSONALITIES.includes(item.personality) &&
-      CATALOG_RARITIES.includes(item.rarity)
-    ))
-    : [];
-
-  const slots = [];
-  for (const personality of CATALOG_PERSONALITIES) {
-    for (const rarity of CATALOG_RARITIES) {
-      const matches = validItems
-        .filter((item) => item.personality === personality && item.rarity === rarity)
-        .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-      const latest = matches[0] || null;
-      const oldest = matches[matches.length - 1] || null;
-      slots.push({
-        number: slots.length + 1,
-        id: catalogSlotId(personality, rarity),
-        personality,
-        rarity,
-        collected: Boolean(latest),
-        count: matches.length,
-        firstCollectedDate: oldest?.date || null,
-        latestCollectedDate: latest?.date || null,
-        latestEntryId: latest?.id || null,
-        appearance: latest
-          ? recipeFromResult(latest)
-          : representativeAppearance(personality, rarity),
-      });
-    }
-  }
-
+// The catalog follows hatchable visual recipes. Role outfits remain wardrobe inspiration.
+const VARIANTS = Object.freeze([
+  ...manifest.templates.basic,
+  ...manifest.templates.mutations,
+].map((file) => {
+  const template = require(`../../character/modular/${file}`);
   return {
-    version: 1,
+    id: template.id,
+    rarity: template.kind === 'basic' ? 'common'
+      : template.id === 'mutation_twin_cloud' ? 'epic' : 'rare',
+    appearance: normalizeCharacterRecipe(template.recipe),
+  };
+}));
+
+function variantIdFromAppearance(appearance) {
+  const recipe = normalizeCharacterRecipe(appearance);
+  if (recipe.cloudMood === 'cloud_twin') return 'mutation_twin_cloud';
+  if (recipe.body === 'body_round_mocha') return 'mutation_sesame';
+  if (recipe.body === 'body_pointy_strawberry') return 'mutation_dapple';
+  if (recipe.body === 'body_melted_matcha') return 'mutation_sprout_cloud';
+  if (recipe.marking === 'marking_patchy') return 'mutation_patchy';
+  const basic = VARIANTS.find((variant) => variant.rarity === 'common' && variant.appearance.body === recipe.body);
+  return basic?.id || 'basic_classic';
+}
+
+function buildCatalog(items) {
+  const validItems = Array.isArray(items) ? items.filter((item) => item && item.date) : [];
+  const slots = VARIANTS.map((variant, index) => {
+    const matches = validItems
+      .filter((item) => variantIdFromAppearance(recipeFromResult(item)) === variant.id)
+      .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const latest = matches[0] || null;
+    const oldest = matches[matches.length - 1] || null;
+    return {
+      number: index + 1,
+      id: variant.id,
+      rarity: variant.rarity,
+      collected: Boolean(latest),
+      count: matches.length,
+      firstCollectedDate: oldest?.date || null,
+      latestCollectedDate: latest?.date || null,
+      latestEntryId: latest?.id || null,
+      appearance: latest ? recipeFromResult(latest) : variant.appearance,
+    };
+  });
+  return {
+    version: 2,
     total: slots.length,
     collectedCount: slots.filter((slot) => slot.collected).length,
     slots,
   };
 }
 
-module.exports = {
-  CATALOG_PERSONALITIES,
-  CATALOG_RARITIES,
-  catalogSlotId,
-  representativeAppearance,
-  buildCatalog,
-};
+module.exports = { VARIANTS, variantIdFromAppearance, buildCatalog };

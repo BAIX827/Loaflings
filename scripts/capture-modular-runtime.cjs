@@ -22,6 +22,7 @@ const exerciseGrowthTimeline = process.argv.includes('--growth-timeline');
 const exerciseHatchGoal = process.argv.includes('--hatch-goal');
 const exerciseHistoryHud = process.argv.includes('--history-hud');
 const exerciseScaleLayout = process.argv.includes('--scale-layout');
+const exerciseSettingsControls = process.argv.includes('--settings-controls');
 const root = path.join(__dirname, '..');
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
@@ -214,6 +215,7 @@ app.whenReady().then(async () => {
     return { ok: true, settings };
   });
   reply('loaflings:get-sense-status', { ok: true, backend: 'smoke' });
+  reply('loaflings:get-adventures', { ok: true, todayEvents: [], eggEvents: [], history: [] });
   reply('loaflings:hatch-day', { ok: true });
   reply('loaflings:collect-day', { ok: true, source: 'smoke', result, count: 1 });
   reply('loaflings:quit', { ok: true });
@@ -529,15 +531,19 @@ app.whenReady().then(async () => {
         cards: document.querySelectorAll('.catalog-card').length,
         collected: document.querySelectorAll('.catalog-card.is-collected').length,
         missing: document.querySelectorAll('.catalog-card.is-missing').length,
+        names: [...document.querySelectorAll('.catalog-name')].map((node) => node.textContent),
         characterLayers: document.querySelectorAll('.catalog-card .character-layer').length,
       };
     })()`);
     if (
       !catalogState.panelOpen ||
       !catalogState.catalogOpen ||
-      catalogState.cards !== 9 ||
+      catalogState.cards !== 10 ||
       catalogState.collected !== 3 ||
-      catalogState.missing !== 6 ||
+      catalogState.missing !== 7 ||
+      !catalogState.names.includes('草莓斑点') ||
+      !catalogState.names.includes('摩卡芝麻') ||
+      !catalogState.names.includes('抹茶芽云') ||
       catalogState.characterLayers < 54
     ) {
       throw new Error(`catalog renderer did not mount: ${JSON.stringify(catalogState)}`);
@@ -573,7 +579,7 @@ app.whenReady().then(async () => {
   }
   let scaleLayoutState = null;
   if (exerciseScaleLayout) {
-    win.setPosition(-10000, -10000);
+    win.setPosition(0, 0);
     win.showInactive();
     await win.webContents.executeJavaScript(`document.getElementById('btn-settings')?.click()`);
     await new Promise((resolve) => setTimeout(resolve, 150));
@@ -617,12 +623,40 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript(`document.getElementById('btn-settings')?.click()`);
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
+  let settingsControlsState = null;
+  if (exerciseSettingsControls) {
+    win.setContentSize(260, 300);
+    win.setPosition(-10000, -10000);
+    win.showInactive();
+    await win.webContents.executeJavaScript(`document.getElementById('btn-settings')?.click()`);
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    settingsControlsState = await win.webContents.executeJavaScript(`(() => {
+      const panel = document.getElementById('settings');
+      const movement = document.getElementById('set-movement-mode');
+      const layer = document.getElementById('set-layer-mode');
+      const panelRect = panel.getBoundingClientRect();
+      const movementRect = movement.getBoundingClientRect();
+      const layerRect = layer.getBoundingClientRect();
+      return {
+        open: !panel.hidden,
+        movement: [...movement.options].map((option) => option.value),
+        layers: [...layer.options].map((option) => option.value),
+        movementVisible: movementRect.bottom <= panelRect.bottom && movementRect.top >= panelRect.top,
+        layerVisible: layerRect.bottom <= panelRect.bottom && layerRect.top >= panelRect.top,
+      };
+    })()`);
+    if (!settingsControlsState.open || !settingsControlsState.movementVisible || !settingsControlsState.layerVisible ||
+      settingsControlsState.movement.join(',') !== 'manual,wander,fixed' ||
+      settingsControlsState.layers.join(',') !== 'top,desktop') {
+      throw new Error(`settings controls did not mount: ${JSON.stringify(settingsControlsState)}`);
+    }
+  }
   win.webContents.invalidate();
   await new Promise((resolve) => setTimeout(resolve, 500));
   const image = await win.webContents.capturePage();
   if (exerciseCatalog) win.hide();
   require('fs').writeFileSync(outputPath, image.toPNG());
-  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, coinState, rolloverState, progressGateState, growthTimelineState, hatchGoalState, historyHudState, scaleLayoutState })}\n`);
+  process.stdout.write(`${JSON.stringify({ variant, outputPath, ...state, wardrobeState, catalogState, statsState, coinState, rolloverState, progressGateState, growthTimelineState, hatchGoalState, historyHudState, scaleLayoutState, settingsControlsState })}\n`);
   win.destroy();
   app.quit();
 }).catch((err) => {

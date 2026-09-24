@@ -14,6 +14,10 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+
+- [x] 2026-09-24 add a Figma asset library to game synchronization rule and verification boundary
+- [x] 2026-09-24 smooth desktop movement modes and Windows window-layer settings
+- [x] 2026-09-24 wardrobe category tabs, fully localized Day details and bilingual saved names, and 10 hatchable basic/mutation catalog forms
 - [x] 2026-09-24 V2 change audit, documentation sync, bilingual first-run guide and historical-memory reopen fix
 - [x] 2026-09-24 additional visual roles and wearables: 4 role recipes, 12 reusable SVG accessories, small-size captures, and Education Figma library sync to 78 components / 18 QA compositions
 - [x] 2026-09-24 Education Figma 2D 素材库：13 页分类树、66 个可编辑 SVG 组件、8 个标准色变量和 14 个组合检查画框；入口见 `character/ASSET_LIBRARY_INDEX.md`
@@ -51,6 +55,20 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-24 (FIGMA TO GAME SYNC RULE)
+- Added a standing project rule: future Figma library changes intended for the game must update the repository assets and relevant runtime entry points in the same task, including bilingual names where applicable. The library index must distinguish verified game assets from drafts or unsynced components.
+- Kept the existing character and gameplay authority boundary: adding a Figma component alone does not change hatch probabilities or the core visual identity. Verified the three rule documents agree and `git diff --check` passes; this documentation change does not claim any new Figma asset has been imported into the game.
+
+2026-09-24 (MOVEMENT AND WINDOW LAYER)
+- Added Settings choices for manual drag, gentle random wandering and fixed position, plus Always on top / Desktop bottom. Previous locked positions migrate to Fixed. Manual drag saves coordinates after a short pause; wandering uses eased steps within the current display work area and pauses while the companion is focused. On Windows, Desktop bottom uses the native bottom window placement and reapplies it after focus leaves.
+- Verified `npm.cmd run verify` (48 Node tests, runtime compilation and demo settlement), isolated Electron settings migration / movable / topmost / Windows bottom smoke, visible movement and layer controls in the real settings panel, and the existing size slider at both extremes in an on-screen Electron window. The off-screen version of the size smoke read a stale Chromium viewport, so the helper now places that test window on-screen. `git diff --check` passed.
+- Rebuilt the local Windows portable preview at `dist/preview-2026-09-24/Loaflings-2026-09-24-preview-Portable.exe`; compared the packaged ASAR's window, motion, settings, HTML and translation files with the source. SHA-256: `95ADA83934E9708BFBF3BF886C836158B825BBE81D502DCA5FC6795161E5CA68`. The portable preview remains local; no GitHub Release was published.
+
+2026-09-24 (WARDROBE, LANGUAGE AND HATCHABLE VARIANTS)
+- Split the adult wardrobe into hat, face accessory and outfit tabs, retaining existing saved selections and per-part previews. Localized Day genes, traits, HUD phase and interface tooltips/accessibility labels; new collection rows store both Chinese and English generated names, while older generated names display in the selected language.
+- Connected the repository's five basic and five mutation recipes to deterministic hatch appearance and a 10-form catalog. Common body choices remain tied to personality; rare hatches can select Patchy, Sesame, Dapple or Sprout Cloud, and epic hatches retain Twin Cloud. Old collection snapshots are classified by their saved appearance. The eight role outfit recipes remain outside hatch generation.
+- Verified `npm.cmd run verify` (45 Node tests, compiled runtime and demo settlement), isolated Electron bilingual Day and wardrobe interactions, and an Electron 10-card catalog check with all three new mutation names and mounted character layers. `git diff --check` passed. Built a separate local Windows portable preview at `dist/preview-2026-09-24/Loaflings-2026-09-24-preview-Portable.exe`, checked its packaged ASAR contains the updated catalog, translations and CORE, and left the older 0.1.0 packages intact. The Figma connector returned only the Visual Bible page for the documented Education file during this run, so any additional Figma-only variants still need a specific node link before import.
 
 2026-09-24 (V2 AUDIT, DOCS AND GUIDE)
 - Checked the pending V2 event ledger, egg ownership, collection snapshots, IPC, desktop presentation and privacy boundary against `PROJECT.md`, the day-cycle contract and `docs/VERSION_2_PLAN.md`. Updated the feature-candidate status, product README and desk README to distinguish implemented behaviour from the remaining long-running live-desktop acceptance checks.

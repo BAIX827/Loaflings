@@ -54,7 +54,9 @@ export function settleDay(profile: DailyActivityProfile): DaylingResult {
   const personality = resolvePersonality(energy);
   const rarity = resolveRarity(energy, rarityRng);
   const style = styleForRarity(rarity);
-  const appearance = resolveAppearance(energy, personality, rarity);
+  const appearance = resolveAppearance(
+    energy, personality, rarity, rngFromKeys(profile.date, profile.seedKey, 'appearance')(),
+  );
   const traits = buildTraits(energy, personality);
   const events = rollIdleEvents(profile, energy, eventRng);
 

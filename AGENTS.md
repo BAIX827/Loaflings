@@ -47,3 +47,18 @@ variants, read:
 Also inspect the canonical reference images listed in that document.
 
 Do not redesign the core Loafling visual identity unless explicitly requested.
+
+## Figma asset library and game sync
+
+When the Loaflings Figma asset library changes, inspect the changed components
+against `character/ASSET_LIBRARY_INDEX.md`, `character/ASSET_PRODUCTION_GUIDE.md`
+and the runtime manifest. For each approved asset intended for the game, update
+the matching repository SVG/PNG and runtime wiring in the same task. This
+includes the relevant wardrobe, hatch appearance, catalog and Chinese/English
+names where applicable. A Figma component alone is not a completed game asset.
+
+Verify that the changed asset actually appears in the running desktop game,
+then update the index and `WORK_PLAN.md`. If a Figma item is only a draft, lacks
+a confirmed game role, or cannot be synced, record it explicitly as unsynced;
+do not mark the Figma-to-game work Done. Do not change hatch rules or the core
+character identity solely because a component was added to Figma.

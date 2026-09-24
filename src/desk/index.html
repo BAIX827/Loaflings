@@ -92,7 +92,7 @@
         <div id="bag-list" class="bag-list" hidden></div>
         <section id="bag-catalog" class="catalog" hidden aria-label="Loafling catalog">
           <div class="catalog-progress" aria-live="polite">
-            <span id="catalog-progress-label">已收集 0 / 9</span>
+            <span id="catalog-progress-label">已收集 0 / 10</span>
             <span class="catalog-progress-track" aria-hidden="true">
               <span id="catalog-progress-fill" class="catalog-progress-fill"></span>
             </span>
@@ -190,15 +190,20 @@
           <strong data-i18n="wardrobe.title">衣柜 · 换装</strong>
           <button type="button" id="btn-close-wardrobe" class="chip chip-quiet" title="Close">✕</button>
         </header>
-        <section class="wardrobe-slot">
+        <div class="wardrobe-tabs" role="tablist" aria-label="Wardrobe categories">
+          <button type="button" id="wardrobe-tab-headwear" class="chip" role="tab" aria-controls="wardrobe-slot-headwear" aria-selected="true" data-i18n="wardrobe.headwear">帽子</button>
+          <button type="button" id="wardrobe-tab-facewear" class="chip chip-quiet" role="tab" aria-controls="wardrobe-slot-facewear" aria-selected="false" data-i18n="wardrobe.facewear">面部配饰</button>
+          <button type="button" id="wardrobe-tab-outfit" class="chip chip-quiet" role="tab" aria-controls="wardrobe-slot-outfit" aria-selected="false" data-i18n="wardrobe.outfit">衣服</button>
+        </div>
+        <section id="wardrobe-slot-headwear" class="wardrobe-slot" role="tabpanel" aria-labelledby="wardrobe-tab-headwear">
           <strong id="wardrobe-headwear-label" data-i18n="wardrobe.headwear">帽子</strong>
           <div id="wardrobe-headwear" class="wardrobe-grid" role="group" aria-labelledby="wardrobe-headwear-label"></div>
         </section>
-        <section class="wardrobe-slot">
+        <section id="wardrobe-slot-facewear" class="wardrobe-slot" role="tabpanel" aria-labelledby="wardrobe-tab-facewear" hidden>
           <strong id="wardrobe-facewear-label" data-i18n="wardrobe.facewear">面部配饰</strong>
           <div id="wardrobe-facewear" class="wardrobe-grid" role="group" aria-labelledby="wardrobe-facewear-label"></div>
         </section>
-        <section class="wardrobe-slot">
+        <section id="wardrobe-slot-outfit" class="wardrobe-slot" role="tabpanel" aria-labelledby="wardrobe-tab-outfit" hidden>
           <strong id="wardrobe-outfit-label" data-i18n="wardrobe.outfit">衣服</strong>
           <div id="wardrobe-outfit" class="wardrobe-grid" role="group" aria-labelledby="wardrobe-outfit-label"></div>
         </section>
@@ -235,6 +240,23 @@
           </select>
         </label>
         <label class="settings-row">
+          <span data-i18n="settings.movement">移动方式</span>
+          <select id="set-movement-mode">
+            <option value="manual" data-i18n="settings.movement.manual">手动拖动</option>
+            <option value="wander" data-i18n="settings.movement.wander">随机走动</option>
+            <option value="fixed" data-i18n="settings.movement.fixed">固定位置</option>
+          </select>
+        </label>
+        <p class="panel-note" data-i18n="settings.movementHint">随机走动会在桌面上缓慢移动；操作窗口时会暂停。</p>
+        <label class="settings-row">
+          <span data-i18n="settings.layer">显示层级</span>
+          <select id="set-layer-mode">
+            <option value="top" data-i18n="settings.layer.top">始终置顶</option>
+            <option value="desktop" data-i18n="settings.layer.desktop">桌面底层</option>
+          </select>
+        </label>
+        <p class="panel-note" data-i18n="settings.layerHint">Windows 下会排在普通窗口后方；操作时可暂时来到前面。</p>
+        <label class="settings-row">
           <span data-i18n="settings.opacity">透明度</span>
           <input id="set-opacity" type="range" min="0.25" max="1" step="0.05" />
         </label>
@@ -247,10 +269,6 @@
           <input id="set-hatch-target" type="number" min="1000" step="1" value="20000" />
         </label>
         <p class="panel-note" data-i18n="settings.hatchTargetHint">至少 1,000 活跃；六个成长阶段按比例调整，已完成的蛋不受影响。</p>
-        <label class="settings-row settings-check">
-          <input id="set-lock" type="checkbox" />
-          <span data-i18n="settings.lock">锁定位置</span>
-        </label>
         <label class="settings-row settings-check">
           <input id="set-show-chrome" type="checkbox" />
           <span data-i18n="settings.showChrome">显示按键</span>

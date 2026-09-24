@@ -1,6 +1,6 @@
 # Loaflings desk shell (macOS and Windows companion)
 
-Minimal Electron companion for **Loaflings / 摸鱼灵**: always-on-top, frameless, transparent window.
+Minimal Electron companion for **Loaflings / 摸鱼灵**: frameless, transparent window with configurable layer.
 
 **Day loop:** a local day starts with an **egg**. The default adult goal is 20,000 activity hits; Settings can change it to any whole number of at least 1,000. All five intermediate thresholds scale proportionally. Before the goal, **Day** shows read-only growth progress and **Save** stays disabled with the exact remaining count. At the goal the Loafling becomes an adult and may be saved. A completed egg keeps its goal if Settings change later. At the next day, a completed egg is replaced automatically; an unfinished egg asks the player to continue with inherited clicks + keystrokes or replace it and restart that egg's count.
 
@@ -14,7 +14,7 @@ CORE contract (`docs/DAY_CYCLE_MVP.md`): `phaseFromProfile` / `hatchDay` / `shou
 - Live day (optional): `senseLive` / `getLiveSettle()` when Accessibility + uiohook are available; `ensureToday()` rolls profile date
 - Local collection: Electron `userData/collection.json` v3 (one upsert per `date:seedKey`, including `appearance` and a stable bilingual memory snapshot for newly saved adults)
 - Observed moments: Electron `userData/adventures.json` stores numeric evidence, local date, egg identity and event IDs for completed focus, return from idle, mouse exploration and window hops. Today and Pack history show the recorded timeline.
-- Read-only catalogue: 9 reachable personality × rarity slots derived from the local collection; missing slots never write placeholder rows
+- Read-only catalogue: 10 hatchable visual recipes (5 basic, 5 mutation) derived from the local collection; missing slots never write placeholder rows. The eight role recipes remain visual outfit ideas, not hatch outcomes.
 - Day phase: Electron `userData/day-state.json` (`egg` | `growing` | `hatched`, plus a pending rollover choice)
 - All-time count-only statistics: Electron `userData/activity-stats.json`; replacing an egg does not clear totals
 - Local coin wallet: Electron `userData/coins.json`; three daily rewards are idempotent and capped at 30 coins. See `docs/COIN_ECONOMY.md`; existing wearables remain free.
@@ -51,7 +51,9 @@ Requires Node 18+.
 3. At the goal, the adult appears and **Save** becomes available; Save upserts into `userData/collection.json` (badge updates).
 4. After local midnight / day roll — a finished egg is replaced; an unfinished egg shows **Keep hatching / Choose a new egg**.
 5. **Day** also lists today's observed moments. **Pack → Moments** shows local history; **Pack → Collection** opens a saved adult and its bilingual hatch memory. The memory refers only to moments associated with that egg. Missed desktop reactions do not erase events.
-6. **Pack** also holds the catalog, all-time stats and coin wallet. Adult wardrobe choices are free and shared across adults. Settings can reopen the bilingual first-run guide.
+6. **Pack** also holds the 10-form catalog, all-time stats and coin wallet. The adult wardrobe has separate hat, face accessory and outfit tabs; choices are free and shared across adults. Settings can reopen the bilingual first-run guide.
+
+Settings also offers manual drag, gentle random wandering, and fixed position. Window coordinates are saved after dragging settles rather than on every move. Random wandering pauses while the window is focused and keeps the companion inside the current display's work area. The layer selector offers Always on top or Desktop bottom. On Windows, Desktop bottom puts the window at the bottom of the ordinary window stack and restores that placement when focus leaves; on macOS it switches off always-on-top without Windows-specific bottom placement.
 
 Moments begin when observation is enabled; existing activity totals are used as a baseline and do not generate retroactive stories. Live input permission is needed for click, key and mouse signals; idle-only mode can still run. `settle:demo` remains a fixture-only CLI path.
 
@@ -100,7 +102,7 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 
 | Path | Role |
 |------|------|
-| `main.js` | Transparent always-on-top window + IPC + day boundary poll |
+| `main.js` / `window.js` / `windowMotion.js` | Transparent window, layer and movement settings, IPC + day boundary poll |
 | `dayState.js` | Persist egg/hatched phase per local date under `userData` |
 | `eggProgress.js` | Calculate carried egg counts and new-egg baselines |
 | `activityStats.js` / `activityStatsCore.js` | Persist and deduplicate all-time count statistics |
@@ -108,7 +110,7 @@ Dock / `.app` icon comes from `src/art/AppIcon.png`. `electron-builder` generate
 | `memoryCore.js` | Build bilingual hatch memories from settled data and recorded moments |
 | `pipeline.js` | Loads SENSE fixture → CORE `settleDay()` |
 | `collection.js` | Persist/load local collection under `userData` |
-| `catalog.js` | Project collection rows onto the 9-slot collected/missing catalogue |
+| `catalog.js` | Project collection rows onto the 10-form collected/missing catalogue |
 | `characterRecipe.js` | Validate recipes, migrate old collection rows and resolve ordered SVG layers |
 | `resultView.js` | Pure renderer-safe projection of CORE settle results |
 | `../shared/jsonFile.cjs` | Shared atomic JSON persistence helper |

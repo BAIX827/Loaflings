@@ -3,6 +3,11 @@
 > 仓库中的 `modular/manifest.json` 和对应 SVG 是运行时素材的权威来源；
 > 本页是制作与评审入口，不新增游戏内容。
 
+**同步规则：**以后 Figma 素材库有更新时，按 `ASSET_PRODUCTION_GUIDE.md` 的
+“Figma 更新与游戏同步”流程核对仓库与游戏。确认用于游戏的组件要在同一项
+工作中接入运行时并实机验证；只有 Figma 组件、尚未导出或尚未接入的项目须标为
+“未同步”，不能计作已在游戏中可用。
+
 Figma 主工作文件（Education 团队）：[Loaflings — Modular 2D Asset Library](https://www.figma.com/design/ILmw8f2utXWkolzvA6QkNt)。
 2026-09-24 已按 `ASSET_PRODUCTION_GUIDE.md` 第 2 节建立 `00–12` 页面树，
 导入 78 个可编辑 SVG 组件、几何母版、两张视觉参考图和 8 个标准色变量；

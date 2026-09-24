@@ -468,9 +468,20 @@ body {
 .wardrobe {
   max-height: 256px;
 }
+.wardrobe-tabs {
+  display: flex;
+  gap: 5px;
+}
+.wardrobe-tabs .chip {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 2px;
+  font-size: 10px;
+}
 .wardrobe-slot {
   margin: 9px 0;
 }
+.wardrobe-slot[hidden] { display: none !important; }
 .wardrobe-slot > strong {
   display: block;
   margin-bottom: 5px;
