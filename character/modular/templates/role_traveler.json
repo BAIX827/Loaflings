@@ -1,0 +1,7 @@
+{
+  "id": "role_traveler",
+  "kind": "role",
+  "label": "漫游 Loafling",
+  "description": "草莓粉的微尖身体，戴沙色渔夫帽和浅蜜色眼镜，背轻巧的蓝色侧袋。",
+  "recipe": { "body": "body_pointy_strawberry", "marking": "none", "expression": "expr_curious", "cloudMood": "cloud_excited", "headwear": "hat_bucket_sand", "facewear": "glasses_sun_honey", "outfit": "outfit_satchel_blue" }
+}

@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Facewear_Glasses_Round_Olive">
+    <circle cx="451" cy="505" r="47" fill="#F6F8EA" fill-opacity="0.13" stroke="#81916F" stroke-width="8"/>
+    <circle cx="753" cy="505" r="47" fill="#F6F8EA" fill-opacity="0.13" stroke="#81916F" stroke-width="8"/>
+    <path d="M498 499C549 482 655 482 706 499M403 498L377 491M800 498L826 491" stroke="#81916F" stroke-width="7" stroke-linecap="round"/>
+    <path d="M424 478L433 471M726 478L735 471" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

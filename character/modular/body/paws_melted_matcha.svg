@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Paws_Melted_Matcha_Foreground">
+    <ellipse id="Paw_Melted_Matcha_Left" cx="400" cy="620" rx="73" ry="51" fill="#E2ECCF" stroke="#4B3A32" stroke-width="7"/>
+    <ellipse id="Paw_Melted_Matcha_Right" cx="800" cy="620" rx="73" ry="51" fill="#E2ECCF" stroke="#4B3A32" stroke-width="7"/>
+    <path id="Paw_Melted_Matcha_Details" d="M369 640C379 648 389 651 400 651M427 651C438 647 447 643 453 637M747 640C757 648 767 651 778 651M805 651C816 647 825 643 831 637" stroke="#A8C097" stroke-opacity="0.8" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

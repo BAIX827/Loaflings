@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Facewear_Glasses_Oval_Amber">
+    <ellipse cx="451" cy="506" rx="51" ry="37" fill="#FFF8F1" fill-opacity="0.12" stroke="#AD855C" stroke-width="8"/>
+    <ellipse cx="753" cy="506" rx="51" ry="37" fill="#FFF8F1" fill-opacity="0.12" stroke="#AD855C" stroke-width="8"/>
+    <path d="M502 502C548 482 654 482 702 502M400 503L375 495M804 503L829 495" stroke="#AD855C" stroke-width="8" stroke-linecap="round"/>
+    <path d="M420 489L437 479M722 489L739 479" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>

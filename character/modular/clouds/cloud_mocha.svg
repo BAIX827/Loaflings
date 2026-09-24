@@ -1,0 +1,6 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Mocha">
+    <path id="Cloud_Mocha_Silhouette" data-part="cloud-silhouette" d="M507 212C481 212 460 193 460 168C460 143 479 123 504 121C511 94 535 76 564 78C579 57 608 50 632 62C650 71 661 86 665 103C694 99 721 119 728 147C749 154 761 174 756 195C751 215 732 228 711 226C662 231 555 230 507 212Z" fill="#F5EBE5" stroke="#B89C8F" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="601" cy="246" r="7" fill="#F5EBE5" stroke="#B89C8F" stroke-width="4"/>
+  </g>
+</svg>

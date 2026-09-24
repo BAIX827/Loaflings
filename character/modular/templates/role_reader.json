@@ -1,0 +1,7 @@
+{
+  "id": "role_reader",
+  "kind": "role",
+  "label": "阅读 Loafling",
+  "description": "抹茶色的柔软低身形，戴书签夹和圆眼镜，衣服上有一本小书口袋。",
+  "recipe": { "body": "body_melted_matcha", "marking": "none", "expression": "expr_focused", "cloudMood": "cloud_focused", "headwear": "hat_bookmark_sage", "facewear": "glasses_round_olive", "outfit": "outfit_book_pocket_cocoa" }
+}

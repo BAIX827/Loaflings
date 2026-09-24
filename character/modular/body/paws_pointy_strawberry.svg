@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Paws_Pointy_Strawberry_Foreground">
+    <ellipse id="Paw_Pointy_Strawberry_Left" cx="421" cy="619" rx="68" ry="51" fill="#FFE6E8" stroke="#4B3A32" stroke-width="7"/>
+    <ellipse id="Paw_Pointy_Strawberry_Right" cx="779" cy="619" rx="68" ry="51" fill="#FFE6E8" stroke="#4B3A32" stroke-width="7"/>
+    <path id="Paw_Pointy_Strawberry_Details" d="M393 640C402 647 410 649 419 649M443 649C452 646 459 642 464 637M751 640C760 647 768 649 777 649M801 649C810 646 817 642 822 637" stroke="#E4A8AF" stroke-opacity="0.75" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+{
+  "id": "role_stargazer",
+  "kind": "role",
+  "label": "观星 Loafling",
+  "description": "淡紫星帽、半月镜框和梦境云朵的角色搭配。",
+  "recipe": { "body": "body_long", "marking": "none", "expression": "expr_curious", "cloudMood": "cloud_dreamy", "headwear": "hat_star_cap", "facewear": "glasses_halfmoon_lilac", "outfit": "outfit_cardigan_cocoa" }
+}

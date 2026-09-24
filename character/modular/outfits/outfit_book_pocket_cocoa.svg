@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Book_Pocket_Cocoa">
+    <path d="M524 591C567 603 633 603 676 591L689 656C641 671 559 671 511 656L524 591Z" fill="#C5A78F" stroke="#7A6053" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M544 615C565 608 587 612 600 623C613 612 635 608 656 615V642C634 637 612 641 600 650C588 641 566 637 544 642V615Z" fill="#FFF2DF" stroke="#9D7B66" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M600 623V649" stroke="#9D7B66" stroke-width="4" stroke-linecap="round"/>
+    <path d="M531 599C573 610 626 610 668 599" stroke="#E4CEB9" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

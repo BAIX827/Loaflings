@@ -1,0 +1,7 @@
+{
+  "id": "role_painter",
+  "kind": "role",
+  "label": "绘画 Loafling",
+  "description": "圆软的 Bun 身形、淡紫画帽、少量彩色斑点和低遮挡的桃色画衣。",
+  "recipe": { "body": "body_bun", "marking": "none", "expression": "expr_excited", "cloudMood": "cloud_curious", "headwear": "hat_painter_lilac", "facewear": "facewear_paint_specks", "outfit": "outfit_painter_smock_peach" }
+}

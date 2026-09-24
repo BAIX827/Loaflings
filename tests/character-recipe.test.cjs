@@ -80,3 +80,20 @@ test('appearance recipes resolve to ordered existing layer sources', () => {
   );
   assert.match(recipeToken(supplied), /^body_chubby\|marking_patchy\|/);
 });
+
+test('colour and shape mutations retain matching body parts and compatible wearables', () => {
+  for (const id of ['mutation_sesame', 'mutation_dapple', 'mutation_sprout_cloud']) {
+    const template = require(`../character/modular/templates/${id}.json`);
+    const recipe = {
+      ...template.recipe,
+      headwear: 'hat_leaf_clip',
+      facewear: 'glasses_oval_amber',
+      outfit: 'outfit_baker_apron',
+    };
+    assert.deepEqual(normalizeCharacterRecipe(recipe), recipe);
+    const { layers } = layersForRecipe(recipe);
+    assert.equal(layers.find((layer) => layer.slot === 'body')?.src, `body/${recipe.body}.svg`);
+    assert.equal(layers.find((layer) => layer.slot === 'pawsForeground')?.src, `body/paws_${recipe.body.slice(5)}.svg`);
+    assert.equal(layers.find((layer) => layer.slot === 'tail')?.src, `body/tail_${recipe.body.slice(5)}.svg`);
+  }
+});

@@ -45,6 +45,59 @@
       "faceTransform": { "x": 0, "y": 5, "scaleX": 1.06, "scaleY": 1, "rotation": 0 },
       "headwearTransform": { "x": 0, "y": 8, "scale": 1 },
       "cloudTransform": { "x": 0, "y": 0, "scale": 1 }
+    },
+    "body_bun": {
+      "label": "Bun",
+      "shadow": "body/shadow.svg",
+      "tail": "body/tail_classic.svg",
+      "body": "body/body_bun.svg",
+      "pawsForeground": "body/paws_classic.svg",
+      "faceTransform": { "x": 0, "y": 0, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": -8, "scale": 1 },
+      "cloudTransform": { "x": 0, "y": -25, "scale": 1 }
+    },
+    "body_pudgy": {
+      "label": "Pudgy",
+      "shadow": "body/shadow_chubby.svg",
+      "tail": "body/tail_chubby.svg",
+      "body": "body/body_pudgy.svg",
+      "pawsForeground": "body/paws_chubby.svg",
+      "faceTransform": { "x": 0, "y": 5, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": 47, "scale": 1.03 },
+      "cloudTransform": { "x": 0, "y": 45, "scale": 1 }
+    },
+    "body_pointy_strawberry": {
+      "label": "Pointy · Strawberry",
+      "shadow": "body/shadow.svg",
+      "tail": "body/tail_pointy_strawberry.svg",
+      "body": "body/body_pointy_strawberry.svg",
+      "pawsForeground": "body/paws_pointy_strawberry.svg",
+      "faceTransform": { "x": 0, "y": 0, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": -6, "scale": 1 },
+      "cloudTransform": { "x": 0, "y": -25, "scale": 1 },
+      "tags": ["mutation", "pointy", "strawberry"]
+    },
+    "body_melted_matcha": {
+      "label": "Melted · Matcha",
+      "shadow": "body/shadow_chubby.svg",
+      "tail": "body/tail_melted_matcha.svg",
+      "body": "body/body_melted_matcha.svg",
+      "pawsForeground": "body/paws_melted_matcha.svg",
+      "faceTransform": { "x": 0, "y": 5, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": 48, "scale": 1 },
+      "cloudTransform": { "x": 0, "y": 45, "scale": 1 },
+      "tags": ["mutation", "melted", "matcha"]
+    },
+    "body_round_mocha": {
+      "label": "Round · Mocha",
+      "shadow": "body/shadow_chubby.svg",
+      "tail": "body/tail_round_mocha.svg",
+      "body": "body/body_round_mocha.svg",
+      "pawsForeground": "body/paws_round_mocha.svg",
+      "faceTransform": { "x": 0, "y": 2, "scaleX": 1, "scaleY": 1, "rotation": 0 },
+      "headwearTransform": { "x": 0, "y": 6, "scale": 1 },
+      "cloudTransform": { "x": 0, "y": 0, "scale": 1 },
+      "tags": ["mutation", "round", "mocha"]
     }
   },
   "markings": {
@@ -52,9 +105,23 @@
     "marking_patchy": {
       "label": "Patchy",
       "src": "markings/marking_patchy.svg",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "recolorable": true,
       "tags": ["mutation", "patches", "rare"]
+    },
+    "marking_sesame": {
+      "label": "Sesame",
+      "src": "markings/marking_sesame.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true,
+      "tags": ["mutation", "seeds"]
+    },
+    "marking_dapple": {
+      "label": "Dapple",
+      "src": "markings/marking_dapple.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true,
+      "tags": ["mutation", "pastel"]
     }
   },
   "expressions": {
@@ -77,75 +144,211 @@
     "cloud_rainy": { "label": "Rainy", "src": "clouds/cloud_rainy.svg" },
     "cloud_stormy": { "label": "Stormy", "src": "clouds/cloud_stormy.svg" },
     "cloud_dreamy": { "label": "Dreamy", "src": "clouds/cloud_dreamy.svg" },
-    "cloud_twin": { "label": "Twin Cloud", "src": "clouds/cloud_twin.svg", "tags": ["mutation", "twin", "epic"] }
+    "cloud_twin": { "label": "Twin Cloud", "src": "clouds/cloud_twin.svg", "tags": ["mutation", "twin", "epic"] },
+    "cloud_sprout": { "label": "Sprout Cloud", "src": "clouds/cloud_sprout.svg", "tags": ["mutation", "plant"] },
+    "cloud_strawberry": { "label": "Strawberry Cloud", "src": "clouds/cloud_strawberry.svg", "tags": ["mutation", "strawberry"] },
+    "cloud_mocha": { "label": "Mocha Cloud", "src": "clouds/cloud_mocha.svg", "tags": ["mutation", "mocha"] }
   },
   "headwear": {
     "none": null,
     "hat_knit_blue": {
       "label": "Blue knit hat", "src": "headwear/hat_knit_blue.svg", "anchor": "headwear",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "cloudOffset": { "x": 0, "y": -36 }, "recolorable": true,
       "tags": ["cozy", "winter", "common"]
     },
     "hat_nightcap_lavender": {
       "label": "Lavender nightcap", "src": "headwear/hat_nightcap_lavender.svg", "anchor": "headwear",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "cloudOffset": { "x": 0, "y": -55 }, "recolorable": true,
       "tags": ["sleepy", "night", "uncommon"]
     },
     "hat_beret_peach": {
       "label": "Peach beret", "src": "headwear/hat_beret_peach.svg", "anchor": "headwear",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "cloudOffset": { "x": 0, "y": -28 }, "recolorable": true,
       "tags": ["creative", "cozy", "common"]
     },
     "hat_rain_yellow": {
       "label": "Yellow rain hat", "src": "headwear/hat_rain_yellow.svg", "anchor": "headwear",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "cloudOffset": { "x": 0, "y": -48 }, "recolorable": true,
       "tags": ["rainy", "outdoor", "uncommon"]
+    },
+    "hat_leaf_clip": {
+      "label": "Leaf clip", "src": "headwear/hat_leaf_clip.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": 0 }, "recolorable": true,
+      "tags": ["garden", "small"]
+    },
+    "hat_baker_cream": {
+      "label": "Cream baker hat", "src": "headwear/hat_baker_cream.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": -35 }, "recolorable": true,
+      "tags": ["baker", "cozy"]
+    },
+    "hat_star_cap": {
+      "label": "Lilac star cap", "src": "headwear/hat_star_cap.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": -42 }, "recolorable": true,
+      "tags": ["dreamy", "night"]
+    },
+    "hat_ribbon_rose": {
+      "label": "Rose ribbon", "src": "headwear/hat_ribbon_rose.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": -16 }, "recolorable": true,
+      "tags": ["gentle", "small"]
+    },
+    "hat_bookmark_sage": {
+      "label": "Sage bookmark clip", "src": "headwear/hat_bookmark_sage.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": 0 }, "recolorable": true,
+      "tags": ["reading", "small"]
+    },
+    "hat_teacup_cream": {
+      "label": "Cream teacup", "src": "headwear/hat_teacup_cream.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": -65 }, "recolorable": true,
+      "tags": ["tea", "cozy"]
+    },
+    "hat_bucket_sand": {
+      "label": "Sand bucket hat", "src": "headwear/hat_bucket_sand.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": -40 }, "recolorable": true,
+      "tags": ["travel", "outdoor"]
+    },
+    "hat_painter_lilac": {
+      "label": "Lilac painter beret", "src": "headwear/hat_painter_lilac.svg", "anchor": "headwear",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "cloudOffset": { "x": 0, "y": -38 }, "recolorable": true,
+      "tags": ["painting", "cozy"]
     }
   },
   "facewear": {
     "none": null,
     "glasses_round_cocoa": {
       "label": "Round cocoa glasses", "src": "facewear/glasses_round_cocoa.svg", "anchor": "faceCenter",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "recolorable": true, "tags": ["reading", "cozy", "common"]
     },
     "glasses_focus_blue": {
       "label": "Blue focus glasses", "src": "facewear/glasses_focus_blue.svg", "anchor": "faceCenter",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "recolorable": true, "tags": ["focus", "work", "uncommon"]
+    },
+    "glasses_oval_amber": {
+      "label": "Amber oval glasses", "src": "facewear/glasses_oval_amber.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["reading", "warm"]
+    },
+    "glasses_halfmoon_lilac": {
+      "label": "Lilac half-moon glasses", "src": "facewear/glasses_halfmoon_lilac.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["reading", "gentle"]
+    },
+    "glasses_round_olive": {
+      "label": "Olive round glasses", "src": "facewear/glasses_round_olive.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["reading", "gentle"]
+    },
+    "facewear_freckles_caramel": {
+      "label": "Caramel freckles", "src": "facewear/facewear_freckles_caramel.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["warm", "small"]
+    },
+    "glasses_sun_honey": {
+      "label": "Honey sun glasses", "src": "facewear/glasses_sun_honey.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["travel", "warm"]
+    },
+    "facewear_paint_specks": {
+      "label": "Pastel paint specks", "src": "facewear/facewear_paint_specks.svg", "anchor": "faceCenter",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["painting", "small"]
     }
   },
   "outfits": {
     "none": null,
     "outfit_vest_sage": {
       "label": "Sage knit vest", "src": "outfits/outfit_vest_sage.svg",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "recolorable": true, "tags": ["cozy", "focus", "common"]
     },
     "outfit_apron_peach": {
       "label": "Peach apron", "src": "outfits/outfit_apron_peach.svg",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "recolorable": true, "tags": ["home", "making", "common"]
     },
     "outfit_raincoat_sky": {
       "label": "Sky raincoat", "src": "outfits/outfit_raincoat_sky.svg",
-      "compatibleBodies": ["body_classic", "body_chubby", "body_long"],
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
       "recolorable": true, "tags": ["rainy", "outdoor", "uncommon"]
+    },
+    "outfit_garden_pinafore": {
+      "label": "Sage garden pinafore", "src": "outfits/outfit_garden_pinafore.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["garden", "making"]
+    },
+    "outfit_cardigan_cocoa": {
+      "label": "Cocoa cardigan", "src": "outfits/outfit_cardigan_cocoa.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["reading", "cozy"]
+    },
+    "outfit_overalls_blueberry": {
+      "label": "Blueberry overalls", "src": "outfits/outfit_overalls_blueberry.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["making", "playful"]
+    },
+    "outfit_baker_apron": {
+      "label": "Cream baker apron", "src": "outfits/outfit_baker_apron.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["baker", "making"]
+    },
+    "outfit_book_pocket_cocoa": {
+      "label": "Cocoa book pocket", "src": "outfits/outfit_book_pocket_cocoa.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["reading", "cozy"]
+    },
+    "outfit_tea_apron_sage": {
+      "label": "Sage tea apron", "src": "outfits/outfit_tea_apron_sage.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["tea", "home"]
+    },
+    "outfit_satchel_blue": {
+      "label": "Blue side satchel", "src": "outfits/outfit_satchel_blue.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["travel", "outdoor"]
+    },
+    "outfit_painter_smock_peach": {
+      "label": "Peach painter smock", "src": "outfits/outfit_painter_smock_peach.svg",
+      "compatibleBodies": ["body_classic", "body_chubby", "body_long", "body_bun", "body_pudgy", "body_pointy_strawberry", "body_melted_matcha", "body_round_mocha"],
+      "recolorable": true, "tags": ["painting", "making"]
     }
   },
   "templates": {
     "basic": [
       "templates/basic_classic.json",
       "templates/basic_chubby.json",
-      "templates/basic_long.json"
+      "templates/basic_long.json",
+      "templates/basic_bun.json",
+      "templates/basic_pudgy.json"
     ],
     "mutations": [
       "templates/mutation_patchy.json",
-      "templates/mutation_twin_cloud.json"
+      "templates/mutation_twin_cloud.json",
+      "templates/mutation_sesame.json",
+      "templates/mutation_dapple.json",
+      "templates/mutation_sprout_cloud.json"
+    ],
+    "roles": [
+      "templates/role_gardener.json",
+      "templates/role_baker.json",
+      "templates/role_stargazer.json",
+      "templates/role_maker.json",
+      "templates/role_reader.json",
+      "templates/role_tea_host.json",
+      "templates/role_traveler.json",
+      "templates/role_painter.json"
     ]
   },
   "defaultRecipe": {

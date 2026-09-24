@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Satchel_Blue">
+    <path d="M482 573C560 605 690 613 800 593" stroke="#7994A9" stroke-width="11" stroke-linecap="round"/>
+    <path d="M765 594C793 586 824 590 846 605L842 653C816 666 777 664 752 650L765 594Z" fill="#AFC9DB" stroke="#69869B" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M762 605C784 613 820 614 844 605L839 626C812 634 780 633 757 625L762 605Z" fill="#D6E6ED" stroke="#69869B" stroke-width="6" stroke-linejoin="round"/>
+    <circle cx="800" cy="626" r="5" fill="#69869B"/>
+  </g>
+</svg>

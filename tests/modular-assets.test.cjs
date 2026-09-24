@@ -45,19 +45,20 @@ test('modular manifest has a stable canvas and layer order', () => {
   ]);
   assert.equal(manifest.version, 3);
   assert.equal(manifest.defaultRecipe.body, 'body_classic');
-  assert.equal(Object.keys(manifest.bodies).length, 3);
+  assert.equal(Object.keys(manifest.bodies).length, 8);
   assert.equal(Object.keys(manifest.expressions).length, 8);
-  assert.equal(Object.keys(manifest.cloudMoods).length, 10);
+  assert.equal(Object.keys(manifest.cloudMoods).length, 13);
   assert.deepEqual(
     manifest.headwear.hat_knit_blue.compatibleBodies,
-    ['body_classic', 'body_chubby', 'body_long'],
+    ['body_classic', 'body_chubby', 'body_long', 'body_bun', 'body_pudgy', 'body_pointy_strawberry', 'body_melted_matcha', 'body_round_mocha'],
   );
 });
 
 test('basic and mutation templates resolve to valid modular recipes', () => {
-  const templateSources = [...manifest.templates.basic, ...manifest.templates.mutations];
-  assert.equal(manifest.templates.basic.length, 3);
-  assert.equal(manifest.templates.mutations.length, 2);
+  const templateSources = [...manifest.templates.basic, ...manifest.templates.mutations, ...manifest.templates.roles];
+  assert.equal(manifest.templates.basic.length, 5);
+  assert.equal(manifest.templates.mutations.length, 5);
+  assert.equal(manifest.templates.roles.length, 8);
 
   for (const source of templateSources) {
     const template = JSON.parse(fs.readFileSync(path.join(modularRoot, source), 'utf8'));
@@ -74,9 +75,9 @@ test('basic and mutation templates resolve to valid modular recipes', () => {
 
 test('every modular part exists and remains an editable transparent SVG', () => {
   const sources = collectSources();
-  assert.equal(new Set(sources).size, sources.length, 'module sources must be unique');
+  // Body shapes intentionally share compatible paw, tail and shadow modules.
 
-  for (const source of sources) {
+  for (const source of new Set(sources)) {
     const filePath = path.join(modularRoot, source);
     assert.equal(fs.existsSync(filePath), true, `${source} is missing`);
     const svg = fs.readFileSync(filePath, 'utf8');
@@ -132,7 +133,7 @@ test('the desktop wardrobe exposes all three wearable slots', () => {
   const renderer = fs.readFileSync(path.join(root, 'src', 'desk', 'renderer.js'), 'utf8');
   assert.match(renderer, /img\.src = modularAssetUrl\(entry\.src\)/);
   assert.match(renderer, /aria-pressed/);
-  assert.equal(Object.keys(manifest.headwear).length, 5);
-  assert.equal(Object.keys(manifest.facewear).length, 3);
-  assert.equal(Object.keys(manifest.outfits).length, 4);
+  assert.equal(Object.keys(manifest.headwear).length, 13);
+  assert.equal(Object.keys(manifest.facewear).length, 9);
+  assert.equal(Object.keys(manifest.outfits).length, 12);
 });

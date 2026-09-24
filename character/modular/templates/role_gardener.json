@@ -1,0 +1,7 @@
+{
+  "id": "role_gardener",
+  "kind": "role",
+  "label": "园艺 Loafling",
+  "description": "嫩叶发夹、园艺围裙与小芽云朵组成的温柔角色搭配；不是新的行为职业规则。",
+  "recipe": { "body": "body_bun", "marking": "none", "expression": "expr_happy", "cloudMood": "cloud_sprout", "headwear": "hat_leaf_clip", "facewear": "none", "outfit": "outfit_garden_pinafore" }
+}

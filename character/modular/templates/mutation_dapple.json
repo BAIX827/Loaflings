@@ -1,0 +1,7 @@
+{
+  "id": "mutation_dapple",
+  "kind": "mutation",
+  "label": "变异 Dapple",
+  "description": "草莓粉的微尖面团轮廓、淡紫斑纹和粉色小云；尖角仍柔软，不构成动物耳朵。",
+  "recipe": { "body": "body_pointy_strawberry", "marking": "marking_dapple", "expression": "expr_curious", "cloudMood": "cloud_strawberry", "headwear": "none", "facewear": "none", "outfit": "none" }
+}

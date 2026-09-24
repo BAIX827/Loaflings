@@ -1,0 +1,7 @@
+{
+  "id": "role_baker",
+  "kind": "role",
+  "label": "烘焙 Loafling",
+  "description": "奶油色烘焙帽与桃色围裙的角色搭配；沿用现有面团身体。",
+  "recipe": { "body": "body_chubby", "marking": "none", "expression": "expr_happy", "cloudMood": "cloud_happy", "headwear": "hat_baker_cream", "facewear": "none", "outfit": "outfit_baker_apron" }
+}

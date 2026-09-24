@@ -1,0 +1,7 @@
+{
+  "id": "role_maker",
+  "kind": "role",
+  "label": "手作 Loafling",
+  "description": "玫瑰色蝴蝶结、琥珀眼镜和蓝莓背带裤的角色搭配。",
+  "recipe": { "body": "body_pudgy", "marking": "none", "expression": "expr_focused", "cloudMood": "cloud_focused", "headwear": "hat_ribbon_rose", "facewear": "glasses_oval_amber", "outfit": "outfit_overalls_blueberry" }
+}

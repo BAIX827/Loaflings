@@ -51,7 +51,7 @@ AI 图像生成适合：
 
 `Loaflings — Modular 2D Asset Library`
 
-工作文件链接、现有 40 个模块清单和导入状态见 `ASSET_LIBRARY_INDEX.md`。
+工作文件链接、现有 78 个模块清单和导入状态见 `ASSET_LIBRARY_INDEX.md`。
 
 推荐页面：
 

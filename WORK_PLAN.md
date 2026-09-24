@@ -1,11 +1,10 @@
 # WORK_PLAN
 
 ## Current
-- [ ] 2026-09-23 Figma 2D 素材库：文件已创建；待 Figma Starter MCP 调用额度恢复后建立页面、变量并导入现有 40 个 SVG 组件，完成组合 QA。仓库侧索引见 `character/ASSET_LIBRARY_INDEX.md`。
 - [ ] Soft polish / optional next
   - [ ] Consider splitting the large desktop renderer into focused modules in a separate, regression-tested change; avoid incidental restructuring during feature work
   - [ ] Reference-aligned optional idle PNG expression / pose pool (3 expression review masters generated; poses remain)
-  - [ ] Review the 3 basic and 2 mutation SVG templates in the live desktop runtime, then approve or revise the art direction
+  - [ ] Review the 5 basic, 5 mutation and 8 role SVG recipes in the live desktop runtime, then approve or revise the art direction
   - [ ] Optional: Developer ID sign + notarize
   - [ ] Optional short interactions (feed / dig / evolution choice)
   - Historical MVP acceptance baseline: `docs/MVP_DEMO_ACCEPTANCE.md`
@@ -15,6 +14,10 @@
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-24 additional visual roles and wearables: 4 role recipes, 12 reusable SVG accessories, small-size captures, and Education Figma library sync to 78 components / 18 QA compositions
+- [x] 2026-09-24 Education Figma 2D 素材库：13 页分类树、66 个可编辑 SVG 组件、8 个标准色变量和 14 个组合检查画框；入口见 `character/ASSET_LIBRARY_INDEX.md`
+- [x] 2026-09-24 colour and shape mutation follow-up: Strawberry Pointy, Matcha Melted and Mocha Round modular bodies with matching paws, tails and clouds
+- [x] 2026-09-24 modular art expansion: 2 bodies, 3 mutation parts, 10 wearables and 4 visual role recipes, with Electron combination previews
 - [x] 2026-09-23 configurable hatch goal: 20,000 default, 1,000 minimum and proportional growth stages
 - [x] 2026-09-23 scoped desktop code cleanup and unused-stub removal
 - [x] 2026-09-23 six-stage growth timeline with milestone thresholds and next-stage distance
@@ -47,6 +50,25 @@
 - [x] LEAD: acceptance docs
 
 ## Log
+
+2026-09-24 (ADDITIONAL ROLES AND ACCESSORIES)
+- Drew 4 new head accessories, 4 face accessories and 4 low-coverage outfit pieces; assembled Reader, Tea Host, Traveler and Painter from existing coloured body shapes, expressions and clouds. All 12 parts remain independent SVG layers compatible with the 8 bodies. The library now has 78 SVG modules and 8 visual role recipes; generation, genes, rarity and hatch rules are unchanged.
+- Added each new SVG as an editable component in the Education Figma file, then assembled 4 more QA frames from instances in manifest layer order. Verified Figma counts of 12 headwear, 8 facewear, 11 outfits and 18 QA frames, plus the combination-page screenshot.
+- Checked all 4 roles at full and 260 px desktop size. Verified 78 SVG files parse with the shared `1200 × 900` viewBox, 12 focused Node tests pass, and an Electron wardrobe smoke loads 12/8/11 wearable previews and persists a selection. That smoke still logs an unrelated missing `loaflings:get-adventures` handler while its wardrobe checks pass; left the unrelated desktop work untouched.
+
+2026-09-24 (EDUCATION FIGMA ASSET LIBRARY)
+- Verified the `education` Figma connection uses `yaxi.bai@student.unimelb.edu.au` on a Student team. The old Starter file belongs to a separate connection and is not editable from this account, so created a new Education-team `Loaflings — Modular 2D Asset Library` and made it the documented entry point.
+- Created the `00–12` page tree, imported all 66 modular SVGs as editable 1200 × 900 components, added the canonical base and both reference boards, and created eight core colour variables with matching swatches.
+- Built 14 basic, mutation and role review frames from component instances in manifest layer order. Verified category counts, variable names, frame layers and Figma screenshots of the visual bible and combination page. Hatch stages, props/effects and export review remain classification/approval pages without new assets.
+
+2026-09-24 (COLOUR AND SHAPE MUTATION FOLLOW-UP)
+- Revised three existing mutation recipes using the supplied character design bible and visual style guide: Dapple now has a strawberry-pink, softly pointed body and pink cloud; Sprout Cloud has a low matcha-green body; Sesame has a round mocha body and warm cloud. Each coloured body has matching paws and tail while reusing face and wearable slots. Added 11 SVG modules, taking the library to 66. These are authored colour-and-shape pairs, not arbitrary palette combinations or changes to mutation probability.
+- Rendered the three recipes, three dressed combinations and 260 px desktop-size samples in Electron; checked silhouettes, faces, cloud gaps, colour continuity and wearable placement. Verified all 66 SVGs parse, 44 direct Node tests pass, and scoped `git diff --check` passes. The standard `npm.cmd test` compile step remains restricted by this sandbox's parent-directory read permissions, so the direct test run is recorded separately.
+
+2026-09-24 (MODULAR CHARACTER ART EXPANSION)
+- Drew Bun and Pudgy body shapes, Sesame and Dapple markings, Sprout Cloud, four head accessories, two glasses and four low-coverage outfits. The manifest now lists 55 editable SVG modules, 5 basic recipes, 5 mutation recipes and 4 visual role recipes. The role recipes do not change generation, rarity or hatch rules; new wearables are available in the existing adult wardrobe.
+- Updated the composer, asset index and capture helper. Rendered and visually checked all nine new recipes, then adjusted clothing coverage and cloud gaps. Verified all 55 SVGs parse, 42 Node tests pass, Electron wardrobe cards load all 8/4/7 wearable previews and new selections persist, and `git diff --check` passes for this scope.
+- `npm.cmd test` could not complete its compile step in this restricted sandbox because esbuild cannot read a parent directory; the direct Node test run passed. The wardrobe capture also logged an unrelated missing `loaflings:get-adventures` handler while concurrent desktop feature work was in progress; its wardrobe assertions passed.
 
 2026-09-23 (DOCUMENTATION SYNC)
 - Audited the current source, assets, package scripts and Markdown against the existing growth, cross-day egg, modular adult, coin wallet and Windows release implementation. Updated the top-level and module READMEs, hatch art and gene contract notes, profile schema, and V2 planning copy; labelled the old Mac demo acceptance as a historical baseline. Preserved the existing V2 drafts and their work-plan entry.

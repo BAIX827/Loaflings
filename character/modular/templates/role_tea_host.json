@@ -1,0 +1,7 @@
+{
+  "id": "role_tea_host",
+  "kind": "role",
+  "label": "茶点 Loafling",
+  "description": "摩卡色圆身体、小茶杯和焦糖雀斑，配一条鼠尾草绿围裙。",
+  "recipe": { "body": "body_round_mocha", "marking": "none", "expression": "expr_happy", "cloudMood": "cloud_happy", "headwear": "hat_teacup_cream", "facewear": "facewear_freckles_caramel", "outfit": "outfit_tea_apron_sage" }
+}

@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Cardigan_Cocoa">
+    <path d="M342 570C379 557 413 567 451 585C484 600 520 606 563 609L556 665C482 675 417 661 378 641C350 642 327 632 309 613C308 596 320 580 342 570Z" fill="#C8AD98" stroke="#755C50" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M858 570C821 557 787 567 749 585C716 600 680 606 637 609L644 665C718 675 783 661 822 641C850 642 873 632 891 613C892 596 880 580 858 570Z" fill="#C8AD98" stroke="#755C50" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M451 585C489 606 525 614 563 615M749 585C711 606 675 614 637 615M397 637C438 660 492 665 552 660M803 637C762 660 708 665 648 660" stroke="#E7D4C3" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="575" cy="627" r="6" fill="#755C50"/><circle cx="575" cy="650" r="6" fill="#755C50"/>
+  </g>
+</svg>

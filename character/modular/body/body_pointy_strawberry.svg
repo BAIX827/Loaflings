@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Body_Pointy_Strawberry">
+    <path id="Body_Pointy_Strawberry_Fill" d="M319 602C285 583 278 536 294 500C307 472 329 451 357 438C364 398 390 369 425 351C440 312 461 279 486 268C495 264 500 271 505 282C517 301 532 308 548 313C578 296 622 296 651 314C674 303 691 284 703 268C711 256 719 263 725 275C749 299 767 322 780 353C817 368 844 399 852 441C885 454 907 480 916 513C927 554 911 588 881 605C861 617 837 619 816 608C790 650 743 665 701 652C665 677 535 677 499 652C457 665 410 650 384 608C363 619 339 617 319 602Z" fill="#FFE6E8" stroke="#4B3A32" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="Body_Pointy_Strawberry_Highlight" d="M371 431C395 383 430 365 462 354M472 301C481 288 488 280 493 275" stroke="#FFFFFF" stroke-opacity="0.58" stroke-width="16" stroke-linecap="round"/>
+    <path id="Body_Pointy_Strawberry_Shade" d="M816 449C845 481 850 529 834 560" stroke="#EBAFB9" stroke-opacity="0.4" stroke-width="14" stroke-linecap="round"/>
+  </g>
+</svg>

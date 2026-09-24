@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Facewear_Glasses_Sun_Honey">
+    <path d="M405 477C429 461 474 462 498 480L493 516C487 538 467 550 448 548C425 548 409 534 405 511V477Z" fill="#F7DFA2" fill-opacity="0.29" stroke="#B68E55" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M707 480C730 462 775 461 798 477V511C794 534 778 548 755 548C736 550 716 538 711 516L707 480Z" fill="#F7DFA2" fill-opacity="0.29" stroke="#B68E55" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M498 483C549 466 656 466 707 483M405 481L381 476M798 481L823 476" stroke="#B68E55" stroke-width="7" stroke-linecap="round"/>
+    <path d="M423 485L438 478M726 485L741 478" stroke="#FFF9E9" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

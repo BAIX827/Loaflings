@@ -1,0 +1,7 @@
+{
+  "id": "mutation_sprout_cloud",
+  "kind": "mutation",
+  "label": "变异 Sprout Cloud",
+  "description": "抹茶绿的低矮融化形态配嫩芽小云；云朵仍悬浮在身体上方。",
+  "recipe": { "body": "body_melted_matcha", "marking": "none", "expression": "expr_happy", "cloudMood": "cloud_sprout", "headwear": "none", "facewear": "none", "outfit": "none" }
+}

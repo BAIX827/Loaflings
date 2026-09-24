@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Painter_Smock_Peach">
+    <path d="M347 572C379 564 414 572 454 590C490 605 533 612 557 614L551 664C486 677 413 657 377 639C350 644 323 628 314 609C314 590 327 578 347 572Z" fill="#F1C7B9" stroke="#A77B70" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M853 572C821 564 786 572 746 590C710 605 667 612 643 614L649 664C714 677 787 657 823 639C850 644 877 628 886 609C886 590 873 578 853 572Z" fill="#F1C7B9" stroke="#A77B70" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M397 609C441 623 493 635 539 633M803 609C759 623 707 635 661 633" stroke="#FFE6DC" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="499" cy="649" r="7" fill="#A9C8BD"/><circle cx="718" cy="645" r="6" fill="#CAB7DF"/>
+  </g>
+</svg>

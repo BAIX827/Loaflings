@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Baker_Apron">
+    <path d="M466 564C488 590 529 606 553 609M734 564C712 590 671 606 647 609" stroke="#AB806C" stroke-width="10" stroke-linecap="round"/>
+    <path d="M503 587C551 607 649 607 697 587L737 663C663 681 537 681 463 663Z" fill="#F6DCCB" stroke="#AB806C" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M515 615C567 629 633 629 685 615" stroke="#FFF3E5" stroke-width="7" stroke-linecap="round"/>
+    <path d="M554 631V655C578 662 622 662 646 655V631" fill="none" stroke="#BD9580" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+</svg>

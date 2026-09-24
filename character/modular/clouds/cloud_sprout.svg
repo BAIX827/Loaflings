@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Cloud_Sprout_Mutation">
+    <path id="Cloud_Sprout_Silhouette" data-part="cloud-silhouette" d="M507 212C481 212 460 193 460 168C460 143 479 123 504 121C511 94 535 76 564 78C579 57 608 50 632 62C650 71 661 86 665 103C694 99 721 119 728 147C749 154 761 174 756 195C751 215 732 228 711 226C662 231 555 230 507 212Z" fill="#ECF8F1" stroke="#85B6A3" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="601" cy="246" r="7" fill="#ECF8F1" stroke="#85B6A3" stroke-width="4"/>
+    <path d="M601 99C598 82 601 70 607 60" stroke="#719B72" stroke-width="6" stroke-linecap="round"/>
+    <path d="M604 73C583 72 577 57 581 45C598 45 607 54 604 73ZM606 67C613 49 629 47 639 54C633 67 623 73 606 67Z" fill="#A6C898" stroke="#719B72" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+</svg>

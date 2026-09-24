@@ -1,0 +1,7 @@
+{
+  "id": "basic_pudgy",
+  "kind": "basic",
+  "label": "基础 Pudgy",
+  "description": "更低、更松软的面团轮廓；保持轻巧的四肢和浮云。",
+  "recipe": { "body": "body_pudgy", "marking": "none", "expression": "expr_normal", "cloudMood": "cloud_normal", "headwear": "none", "facewear": "none", "outfit": "none" }
+}

@@ -53,7 +53,7 @@
     <aside class="controls">
       <h1>Loafling Composer</h1>
       <p>身体、表情、云朵和穿戴都是独立图层，可以自由组合。</p>
-      <div class="count">3 基础模板 · 2 变异模板 · 全部仍可自由换装</div>
+      <div class="count">5 基础模板 · 5 变异模板 · 4 角色搭配 · 自由换装</div>
 
       <div class="control-grid">
         <label class="full">模板
@@ -63,10 +63,25 @@
               <option value="basic_classic">基础 Classic</option>
               <option value="basic_chubby">基础 Chubby</option>
               <option value="basic_long">基础 Long</option>
+              <option value="basic_bun">基础 Bun</option>
+              <option value="basic_pudgy">基础 Pudgy</option>
             </optgroup>
             <optgroup label="Reference 变异模板">
               <option value="mutation_patchy">变异 Patchy</option>
               <option value="mutation_twin_cloud">变异 Twin Cloud</option>
+              <option value="mutation_sesame">变异 Sesame</option>
+              <option value="mutation_dapple">变异 Dapple</option>
+              <option value="mutation_sprout_cloud">变异 Sprout Cloud</option>
+            </optgroup>
+            <optgroup label="角色搭配">
+              <option value="role_gardener">园艺 Loafling</option>
+              <option value="role_baker">烘焙 Loafling</option>
+              <option value="role_stargazer">观星 Loafling</option>
+              <option value="role_maker">手作 Loafling</option>
+              <option value="role_reader">阅读 Loafling</option>
+              <option value="role_tea_host">茶点 Loafling</option>
+              <option value="role_traveler">漫游 Loafling</option>
+              <option value="role_painter">绘画 Loafling</option>
             </optgroup>
           </select>
         </label>
@@ -76,6 +91,11 @@
             <option value="body_classic">Classic</option>
             <option value="body_chubby">Chubby</option>
             <option value="body_long">Long</option>
+            <option value="body_bun">Bun</option>
+            <option value="body_pudgy">Pudgy</option>
+            <option value="body_pointy_strawberry">Pointy · Strawberry</option>
+            <option value="body_melted_matcha">Melted · Matcha</option>
+            <option value="body_round_mocha">Round · Mocha</option>
           </select>
         </label>
 
@@ -83,6 +103,8 @@
           <select id="marking">
             <option value="none">None</option>
             <option value="marking_patchy">Patchy</option>
+            <option value="marking_sesame">Sesame</option>
+            <option value="marking_dapple">Dapple</option>
           </select>
         </label>
 
@@ -111,6 +133,9 @@
             <option value="cloud_stormy">Stormy</option>
             <option value="cloud_dreamy">Dreamy</option>
             <option value="cloud_twin">Twin Cloud</option>
+            <option value="cloud_sprout">Sprout Cloud</option>
+            <option value="cloud_strawberry">Strawberry Cloud</option>
+            <option value="cloud_mocha">Mocha Cloud</option>
           </select>
         </label>
 
@@ -121,14 +146,28 @@
             <option value="hat_nightcap_lavender">Lavender nightcap</option>
             <option value="hat_beret_peach">Peach beret</option>
             <option value="hat_rain_yellow">Yellow rain hat</option>
+            <option value="hat_leaf_clip">Leaf clip</option>
+            <option value="hat_baker_cream">Cream baker hat</option>
+            <option value="hat_star_cap">Lilac star cap</option>
+            <option value="hat_ribbon_rose">Rose ribbon</option>
+            <option value="hat_bookmark_sage">Sage bookmark clip</option>
+            <option value="hat_teacup_cream">Cream teacup</option>
+            <option value="hat_bucket_sand">Sand bucket hat</option>
+            <option value="hat_painter_lilac">Lilac painter beret</option>
           </select>
         </label>
 
-        <label>眼镜
+        <label>面部配饰
           <select id="facewear">
             <option value="none">None</option>
             <option value="glasses_round_cocoa">Round cocoa</option>
             <option value="glasses_focus_blue">Blue focus</option>
+            <option value="glasses_oval_amber">Amber oval</option>
+            <option value="glasses_halfmoon_lilac">Lilac half-moon</option>
+            <option value="glasses_round_olive">Olive round</option>
+            <option value="facewear_freckles_caramel">Caramel freckles</option>
+            <option value="glasses_sun_honey">Honey sun glasses</option>
+            <option value="facewear_paint_specks">Pastel paint specks</option>
           </select>
         </label>
 
@@ -138,6 +177,14 @@
             <option value="outfit_vest_sage">Sage knit vest</option>
             <option value="outfit_apron_peach">Peach apron</option>
             <option value="outfit_raincoat_sky">Sky raincoat</option>
+            <option value="outfit_garden_pinafore">Sage garden pinafore</option>
+            <option value="outfit_cardigan_cocoa">Cocoa cardigan</option>
+            <option value="outfit_overalls_blueberry">Blueberry overalls</option>
+            <option value="outfit_baker_apron">Cream baker apron</option>
+            <option value="outfit_book_pocket_cocoa">Cocoa book pocket</option>
+            <option value="outfit_tea_apron_sage">Sage tea apron</option>
+            <option value="outfit_satchel_blue">Blue side satchel</option>
+            <option value="outfit_painter_smock_peach">Peach painter smock</option>
           </select>
         </label>
       </div>
@@ -178,6 +225,26 @@
         shadow: 'body/shadow_long.svg', tail: 'body/tail_long.svg',
         body: 'body/body_long.svg', pawsForeground: 'body/paws_long.svg',
       },
+      body_bun: {
+        shadow: 'body/shadow.svg', tail: 'body/tail_classic.svg',
+        body: 'body/body_bun.svg', pawsForeground: 'body/paws_classic.svg',
+      },
+      body_pudgy: {
+        shadow: 'body/shadow_chubby.svg', tail: 'body/tail_chubby.svg',
+        body: 'body/body_pudgy.svg', pawsForeground: 'body/paws_chubby.svg',
+      },
+      body_pointy_strawberry: {
+        shadow: 'body/shadow.svg', tail: 'body/tail_pointy_strawberry.svg',
+        body: 'body/body_pointy_strawberry.svg', pawsForeground: 'body/paws_pointy_strawberry.svg',
+      },
+      body_melted_matcha: {
+        shadow: 'body/shadow_chubby.svg', tail: 'body/tail_melted_matcha.svg',
+        body: 'body/body_melted_matcha.svg', pawsForeground: 'body/paws_melted_matcha.svg',
+      },
+      body_round_mocha: {
+        shadow: 'body/shadow_chubby.svg', tail: 'body/tail_round_mocha.svg',
+        body: 'body/body_round_mocha.svg', pawsForeground: 'body/paws_round_mocha.svg',
+      },
     };
     const cloudShift = {
       none: 0,
@@ -185,6 +252,14 @@
       hat_nightcap_lavender: -6,
       hat_beret_peach: -3,
       hat_rain_yellow: -5,
+      hat_leaf_clip: 0,
+      hat_baker_cream: -3.9,
+      hat_star_cap: -4.7,
+      hat_ribbon_rose: -1.8,
+      hat_bookmark_sage: 0,
+      hat_teacup_cream: -7.2,
+      hat_bucket_sand: -4.4,
+      hat_painter_lilac: -4.2,
     };
     const presets = {
       focus: {
@@ -220,6 +295,58 @@
       mutation_twin_cloud: {
         body: 'body_classic', marking: 'none', expression: 'expr_happy', cloudMood: 'cloud_twin',
         headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      basic_bun: {
+        body: 'body_bun', marking: 'none', expression: 'expr_normal', cloudMood: 'cloud_normal',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      basic_pudgy: {
+        body: 'body_pudgy', marking: 'none', expression: 'expr_normal', cloudMood: 'cloud_normal',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      mutation_sesame: {
+        body: 'body_round_mocha', marking: 'marking_sesame', expression: 'expr_happy', cloudMood: 'cloud_mocha',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      mutation_dapple: {
+        body: 'body_pointy_strawberry', marking: 'marking_dapple', expression: 'expr_curious', cloudMood: 'cloud_strawberry',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      mutation_sprout_cloud: {
+        body: 'body_melted_matcha', marking: 'none', expression: 'expr_happy', cloudMood: 'cloud_sprout',
+        headwear: 'none', facewear: 'none', outfit: 'none',
+      },
+      role_gardener: {
+        body: 'body_bun', marking: 'none', expression: 'expr_happy', cloudMood: 'cloud_sprout',
+        headwear: 'hat_leaf_clip', facewear: 'none', outfit: 'outfit_garden_pinafore',
+      },
+      role_baker: {
+        body: 'body_chubby', marking: 'none', expression: 'expr_happy', cloudMood: 'cloud_happy',
+        headwear: 'hat_baker_cream', facewear: 'none', outfit: 'outfit_baker_apron',
+      },
+      role_stargazer: {
+        body: 'body_long', marking: 'none', expression: 'expr_curious', cloudMood: 'cloud_dreamy',
+        headwear: 'hat_star_cap', facewear: 'glasses_halfmoon_lilac', outfit: 'outfit_cardigan_cocoa',
+      },
+      role_maker: {
+        body: 'body_pudgy', marking: 'none', expression: 'expr_focused', cloudMood: 'cloud_focused',
+        headwear: 'hat_ribbon_rose', facewear: 'glasses_oval_amber', outfit: 'outfit_overalls_blueberry',
+      },
+      role_reader: {
+        body: 'body_melted_matcha', marking: 'none', expression: 'expr_focused', cloudMood: 'cloud_focused',
+        headwear: 'hat_bookmark_sage', facewear: 'glasses_round_olive', outfit: 'outfit_book_pocket_cocoa',
+      },
+      role_tea_host: {
+        body: 'body_round_mocha', marking: 'none', expression: 'expr_happy', cloudMood: 'cloud_happy',
+        headwear: 'hat_teacup_cream', facewear: 'facewear_freckles_caramel', outfit: 'outfit_tea_apron_sage',
+      },
+      role_traveler: {
+        body: 'body_pointy_strawberry', marking: 'none', expression: 'expr_curious', cloudMood: 'cloud_excited',
+        headwear: 'hat_bucket_sand', facewear: 'glasses_sun_honey', outfit: 'outfit_satchel_blue',
+      },
+      role_painter: {
+        body: 'body_bun', marking: 'none', expression: 'expr_excited', cloudMood: 'cloud_curious',
+        headwear: 'hat_painter_lilac', facewear: 'facewear_paint_specks', outfit: 'outfit_painter_smock_peach',
       },
     };
     const defaultRecipe = {
@@ -258,7 +385,13 @@
       setLayer('headwear', recipe.headwear === 'none' ? null : `headwear/${recipe.headwear}.svg`);
       setLayer('facewear', recipe.facewear === 'none' ? null : `facewear/${recipe.facewear}.svg`);
       setLayer('outfit', recipe.outfit === 'none' ? null : `outfits/${recipe.outfit}.svg`);
-      layers.cloudMood.style.transform = `translateY(${cloudShift[recipe.headwear]}%)`;
+      const faceShift = { body_classic: 0, body_chubby: 0.33, body_long: 0.56, body_bun: 0, body_pudgy: 0.56, body_pointy_strawberry: 0, body_melted_matcha: 0.56, body_round_mocha: 0.22 };
+      const hatShift = { body_classic: 0, body_chubby: 0, body_long: 0.89, body_bun: -0.89, body_pudgy: 5.22, body_pointy_strawberry: -0.67, body_melted_matcha: 5.33, body_round_mocha: 0.67 };
+      const bodyCloudShift = { body_classic: 0, body_chubby: 0, body_long: 0, body_bun: -2.78, body_pudgy: 5, body_pointy_strawberry: -2.78, body_melted_matcha: 5, body_round_mocha: 0 };
+      layers.expression.style.transform = `translateY(${faceShift[recipe.body]}%)`;
+      layers.facewear.style.transform = layers.expression.style.transform;
+      layers.headwear.style.transform = `translateY(${hatShift[recipe.body]}%)`;
+      layers.cloudMood.style.transform = `translateY(${bodyCloudShift[recipe.body] + cloudShift[recipe.headwear]}%)`;
       $('#recipe').textContent = JSON.stringify(recipe, null, 2);
     }
 

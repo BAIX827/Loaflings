@@ -1,0 +1,8 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Headwear_Hat_Ribbon_Rose">
+    <path d="M592 325C557 292 515 292 482 311C488 345 521 367 565 353L592 337Z" fill="#F3B7C2" stroke="#A56F7C" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M605 327C641 291 684 289 719 309C711 346 674 367 632 352L603 339Z" fill="#F3B7C2" stroke="#A56F7C" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M586 345L570 377L606 367L632 381L619 344" fill="#E7A1B0" stroke="#A56F7C" stroke-width="6" stroke-linejoin="round"/>
+    <ellipse cx="599" cy="333" rx="23" ry="19" fill="#F9D1D8" stroke="#A56F7C" stroke-width="7"/>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Garden_Pinafore">
+    <path d="M451 569L478 615M749 569L722 615" stroke="#75946E" stroke-width="12" stroke-linecap="round"/>
+    <path d="M474 596C535 616 665 616 726 596L759 660C684 681 516 681 441 660Z" fill="#C8D9B8" stroke="#75946E" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M494 617C560 635 640 635 706 617" stroke="#E9F2DB" stroke-width="7" stroke-linecap="round"/>
+    <path d="M558 628V655C582 663 618 663 642 655V628" fill="none" stroke="#75946E" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M600 645C591 637 591 630 600 624C609 630 609 637 600 645Z" fill="#91B187"/>
+  </g>
+</svg>

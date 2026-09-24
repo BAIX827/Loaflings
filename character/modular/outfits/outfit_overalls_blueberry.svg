@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Overalls_Blueberry">
+    <path d="M443 559L465 555C485 588 515 602 554 607L549 633C497 625 461 601 443 559ZM757 559L735 555C715 588 685 602 646 607L651 633C703 625 739 601 757 559Z" fill="#B2C4E3" stroke="#627DA9" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M457 599C521 621 679 621 743 599L755 660C679 679 521 679 445 660Z" fill="#B2C4E3" stroke="#627DA9" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M477 623C544 638 656 638 723 623" stroke="#DFE7F6" stroke-width="7" stroke-linecap="round"/>
+    <path d="M548 632V657C573 663 627 663 652 657V632" fill="none" stroke="#627DA9" stroke-width="6" stroke-linejoin="round"/>
+    <circle cx="471" cy="595" r="7" fill="#FFF2CF" stroke="#627DA9" stroke-width="4"/><circle cx="729" cy="595" r="7" fill="#FFF2CF" stroke="#627DA9" stroke-width="4"/>
+  </g>
+</svg>

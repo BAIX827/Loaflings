@@ -1,0 +1,7 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Paws_Round_Mocha_Foreground">
+    <ellipse id="Paw_Round_Mocha_Left" cx="405" cy="620" rx="72" ry="52" fill="#C9A998" stroke="#4B3A32" stroke-width="7"/>
+    <ellipse id="Paw_Round_Mocha_Right" cx="795" cy="620" rx="72" ry="52" fill="#C9A998" stroke="#4B3A32" stroke-width="7"/>
+    <path id="Paw_Round_Mocha_Details" d="M375 641C385 649 395 652 405 652M431 652C441 648 449 644 456 638M745 641C755 649 765 652 775 652M801 652C811 648 819 644 826 638" stroke="#B48A75" stroke-opacity="0.8" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

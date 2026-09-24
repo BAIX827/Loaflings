@@ -1,0 +1,7 @@
+{
+  "id": "basic_bun",
+  "kind": "basic",
+  "label": "基础 Bun",
+  "description": "顶部稍高、轮廓像轻轻发起的面团；沿用标准脸、前爪和云朵。",
+  "recipe": { "body": "body_bun", "marking": "none", "expression": "expr_normal", "cloudMood": "cloud_normal", "headwear": "none", "facewear": "none", "outfit": "none" }
+}

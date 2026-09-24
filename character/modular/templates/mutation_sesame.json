@@ -1,0 +1,7 @@
+{
+  "id": "mutation_sesame",
+  "kind": "mutation",
+  "label": "变异 Sesame",
+  "description": "摩卡色圆润身体配少量芝麻状斑点和暖色小云；保留极简脸和可组合穿戴。",
+  "recipe": { "body": "body_round_mocha", "marking": "marking_sesame", "expression": "expr_happy", "cloudMood": "cloud_mocha", "headwear": "none", "facewear": "none", "outfit": "none" }
+}

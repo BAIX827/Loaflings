@@ -1,0 +1,9 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Outfit_Tea_Apron_Sage">
+    <path d="M482 570C505 593 540 602 560 606M718 570C695 593 660 602 640 606" stroke="#789275" stroke-width="9" stroke-linecap="round"/>
+    <path d="M506 595C552 611 649 611 694 595L722 662C655 678 546 678 478 662L506 595Z" fill="#C9DDC2" stroke="#789275" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M542 619C575 628 625 628 658 619" stroke="#EAF3E5" stroke-width="7" stroke-linecap="round"/>
+    <path d="M562 635C580 643 620 643 638 635V653C615 660 585 660 562 653V635Z" fill="#E9F2E2" stroke="#8CAA88" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M585 642C592 636 604 636 611 642" stroke="#A3B89D" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>
