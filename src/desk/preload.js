@@ -62,6 +62,14 @@ contextBridge.exposeInMainWorld('loaflings', {
   getCoinWallet() {
     return ipcRenderer.invoke('loaflings:get-coin-wallet');
   },
+  getAdventures() {
+    return ipcRenderer.invoke('loaflings:get-adventures');
+  },
+  onAdventureEvents(cb) {
+    const handler = (_e, events) => cb(events);
+    ipcRenderer.on('loaflings:adventure-events', handler);
+    return () => ipcRenderer.removeListener('loaflings:adventure-events', handler);
+  },
   resolveEggRollover(action) {
     return ipcRenderer.invoke('loaflings:resolve-egg-rollover', action);
   },

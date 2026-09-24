@@ -19,6 +19,16 @@ npm start
 - Full non-UI verification: `npm run verify`
 - Optional local coins reward daily activity, a completed focus session and the first real collection; see [`docs/COIN_ECONOMY.md`](docs/COIN_ECONOMY.md). Existing wearables stay free.
 
+### First play / 第一次游玩
+
+1. Start the app and leave it running while you use your computer. Clicks and keystrokes grow the egg through six stages; **Day / 今日** shows the current goal and the activity still needed.
+2. **Day / 今日** also shows moments recorded from count-only focus, idle, mouse travel and window-switch activity. **Pack / 背包 → Moments / 奇遇** keeps local history. A brief character reaction may appear when a new moment is recorded.
+3. At the adult goal, choose **Save / 收藏**. The new collection entry keeps a bilingual hatch memory based on its settled personality, traits and recorded moments. Open it again from the Pack calendar or collection. Older entries show a neutral summary.
+4. At a day change, an unfinished egg asks whether to continue its progress or start a new egg. Earlier moments stay in Pack history; only moments belonging to the current egg can enter its memory.
+5. **Pack / 背包** also has the catalog, all-time statistics and coins. Coins cannot be spent yet; adult wardrobe items remain free. Change language, hatch goal or appearance settings in **Settings / 设置**, where you can reopen the first-run guide.
+
+The first-run guide is available in Chinese and English. Moment history starts when this feature is enabled; it does not reconstruct events from older activity records. A recorded moment stays in local history even when its brief desktop reaction is missed.
+
 ### Packaged `.app` (Mac)
 
 ```bash
@@ -52,7 +62,7 @@ computer behaviour (DAY-SENSE)
 
 One local calendar day → one activity profile. A finished egg is replaced on the next day; an unfinished egg waits for a Continue / New Egg choice.
 
-The Pack also includes all-time activity statistics and a local coin wallet. [Version 2 autonomous moments and daily memories](docs/VERSION_2_PLAN.md) are proposed features, not implemented ones.
+The Pack also includes all-time activity statistics, a local coin wallet and a history of observed moments. [Version 2](docs/VERSION_2_PLAN.md) records four kinds of count-based moments, shows a quiet desktop reaction, and saves a bilingual memory with each new adult collection entry. Extended live-desktop checks of event frequency and animation are still pending.
 
 ## Privacy
 
@@ -83,7 +93,7 @@ Loaflings/
 │   ├── GENE_CONTRACT_MVP.md
 │   ├── DAY_CYCLE_MVP.md
 │   ├── COIN_ECONOMY.md
-│   ├── VERSION_2_PLAN.md    ← proposed scope; not yet implemented
+│   ├── VERSION_2_PLAN.md    ← implemented scope and remaining live-desktop checks
 │   ├── SENSE_PROFILE_SCHEMA.md
 │   └── SENSE_LIVE.md
 └── src/

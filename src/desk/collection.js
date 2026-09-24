@@ -17,7 +17,7 @@ function collectionPath() {
  * @returns {{ version: number, items: object[] }}
  */
 function emptyCollection() {
-  return { version: 2, items: [] };
+  return { version: 3, items: [] };
 }
 
 /**
@@ -30,7 +30,7 @@ function loadCollection() {
     ? raw.items.map((item) => ({ ...item, appearance: recipeFromResult(item) }))
     : [];
   return {
-    version: Math.max(2, typeof raw?.version === 'number' ? raw.version : 1),
+    version: Math.max(3, typeof raw?.version === 'number' ? raw.version : 1),
     items,
     path: fp,
   };
@@ -65,6 +65,7 @@ function entryFromSettle(result, meta = {}) {
     traits: Array.isArray(result?.traits) ? result.traits : [],
     events: Array.isArray(result?.events) ? result.events : [],
     energy: result?.energy || null,
+    memory: meta.memory || null,
   };
 }
 
@@ -79,6 +80,8 @@ function saveToCollection(result, meta = {}) {
   const entry = entryFromSettle(result, meta);
   const idx = col.items.findIndex((it) => it.id === entry.id);
   if (idx >= 0) {
+    // A saved story is a snapshot. Repeated Save must not rewrite it from later activity.
+    entry.memory = col.items[idx].memory || null;
     col.items[idx] = entry;
   } else {
     col.items.push(entry);

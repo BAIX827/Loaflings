@@ -53,6 +53,7 @@ function normalizeState(raw, date) {
     pendingRollover:
       source.pendingRollover && typeof source.pendingRollover === 'object'
         ? {
+            eggId: source.pendingRollover.eggId || egg.eggId,
             fromDate: source.pendingRollover.fromDate || source.date || date,
             startedDate:
               source.pendingRollover.startedDate || source.pendingRollover.fromDate || source.date || date,

@@ -1,6 +1,7 @@
 # WORK_PLAN
 
 ## Current
+- [ ] 2026-09-24 Version 2.1–2.3: count-based moments, quiet reactions and bilingual collection memories implemented; finish long-running live-desktop checks for event frequency, personality presentation and reduced motion before full product acceptance. Scope and thresholds: `docs/VERSION_2_PLAN.md`.
 - [ ] Soft polish / optional next
   - [ ] Consider splitting the large desktop renderer into focused modules in a separate, regression-tested change; avoid incidental restructuring during feature work
   - [ ] Reference-aligned optional idle PNG expression / pose pool (3 expression review masters generated; poses remain)
@@ -10,10 +11,10 @@
   - Historical MVP acceptance baseline: `docs/MVP_DEMO_ACCEPTANCE.md`
 
 ## Next
-- [ ] Version 2 proposed product direction: implement the scoped autonomous-moments → daily memory sequence in `docs/VERSION_2_PLAN.md`; broader ideas and deferred features in `docs/FEATURE_IDEAS.md`. This is planning only; no V2 feature is marked complete.
 - [ ] TASK-005 hatch reveal polish (copy / rarity feel) if 老大要
 
 ## Done
+- [x] 2026-09-24 V2 change audit, documentation sync, bilingual first-run guide and historical-memory reopen fix
 - [x] 2026-09-24 additional visual roles and wearables: 4 role recipes, 12 reusable SVG accessories, small-size captures, and Education Figma library sync to 78 components / 18 QA compositions
 - [x] 2026-09-24 Education Figma 2D 素材库：13 页分类树、66 个可编辑 SVG 组件、8 个标准色变量和 14 个组合检查画框；入口见 `character/ASSET_LIBRARY_INDEX.md`
 - [x] 2026-09-24 colour and shape mutation follow-up: Strawberry Pointy, Matcha Melted and Mocha Round modular bodies with matching paws, tails and clouds
@@ -51,6 +52,11 @@
 
 ## Log
 
+2026-09-24 (V2 AUDIT, DOCS AND GUIDE)
+- Checked the pending V2 event ledger, egg ownership, collection snapshots, IPC, desktop presentation and privacy boundary against `PROJECT.md`, the day-cycle contract and `docs/VERSION_2_PLAN.md`. Updated the feature-candidate status, product README and desk README to distinguish implemented behaviour from the remaining long-running live-desktop acceptance checks.
+- Rewrote the first-run guide in Chinese and English around the current six-stage goal, Today moments, Pack history, saved memories, coins, cross-day choice and count-only privacy. Existing users see the revised guide once; it remains reopenable from Settings. Fixed historical collection memory being replaced with today's result when Day is reopened.
+- Verified `npm.cmd run verify` (44 Node tests, runtime compilation and fixture settlement), a real 260 px Electron smoke for both guide languages, Today/Pack moments, click-through reaction and current/historical memories, plus `git diff --check`. Long-running real-desktop event frequency, personality feel and reduced-motion checks remain open in Current.
+
 2026-09-24 (ADDITIONAL ROLES AND ACCESSORIES)
 - Drew 4 new head accessories, 4 face accessories and 4 low-coverage outfit pieces; assembled Reader, Tea Host, Traveler and Painter from existing coloured body shapes, expressions and clouds. All 12 parts remain independent SVG layers compatible with the 8 bodies. The library now has 78 SVG modules and 8 visual role recipes; generation, genes, rarity and hatch rules are unchanged.
 - Added each new SVG as an editable component in the Education Figma file, then assembled 4 more QA frames from instances in manifest layer order. Verified Figma counts of 12 headwear, 8 facewear, 11 outfits and 18 QA frames, plus the combination-page screenshot.
@@ -60,6 +66,11 @@
 - Verified the `education` Figma connection uses `yaxi.bai@student.unimelb.edu.au` on a Student team. The old Starter file belongs to a separate connection and is not editable from this account, so created a new Education-team `Loaflings — Modular 2D Asset Library` and made it the documented entry point.
 - Created the `00–12` page tree, imported all 66 modular SVGs as editable 1200 × 900 components, added the canonical base and both reference boards, and created eight core colour variables with matching swatches.
 - Built 14 basic, mutation and role review frames from component instances in manifest layer order. Verified category counts, variable names, frame layers and Figma screenshots of the visual bible and combination page. Hatch stages, props/effects and export review remain classification/approval pages without new assets.
+
+2026-09-24 (VERSION 2.1–2.3 LOCAL IMPLEMENTATION)
+- Added a local count-based moment ledger for completed focus, return after observed idle, mouse exploration and window hops, with numeric evidence, event IDs, per-egg ownership, cooldowns, daily limits and restart-safe checkpoints. Continued eggs retain earlier dates; a new egg starts a separate memory history.
+- Added today's timeline and Pack history, a short personality-based desktop reaction, and bilingual memories based on settled energy, traits and recorded moments. New collection entries keep the memory snapshot and event references; older entries show a neutral fallback.
+- Verified with controlled event replay, persistence and legacy-collection tests, plus an isolated Electron check of timeline, history, click-through cue and memory at 260px. Extended real-desktop frequency and motion checks remain open.
 
 2026-09-24 (COLOUR AND SHAPE MUTATION FOLLOW-UP)
 - Revised three existing mutation recipes using the supplied character design bible and visual style guide: Dapple now has a strawberry-pink, softly pointed body and pink cloud; Sprout Cloud has a low matcha-green body; Sesame has a round mocha body and warm cloud. Each coloured body has matching paws and tail while reusing face and wearable slots. Added 11 SVG modules, taking the library to 66. These are authored colour-and-shape pairs, not arbitrary palette combinations or changes to mutation probability.

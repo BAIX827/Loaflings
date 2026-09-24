@@ -9,6 +9,8 @@ const {
 const { ensureDayState, recordEggProgress, reopenUnreadyEgg, markGrowing } = require('./dayState');
 const { observeActivityProfile } = require('./activityStats');
 const { observeCoinProfile } = require('./coinWallet');
+const { observeAdventureProfile, previousEggId } = require('./adventureStore');
+const { getCompanion } = require('./window');
 const { phaseFromProfile, hatchDay, hatchTargetInputs, getApiSource } = require('./hooks/coreDayCycle');
 const { slimResult } = require('./resultView');
 
@@ -118,6 +120,28 @@ function syncDayBoundary() {
   }
   if (profile && !day.choiceRequired && !day.alreadyHatched) {
     day = recordEggProgress(profile);
+  }
+  try {
+    if (sense?.previousProfile) {
+      const oldId = previousEggId(sense.previousProfile.date) || day.pendingRollover?.eggId;
+      if (oldId) {
+        const previousPersonality = hatchDay(sense.previousProfile).result.personality;
+        observeAdventureProfile(sense.previousProfile, oldId, previousPersonality, { force: true });
+      }
+    }
+    if (profile && !day.choiceRequired) {
+      const eggProfile = effectiveProfileForDay(profile, day);
+      const personality = hatchDay(eggProfile).result.personality;
+      const newEvents = observeAdventureProfile(profile, day.egg.eggId, personality);
+      if (newEvents.length) {
+        const companion = getCompanion();
+        if (companion && !companion.isDestroyed()) {
+          companion.webContents.send('loaflings:adventure-events', newEvents);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[desk] adventures unavailable', err);
   }
   let phase = day.phase;
   if (day.alreadyHatched) {

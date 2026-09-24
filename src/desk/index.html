@@ -31,6 +31,7 @@
         <span id="hud-coins" class="hud-coins" title="金币 / Coins">🪙 0</span>
       </div>
       <p id="coin-notice" class="coin-notice" hidden aria-live="polite"></p>
+      <p id="moment-bubble" class="moment-bubble" hidden aria-hidden="true"></p>
       <button type="button" id="btn-chrome-peek" class="chrome-peek" title="Show controls" hidden aria-label="Show controls">⚙</button>
       <div id="chrome" class="chrome" role="toolbar" aria-label="Companion controls">
         <button type="button" id="btn-reveal" class="chip" data-i18n="btn.day" title="Day">今日</button>
@@ -53,6 +54,10 @@
           <strong id="panel-title" data-i18n="panel.title">今日孵化</strong>
           <button type="button" id="btn-close-panel" class="chip chip-quiet" title="Close">✕</button>
         </header>
+        <section class="memory-section">
+          <strong data-i18n="memory.title">孵化记忆</strong>
+          <p id="memory-copy" class="panel-note"></p>
+        </section>
         <dl class="panel-grid">
           <dt data-i18n="panel.name">名字</dt><dd id="f-name">—</dd>
           <dt data-i18n="panel.type">类型</dt><dd id="f-type">—</dd>
@@ -64,6 +69,10 @@
           <dt data-i18n="panel.source">来源</dt><dd id="f-source">—</dd>
         </dl>
         <p id="panel-note" class="panel-note"></p>
+        <section class="moments-section">
+          <strong id="panel-moments-title" data-i18n="moments.today">今日奇遇</strong>
+          <div id="panel-moments" class="moments-list"></div>
+        </section>
       </aside>
 
       <aside id="bag" class="panel bag" hidden aria-label="Pack">
@@ -77,6 +86,7 @@
           <button type="button" id="bag-tab-catalog" class="chip chip-quiet" data-i18n="bag.catalog">图鉴</button>
           <button type="button" id="bag-tab-stats" class="chip chip-quiet" data-i18n="bag.stats">统计</button>
           <button type="button" id="bag-tab-coins" class="chip chip-quiet" data-i18n="bag.coins">金币</button>
+          <button type="button" id="bag-tab-moments" class="chip chip-quiet" data-i18n="bag.moments">奇遇</button>
         </div>
         <div id="bag-cal" class="bag-cal"></div>
         <div id="bag-list" class="bag-list" hidden></div>
@@ -122,6 +132,10 @@
           <div id="coins-history" class="coins-history"></div>
           <p class="panel-note" data-i18n="coins.note">金币暂不能消费；现有换装部件保持免费。</p>
         </section>
+        <section id="bag-moments" class="bag-moments" hidden aria-label="Adventure history">
+          <p class="panel-note" data-i18n="moments.historyNote">记录保存在本机；换新蛋不会删除过去的奇遇。</p>
+          <div id="moments-history" class="moments-list"></div>
+        </section>
         <p id="bag-hint" class="panel-note"></p>
         <button type="button" id="bag-back-today" class="chip" style="margin-top:8px" data-i18n="bag.today">回到今天</button>
       </aside>
@@ -148,6 +162,10 @@
         </div>
         <p id="progress-next" class="progress-next"></p>
         <p id="progress-remaining" class="progress-remaining">还差 20,000 活跃数才能成为成体并收藏。</p>
+        <section class="moments-section">
+          <strong data-i18n="moments.today">今日奇遇</strong>
+          <div id="progress-moments" class="moments-list"></div>
+        </section>
       </aside>
 
       <aside id="egg-rollover" class="panel egg-rollover" hidden aria-label="Unfinished egg choice">
@@ -194,10 +212,12 @@
           <button type="button" id="btn-close-guide" class="chip chip-quiet" title="Close">✕</button>
         </header>
         <ol class="guide-steps" id="guide-steps">
-          <li>打字和点击合计成 <strong>活跃 hits</strong>，推进六态长大。</li>
-          <li>默认达到 <strong>20,000 活跃</strong>才会成为成体并开放<strong>收藏</strong>；可在设置里调整，收藏后可以在日历里再看它。</li>
-          <li><strong>背包</strong>里有日历、收藏、图鉴和累计统计；图鉴会自动标出已收集与未收集的类型。</li>
-          <li><strong>设置</strong>可改语言、藏按键、透明度。</li>
+          <li data-i18n="guide.growth">打字和点击合计为活跃数，推动蛋经历六个成长阶段；默认 20,000 活跃成为成体，可在设置中调整。</li>
+          <li data-i18n="guide.today">点“今日”看成长进度和今天的奇遇。奇遇只根据专注、休息、鼠标移动和窗口切换的统计产生。</li>
+          <li data-i18n="guide.save">成体后点“收藏”，保存摸鱼灵和双语孵化记忆；在背包的日历、收藏和图鉴中回看。</li>
+          <li data-i18n="guide.pack">背包还会显示奇遇历史、累计统计和金币。现有换装部件免费，金币目前不能消费。</li>
+          <li data-i18n="guide.nextDay">未完成的蛋跨天时，可选择继续孵化或换新蛋；已有奇遇会留在本机历史中。</li>
+          <li data-i18n="guide.privacy">只保存行为数量，不读取打出的文字、文档、截图或窗口标题。设置中可以切换语言并重新打开此引导。</li>
         </ol>
         <button type="button" id="btn-guide-ok" class="chip" style="margin-top:8px" data-i18n="guide.ok">知道啦 ✿</button>
       </aside>

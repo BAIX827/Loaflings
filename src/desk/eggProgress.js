@@ -1,5 +1,6 @@
 'use strict';
 
+const { randomUUID } = require('node:crypto');
 const EGG_STATE_VERSION = 2;
 
 function count(value) {
@@ -16,6 +17,7 @@ function profileCounts(profile) {
 function emptyEgg(date, profile = null) {
   const baseline = profileCounts(profile);
   return {
+    eggId: randomUUID(),
     startedDate: date,
     carryClicks: 0,
     carryKeystrokes: 0,
@@ -30,6 +32,7 @@ function emptyEgg(date, profile = null) {
 function normalizeEgg(raw, fallbackDate) {
   const egg = raw && typeof raw === 'object' ? raw : {};
   return {
+    eggId: typeof egg.eggId === 'string' && egg.eggId ? egg.eggId : `legacy:${egg.startedDate || fallbackDate}`,
     startedDate: typeof egg.startedDate === 'string' ? egg.startedDate : fallbackDate,
     carryClicks: count(egg.carryClicks),
     carryKeystrokes: count(egg.carryKeystrokes),
@@ -64,6 +67,7 @@ function freezeEgg(egg, profile) {
 function pendingFromEgg(egg, fromDate) {
   const normalized = normalizeEgg(egg, fromDate);
   return {
+    eggId: normalized.eggId,
     fromDate,
     startedDate: normalized.startedDate || fromDate,
     clicks: normalized.clicks,
@@ -74,6 +78,7 @@ function pendingFromEgg(egg, fromDate) {
 function continueEgg(pending, today) {
   const previous = pending && typeof pending === 'object' ? pending : {};
   return {
+    eggId: previous.eggId || `legacy:${previous.startedDate || previous.fromDate || today}`,
     startedDate: previous.startedDate || previous.fromDate || today,
     carryClicks: count(previous.clicks),
     carryKeystrokes: count(previous.keystrokes),

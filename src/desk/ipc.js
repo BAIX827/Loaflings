@@ -13,6 +13,8 @@ const { loadSettings, saveSettings } = require('./settings');
 const { ensureDayState, recordEggProgress, resolveRollover, markHatched } = require('./dayState');
 const { observeActivityProfile, getActivityStats } = require('./activityStats');
 const { awardCollectionCoin, getCoinWallet } = require('./coinWallet');
+const { getAdventureTimeline, getEggAdventures } = require('./adventureStore');
+const { buildMemory } = require('./memoryCore');
 const { collectionRewardEligible } = require('./coinWalletCore');
 const {
   hatchProgressFromProfile,
@@ -65,6 +67,14 @@ function currentHatchSnapshot() {
     remainingInputs: Math.max(0, targetInputs - progress.inputs),
     canCollect: progress.inputs >= targetInputs,
   };
+}
+
+function memoryForBundle(bundle, day) {
+  if (bundle?.source !== 'live' || !day?.egg?.eggId) return null;
+  const id = `${bundle.result.date}:${bundle.profile?.seedKey || 'local'}`;
+  const existing = loadCollection().items.find((item) => item.id === id);
+  if (existing) return existing.memory || null;
+  return buildMemory(bundle.result, getEggAdventures(day.egg.eggId));
 }
 
 function registerIpc() {
@@ -187,6 +197,7 @@ function registerIpc() {
         persistPath,
         profile,
         result: slimResult(result),
+        memory: memoryForBundle({ source: 'live', profile, result }, ensureDayState()),
       };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
@@ -219,6 +230,7 @@ function registerIpc() {
       persistPath: bundle.persistPath,
       profile: bundle.profile,
       result: slimResult(bundle.result),
+      memory: memoryForBundle(bundle, ensureDayState()),
       day: ensureDayState(),
     };
   });
@@ -261,6 +273,15 @@ function registerIpc() {
     try {
       syncDayBoundary();
       return { ok: true, ...getCoinWallet() };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle('loaflings:get-adventures', () => {
+    try {
+      const synced = syncDayBoundary();
+      return { ok: true, ...getAdventureTimeline(synced.date, synced.day?.egg?.eggId) };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
@@ -320,6 +341,7 @@ function registerIpc() {
       const saved = saveToCollection(bundle.result, {
         source: bundle.source,
         seedKey: bundle.profile?.seedKey,
+        memory: memoryForBundle(bundle, gate.day),
       });
       const hatched = markHatched(gate.targetInputs);
       let coinReward = null;
@@ -336,6 +358,7 @@ function registerIpc() {
         fixturePath: bundle.fixturePath,
         persistPath: bundle.persistPath,
         result: slimResult(bundle.result),
+        memory: saved.entry.memory,
         entry: saved.entry,
         count: saved.count,
         coinReward,

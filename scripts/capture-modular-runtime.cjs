@@ -238,7 +238,7 @@ app.whenReady().then(async () => {
   const indexPath = path.join(root, 'src', 'desk', 'index.html');
   await win.loadFile(indexPath);
   await win.webContents.executeJavaScript(
-    `localStorage.setItem('loaflings.guide.v2.done', '1')`,
+    `localStorage.setItem('loaflings.guide.v3.done', '1')`,
   );
   await win.loadFile(indexPath);
   await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -460,11 +460,11 @@ app.whenReady().then(async () => {
       const hat = document.getElementById('wardrobe-headwear');
       const glasses = document.getElementById('wardrobe-facewear');
       const outfit = document.getElementById('wardrobe-outfit');
-      hat.querySelector('[data-id="hat_knit_blue"]')?.click();
+      hat.querySelector('[data-id="hat_leaf_clip"]')?.click();
       await pause(180);
-      glasses.querySelector('[data-id="glasses_round_cocoa"]')?.click();
+      glasses.querySelector('[data-id="glasses_oval_amber"]')?.click();
       await pause(180);
-      outfit.querySelector('[data-id="outfit_vest_sage"]')?.click();
+      outfit.querySelector('[data-id="outfit_garden_pinafore"]')?.click();
       await pause(350);
       const root = document.querySelector('.modular-character');
       return {
@@ -479,11 +479,14 @@ app.whenReady().then(async () => {
           .map((node) => node.dataset.layer),
       };
     })()`);
-    const expected = ['hat_knit_blue', 'glasses_round_cocoa', 'outfit_vest_sage'];
+    const expected = ['hat_leaf_clip', 'glasses_oval_amber', 'outfit_garden_pinafore'];
+    const wardrobeManifest = require('../character/modular/manifest.json');
+    const expectedCounts = ['headwear', 'facewear', 'outfits']
+      .map((slot) => Object.keys(wardrobeManifest[slot]).length);
     if (
       !wardrobeState.panelOpen ||
-      wardrobeState.optionCounts.join(',') !== '5,3,4' ||
-      wardrobeState.previewCounts.join(',') !== '4,2,3' ||
+      wardrobeState.optionCounts.join(',') !== expectedCounts.join(',') ||
+      wardrobeState.previewCounts.join(',') !== expectedCounts.map((count) => count - 1).join(',') ||
       !wardrobeState.previewsLoaded ||
       wardrobeState.selected.join(',') !== expected.join(',') ||
       expected.some((id) => !wardrobeState.recipe.includes(id))

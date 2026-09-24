@@ -62,7 +62,7 @@ app.whenReady().then(() => {
     } catch (err) {
       console.warn('[loaflings] day poll', err);
     }
-  }, 60_000);
+  }, 5_000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

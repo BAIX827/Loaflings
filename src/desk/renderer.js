@@ -29,6 +29,16 @@
   let coinWallet = null;
   let seenCoinEntries = null;
   let coinNoticeTimer = null;
+  let adventureTimeline = null;
+  let lastPanelPayload = null;
+  let activeMoment = null;
+  let momentTimer = null;
+  const momentBubbleEl = document.getElementById('moment-bubble');
+  const MOMENT_LOOK = {
+    builder: { expression: 'expr_focused', cloudMood: 'cloud_focused' },
+    explorer: { expression: 'expr_curious', cloudMood: 'cloud_curious' },
+    dreamer: { expression: 'expr_sleepy', cloudMood: 'cloud_dreamy' },
+  };
   const rolloverEl = document.getElementById('egg-rollover');
   const progressPanelEl = document.getElementById('progress-panel');
   const collectButton = document.getElementById('btn-collect');
@@ -159,11 +169,15 @@
   function setProgressOpen(open) {
     if (!progressPanelEl) return;
     progressPanelEl.hidden = !open;
-    if (open) renderProgressPanel();
+    if (open) {
+      renderProgressPanel();
+      void refreshAdventures();
+    }
   }
 
   function showEggRollover(day) {
     eggChoiceRequired = true;
+    clearMoment();
     const pending = day?.pendingRollover || day?.day?.pendingRollover || {};
     const hits = (Number(pending.clicks) || 0) + (Number(pending.keystrokes) || 0);
     const countEl = document.getElementById('rollover-hits');
@@ -315,7 +329,15 @@
   function currentAppearanceRecipe() {
     const source = viewingEntry?.appearance || lastPayload?.result?.appearance;
     const base = normalizeRecipe(source);
-    return base ? { ...base, ...normalizeWardrobe(wardrobe, base.body) } : null;
+    if (!base) return null;
+    const recipe = { ...base, ...normalizeWardrobe(wardrobe, base.body) };
+    if (activeMoment && !viewingEntry && phase === 'adult') {
+      const look = MOMENT_LOOK[activeMoment.personality] || {};
+      if (look.expression) recipe.expression = look.expression;
+      // Twin Cloud is an Epic identity layer and must stay visible during a reaction.
+      if (look.cloudMood && recipe.cloudMood !== 'cloud_twin') recipe.cloudMood = look.cloudMood;
+    }
+    return recipe;
   }
 
   function recipeToken(recipe) {
@@ -546,6 +568,7 @@
   }
 
   function fillPanel(payload) {
+    lastPanelPayload = payload;
     const result = payload?.result || {};
     const g = result.genes || {};
     if (panelTitle) panelTitle.textContent = tr('panel.title');
@@ -568,11 +591,12 @@
       : '—';
     document.getElementById('f-source').textContent = labelSource(payload?.source);
 
-    const note = result.events?.[0]?.note || '';
     const date = result.date || '';
-    document.getElementById('panel-note').textContent = [date, note]
-      .filter(Boolean)
-      .join(' · ');
+    document.getElementById('panel-note').textContent = date;
+    const memory = payload?.memory || payload?.entry?.memory;
+    const memoryEl = document.getElementById('memory-copy');
+    if (memoryEl) memoryEl.textContent = memory?.[locale] || tr(payload?.source === 'demo' ? 'memory.demo' : 'memory.legacy');
+    renderTodayMoments();
 
     // Never surface the old debug reveal strip under the pet
     if (revealEl) revealEl.hidden = true;
@@ -581,7 +605,10 @@
 
   function setPanelOpen(open) {
     panelEl.hidden = !open;
-    if (open) setProgressOpen(false);
+    if (open) {
+      setProgressOpen(false);
+      void refreshAdventures();
+    }
   }
 
   async function refreshBadge() {
@@ -756,6 +783,7 @@
   await refreshBadge();
   await syncFromMain();
   await refreshCoinWallet();
+  await refreshAdventures();
 
   document.getElementById('btn-reveal')?.addEventListener('click', async () => {
     if (eggChoiceRequired) return;
@@ -787,7 +815,8 @@
     setStatus('');
     const open = panelEl.hidden;
     if (open) {
-      if (!lastPayload) await loadSettle(false);
+      if (viewingEntry && lastPanelPayload) fillPanel(lastPanelPayload);
+      else if (!lastPayload) await loadSettle(false);
       else fillPanel(lastPayload);
     }
     setPanelOpen(open);
@@ -810,6 +839,102 @@
       return key;
     }
   }
+
+  function momentEvidence(event) {
+    const evidence = event?.evidence || {};
+    if (event.kind === 'focus_end' || event.kind === 'idle_return') {
+      return template('moments.minutes', { count: Math.floor((Number(evidence.seconds) || 0) / 60) });
+    }
+    if (event.kind === 'explore') {
+      return template('moments.metres', { count: numberText(evidence.metres, 2) });
+    }
+    if (event.kind === 'window_hop') {
+      return template('moments.switches', { count: numberText(evidence.switches) });
+    }
+    return '';
+  }
+
+  function renderMomentsList(target, events, history = false) {
+    if (!target) return;
+    target.replaceChildren();
+    if (!events?.length) {
+      const empty = document.createElement('p');
+      empty.className = 'panel-note';
+      empty.textContent = tr(history ? 'moments.historyEmpty' : 'moments.empty');
+      target.appendChild(empty);
+      return;
+    }
+    for (const event of events) {
+      const row = document.createElement('div');
+      row.className = 'moment-row';
+      const title = document.createElement('span');
+      title.textContent = tr(`moments.${event.kind}`);
+      const detail = document.createElement('small');
+      const at = new Date(event.occurredAt);
+      const time = Number.isNaN(at.getTime()) ? '' : new Intl.DateTimeFormat(
+        locale === 'en' ? 'en-AU' : 'zh-CN', { hour: '2-digit', minute: '2-digit' },
+      ).format(at);
+      detail.textContent = [history ? event.date : '', time, momentEvidence(event)]
+        .filter(Boolean).join(' · ');
+      row.append(title, detail);
+      target.appendChild(row);
+    }
+  }
+
+  function renderTodayMoments() {
+    const events = adventureTimeline?.todayEvents || [];
+    renderMomentsList(document.getElementById('progress-moments'), events);
+    const panelTitle = document.getElementById('panel-moments-title');
+    if (panelTitle) panelTitle.textContent = tr(viewingEntry ? 'moments.recorded' : 'moments.today');
+    const referenced = new Set(viewingEntry?.memory?.eventIds || []);
+    const panelEvents = viewingEntry
+      ? (adventureTimeline?.history || []).filter((event) => referenced.has(event.id))
+      : events;
+    renderMomentsList(document.getElementById('panel-moments'), panelEvents, Boolean(viewingEntry));
+    renderMomentsList(document.getElementById('moments-history'), adventureTimeline?.history || [], true);
+  }
+
+  async function refreshAdventures() {
+    if (!api?.getAdventures) return;
+    try {
+      const payload = await api.getAdventures();
+      if (!payload?.ok) return;
+      adventureTimeline = payload;
+      renderTodayMoments();
+    } catch {
+      // The companion remains usable if local history is temporarily unavailable.
+    }
+  }
+
+  function clearMoment() {
+    clearTimeout(momentTimer);
+    activeMoment = null;
+    petEl?.classList.remove('moment-active');
+    if (momentBubbleEl) momentBubbleEl.hidden = true;
+    if (phase === 'adult' && !viewingEntry && !eggChoiceRequired) {
+      petLoaded = false;
+      void loadPetArt('adult');
+    }
+  }
+
+  function showMoment(event) {
+    if (!event || viewingEntry || eggChoiceRequired) return;
+    if (['panel', 'progress-panel', 'bag', 'wardrobe', 'guide', 'settings']
+      .some((id) => !document.getElementById(id)?.hidden)) return;
+    clearTimeout(momentTimer);
+    activeMoment = event;
+    if (momentBubbleEl) {
+      momentBubbleEl.textContent = tr(`moment.bubble.${event.personality || 'balanced'}`);
+      momentBubbleEl.hidden = false;
+    }
+    if (phase === 'adult') {
+      petEl?.classList.add('moment-active');
+      petLoaded = false;
+      void loadPetArt('adult');
+    }
+    momentTimer = setTimeout(clearMoment, 3800);
+  }
+
   function applyLocale() {
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n');
@@ -824,6 +949,10 @@
     renderHudHits(lastEggHits, phase);
     updateCollectionGate(latestHatchProgress);
     if (progressPanelEl && !progressPanelEl.hidden) renderProgressPanel();
+    renderTodayMoments();
+    if (activeMoment && momentBubbleEl) {
+      momentBubbleEl.textContent = tr(`moment.bubble.${activeMoment.personality || 'balanced'}`);
+    }
   }
 
   // —— Pack / calendar (collection) ——
@@ -832,6 +961,7 @@
   const bagList = document.getElementById('bag-list');
   const bagCatalog = document.getElementById('bag-catalog');
   const bagStats = document.getElementById('bag-stats');
+  const bagMoments = document.getElementById('bag-moments');
   const catalogGrid = document.getElementById('catalog-grid');
   const catalogProgressLabel = document.getElementById('catalog-progress-label');
   const catalogProgressFill = document.getElementById('catalog-progress-fill');
@@ -1108,6 +1238,7 @@
     if (bagList) bagList.hidden = tab !== 'collection';
     if (bagCatalog) bagCatalog.hidden = tab !== 'catalog';
     if (bagStats) bagStats.hidden = tab !== 'stats';
+    if (bagMoments) bagMoments.hidden = tab !== 'moments';
     const bagCoins = document.getElementById('bag-coins');
     if (bagCoins) bagCoins.hidden = tab !== 'coins';
     for (const [id, value] of [
@@ -1116,16 +1247,19 @@
       ['bag-tab-catalog', 'catalog'],
       ['bag-tab-stats', 'stats'],
       ['bag-tab-coins', 'coins'],
+      ['bag-tab-moments', 'moments'],
     ]) {
       document.getElementById(id)?.classList.toggle('chip-quiet', tab !== value);
     }
     if (tab === 'catalog') void renderCatalog();
     if (tab === 'stats') void loadActivityStats();
     if (tab === 'coins') void refreshCoinWallet();
+    if (tab === 'moments') void refreshAdventures();
   }
 
   async function viewCollectionEntry(entry) {
     viewingEntry = entry;
+    clearMoment();
     if (stageEl) stageEl.dataset.viewing = '1';
     if (viewBanner) {
       viewBanner.hidden = false;
@@ -1148,6 +1282,7 @@
         traits: entry.traits,
         events: entry.events,
       },
+      memory: entry.memory,
     });
     setPanelOpen(false);
     setBagOpen(false);
@@ -1158,6 +1293,8 @@
 
   async function clearViewing() {
     viewingEntry = null;
+    lastPanelPayload = null;
+    renderTodayMoments();
     if (stageEl) stageEl.dataset.viewing = '0';
     if (viewBanner) {
       viewBanner.hidden = true;
@@ -1172,7 +1309,7 @@
     setWardrobeOpen(false);
     setSettingsOpen(false);
     setPanelOpen(false);
-    await Promise.all([loadCollectionItems(), loadCatalog(), loadActivityStats(), refreshCoinWallet()]);
+    await Promise.all([loadCollectionItems(), loadCatalog(), loadActivityStats(), refreshCoinWallet(), refreshAdventures()]);
     renderBagCalendar();
     renderBagList();
     showBagTab('calendar');
@@ -1197,6 +1334,9 @@
   });
   document.getElementById('bag-tab-coins')?.addEventListener('click', () => {
     showBagTab('coins');
+  });
+  document.getElementById('bag-tab-moments')?.addEventListener('click', () => {
+    showBagTab('moments');
   });
 
   // —— Wardrobe: persisted cosmetic overlay for adult Loaflings ——
@@ -1423,7 +1563,7 @@
     await api?.setSettings?.({ locale });
     applyLocale();
     populateWardrobeControls();
-    if (lastPayload && panelEl && !panelEl.hidden) fillPanel(lastPayload);
+    if (lastPanelPayload && panelEl && !panelEl.hidden) fillPanel(lastPanelPayload);
     if (viewingEntry) {
       const banner = document.getElementById('view-banner');
       if (banner && !banner.hidden) {
@@ -1436,6 +1576,7 @@
       if (bagCatalog && !bagCatalog.hidden) void renderCatalog();
       if (bagStats && !bagStats.hidden) renderActivityStats();
       if (!document.getElementById('bag-coins')?.hidden) renderCoinWallet();
+      if (bagMoments && !bagMoments.hidden) renderTodayMoments();
     }
   });
 
@@ -1459,6 +1600,12 @@
 
   api?.onCompanionWindowId?.((payload) => {
     console.log('[loaflings] companion windowId', payload?.windowId);
+  });
+
+  api?.onAdventureEvents?.((events) => {
+    const newest = Array.isArray(events) ? events[events.length - 1] : null;
+    if (newest) showMoment(newest);
+    void refreshAdventures();
   });
 
   api?.onDayState?.(async (day) => {
@@ -1707,7 +1854,7 @@
 
 
   // —— Newbie guide (first run) ——
-  const GUIDE_KEY = 'loaflings.guide.v2.done';
+  const GUIDE_KEY = 'loaflings.guide.v3.done';
   const guideEl = document.getElementById('guide');
   function setGuideOpen(open) {
     if (guideEl) guideEl.hidden = !open;
